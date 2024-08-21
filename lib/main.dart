@@ -1,18 +1,23 @@
+import 'package:alerta_criminal/core/di/dependency_injection.dart';
+import 'package:alerta_criminal/features/auth/screens/auth_screen.dart';
 import 'package:alerta_criminal/features/home/screens/home_screen.dart';
-import 'package:alerta_criminal/theme/Theme.dart';
+import 'package:alerta_criminal/firebase_options.dart';
+import 'package:alerta_criminal/theme/theme.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-final theme = ThemeData(
-  useMaterial3: true,
-  colorScheme: ColorScheme.fromSeed(
-    brightness: Brightness.dark,
-    seedColor: const Color.fromARGB(255, 222, 159, 0),
-  ),
-  textTheme: GoogleFonts.latoTextTheme(),
-);
+import 'features/splash/screens/splash_screen.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
+
+  DependencyInjection().setup();
+
   runApp(const MyApp());
 }
 
@@ -25,7 +30,22 @@ class MyApp extends StatelessWidget {
       title: 'Alerta Criminal',
       theme: lightTheme,
       darkTheme: darkTheme,
-      home: const HomeScreen(),
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
+      home: StreamBuilder(
+        stream: firebaseAuthInstance.authStateChanges(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const SplashScreen();
+          }
+
+          if (snapshot.hasData) {
+            return const HomeScreen();
+          }
+
+          return const AuthScreen();
+        },
+      ),
     );
   }
 }

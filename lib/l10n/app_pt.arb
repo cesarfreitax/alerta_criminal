@@ -1,0 +1,18 @@
+{
+  "map": "Mapa",
+  "title": "Título",
+  "description": "Descrição",
+  "takePicture": "Tirar Foto",
+  "addCrimTitleError": "Título precisa ter 4 ou mais caracteres",
+  "signUpText": "Ainda não possui uma conta? \n Crie agora.",
+  "signInText": "Já tem uma conta? \n Entrar.",
+  "passwordInvalidMessage": "Por favor, insira uma senha válida.",
+  "emailAddress": "Email",
+  "password": "Senha",
+  "authenticationFailed": "Autenticação falhou...",
+  "signInButton": "Entrar",
+  "signUpButton": "Registrar",
+  "loginTitle": "Entrar",
+  "registerTitle": "Registrar",
+  "fullName": "Nome Completo"
+}

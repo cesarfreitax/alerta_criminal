@@ -1,3 +1,6 @@
+import 'package:alerta_criminal/core/di/dependency_injection.dart';
+import 'package:alerta_criminal/core/utils/string_util.dart';
+import 'package:alerta_criminal/features/home/widgets/map_widget.dart';
 import 'package:flutter/material.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -7,11 +10,15 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Home'),
+        title: Text(getStrings(context).map),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout_rounded),
+            onPressed: DependencyInjection.authService.signOut,
+          )
+        ],
       ),
-      body: const Center(
-        child: Text('Home'),
-      ),
+      body: const MapWidget(),
     );
   }
 }

@@ -4,6 +4,12 @@
 <dict>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+    <string>Enable localization when using the app</string>
+    <key>NSLocationAlwaysUsageDescription</key>
+    <string>Always enable localization</string>
+    <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+    <string>Enable localization when using the app or background</string>
 	<key>CFBundleDisplayName</key>
 	<string>Alerta Criminal</string>
 	<key>CFBundleExecutable</key>

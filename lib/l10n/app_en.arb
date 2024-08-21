@@ -1,0 +1,74 @@
+{
+  "map": "Map",
+  "@map": {
+    "description": "Title for the map screen"
+  },
+  "title": "Title",
+  "@title": {
+    "description": "Title"
+  },
+  "description": "Description",
+  "@description": {
+    "description": "Description"
+  },
+  "takePicture": "Take Picture",
+  "@takePicture": {
+    "description": "Button to take a picture"
+  },
+  "addCrimTitleError": "Title must has 4 or more characters",
+  "@addCrimTitleError": {
+    "description": "Error on adding new crim: Title must has 4 or more characters"
+  },
+  "signUpText": "Does not have an account yet? \n Do register.",
+  "@signUpText": {
+    "description": "Sign up text button to register"
+  },
+  "signInText": "Already have an account? \n Do login.",
+  "@signInText": {
+    "description": "Sign in text button to login"
+  },
+  "passwordInvalidMessage": "Please enter a valid password.",
+  "@passwordInvalidMessage": {
+    "description": "Password is incorrect"
+  },
+  "fullNameInvalidMessage": "Please enter a valid name.",
+  "@fullNameInvalidMessage": {
+    "description": "Name is incorrect"
+  },
+  "emailInvalidMessage": "Please enter a valid email.",
+  "@emailInvalidMessage": {
+    "description": "Email is incorrect"
+  },
+  "fullName": "Full Name",
+  "@fullName": {
+    "description": "Full name"
+  },
+  "emailAddress": "Email Address",
+  "@emailAddress": {
+    "description": "Email Address"
+  },
+  "password": "Password",
+  "@password": {
+    "description": "Password"
+  },
+  "authenticationFailed": "Authentication failed...",
+  "@authenticationFailed": {
+    "description": "Authentication failed"
+  },
+  "signInButton": "Sign in",
+  "@signInButton": {
+    "description": "Sign in in the application button"
+  },
+  "signUpButton": "Sign up",
+  "@signUpButton": {
+    "description": "Sign up button to create an account"
+  },
+  "loginTitle": "Login",
+  "@loginTitle": {
+    "description": "Login screen title"
+  },
+  "registerTitle": "Register",
+  "@registerTitle": {
+    "description": "Register screen title"
+  }
+}
