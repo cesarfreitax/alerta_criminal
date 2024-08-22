@@ -4,7 +4,6 @@ import 'package:alerta_criminal/core/di/dependency_injection.dart';
 import 'package:alerta_criminal/core/utils/auth_util.dart';
 import 'package:alerta_criminal/core/utils/string_util.dart';
 import 'package:alerta_criminal/data/models/crim_model.dart';
-import 'package:alerta_criminal/domain/entities/crim_entity.dart';
 import 'package:alerta_criminal/features/home/widgets/photo_preview_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -12,7 +11,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 class AddNewCrimBottomSheet {
   Future<dynamic> show(
     BuildContext ctx,
-    void Function(CrimEntity crim) addNewCrim,
+    void Function(CrimModel crim) addNewCrim,
     LatLng location,
   ) async {
     addNewCrim = addNewCrim;
@@ -43,7 +42,7 @@ class _AddNewCrimBottomSheet extends StatefulWidget {
     required this.location,
   });
 
-  final void Function(CrimEntity crim) addNewCrim;
+  final void Function(CrimModel crim) addNewCrim;
   final LatLng location;
 
   @override
@@ -58,8 +57,6 @@ class _AddNewCrimBottomSheetState extends State<_AddNewCrimBottomSheet> {
   final descriptionController = TextEditingController();
 
   File? image;
-  var title = "";
-  var description = "";
 
   // late LatLng location;
 
@@ -73,18 +70,20 @@ class _AddNewCrimBottomSheetState extends State<_AddNewCrimBottomSheet> {
   }
 
   void addNewCrim() async {
-    final model = CrimModel(
-      title: title,
-      description: description,
-      location: widget.location,
+    final crim = CrimModel(
+      title: titleController.text,
+      description: descriptionController.text,
+      lat: widget.location.latitude,
+      lng: widget.location.longitude,
+      userId: getCurrentUser()!.uid
     );
 
     if (image != null) {
-      DependencyInjection.userDataUseCase.saveCrimImage(image!, getCurrentUser().uid);
+      final imageUrl = await DependencyInjection.userDataUseCase.saveCrimImage(image!, getCurrentUser()!.uid);
+      crim.imageUrl = imageUrl;
     }
 
-    final entity = model.toEntity();
-    widget.addNewCrim(entity);
+    widget.addNewCrim(crim);
   }
 
   @override

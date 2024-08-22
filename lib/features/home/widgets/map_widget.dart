@@ -1,6 +1,7 @@
 import 'package:alerta_criminal/core/utils/location_util.dart';
-import 'package:alerta_criminal/domain/entities/crim_entity.dart';
+import 'package:alerta_criminal/data/models/crim_model.dart';
 import 'package:alerta_criminal/features/home/widgets/add_new_crim_bottom_sheet.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
@@ -29,9 +30,17 @@ class _MapWidgetState extends State<MapWidget> {
     });
   }
 
-  List<CrimEntity> crims = [];
+  List<CrimModel> crims = [];
 
-  void addNewCrim(CrimEntity crim) {
+  void addNewCrim(CrimModel crim) {
+    final crimsRef =
+        FirebaseFirestore.instance.collection('crims').withConverter<CrimModel>(
+              fromFirestore: (snapshots, _) => CrimModel.fromJson(snapshots.data()!),
+              toFirestore: (crim, _) => crim.toJson(),
+            );
+
+    crimsRef.add(crim);
+
     setState(() {
       crims.add(crim);
     });
@@ -66,11 +75,11 @@ class _MapWidgetState extends State<MapWidget> {
                   zoom: 11.0,
                 ),
                 zoomControlsEnabled: false,
-                markers: crims.map((crim) => Marker(
-                  markerId: MarkerId(crim.id),
-                  position: crim.location
-                  )
-                ).toSet(),
+                markers: crims
+                    .map((crim) => Marker(
+                        markerId: MarkerId(crim.id),
+                        position: LatLng(crim.lat, crim.lng)))
+                    .toSet(),
               ),
         Positioned(
           bottom: 16,

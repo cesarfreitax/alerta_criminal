@@ -1,30 +1,21 @@
-import 'package:alerta_criminal/data/models/crim_model.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:json_annotation/json_annotation.dart';
 
+part 'crim_entity.g.dart';
+
+@JsonSerializable()
 class CrimEntity {
-  CrimEntity({
-    required this.id,
-    required this.imageUrl,
-    required this.title,
-    required this.description,
-    required this.location,
-  });
+  String id;
+  String imageUrl;
+  String title;
+  String description;
+  double lat;
+  double lng;
 
-  final String id;
-  final String imageUrl;
-  final String title;
-  final String description;
-  final LatLng location;
-}
+  CrimEntity(
+      this.id, this.imageUrl, this.title, this.description, this.lat, this.lng);
 
-extension CrimEntityExtension on CrimModel {
-  CrimEntity toEntity() {
-    return CrimEntity(
-      id: id,
-      title: title,
-      description: description,
-      imageUrl: imageUrl,
-      location: location
-    );
-  }
+  factory CrimEntity.fromJson(Map<String, dynamic> json) =>
+      _$CrimEntityFromJson(json);
+
+  Map<String, dynamic> toJson() => _$CrimEntityToJson(this);
 }

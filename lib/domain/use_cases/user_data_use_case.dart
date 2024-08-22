@@ -7,7 +7,7 @@ class UserDataUseCase {
 
   UserDataUseCase(this.repository);
 
-  Future<void> saveCrimImage(File image, String userId) async {
-    await repository.saveCrimImage(image, userId);
+  Future<String> saveCrimImage(File image, String userId) async {
+   return await repository.saveCrimImage(image, userId);
   }
 }
