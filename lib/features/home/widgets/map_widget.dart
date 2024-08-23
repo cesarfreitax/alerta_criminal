@@ -1,96 +1,98 @@
 import 'package:alerta_criminal/core/utils/location_util.dart';
-import 'package:alerta_criminal/data/models/crim_model.dart';
-import 'package:alerta_criminal/features/home/widgets/add_new_crim_bottom_sheet.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-class MapWidget extends StatefulWidget {
-  const MapWidget({super.key});
+class MapWidget extends ConsumerStatefulWidget {
+  MapWidget(
+    {
+    super.key,
+    required this.markers,
+    required this.userLocation,
+    required this.isSelecting,
+  });
+
+  Set<Marker> markers;
+  LatLng userLocation;
+  final bool isSelecting;
 
   @override
-  State<MapWidget> createState() {
+  ConsumerState<MapWidget> createState() {
     return _MapWidgetState();
   }
 }
 
-class _MapWidgetState extends State<MapWidget> {
-  LatLng? userLocation;
-  var isFetchingLocation = false;
-
-  void setLocation() async {
-    final locationData = await LocationUtil().getLocation();
-
-    if (locationData == null) {
-      return;
-    }
-
-    setState(() {
-      userLocation = LatLng(locationData.latitude!, locationData.longitude!);
-    });
-  }
-
-  List<CrimModel> crims = [];
-
-  void addNewCrim(CrimModel crim) {
-    final crimsRef =
-        FirebaseFirestore.instance.collection('crims').withConverter<CrimModel>(
-              fromFirestore: (snapshots, _) => CrimModel.fromJson(snapshots.data()!),
-              toFirestore: (crim, _) => crim.toJson(),
-            );
-
-    crimsRef.add(crim);
-
-    setState(() {
-      crims.add(crim);
-    });
-  }
+class _MapWidgetState extends ConsumerState<MapWidget> {
+  late Future<void> futureCrims;
 
   late GoogleMapController mapController;
-
-  final LatLng center = const LatLng(45.521563, -122.677433);
+  final searchBarController = TextEditingController();
 
   void onMapCreated(GoogleMapController controller) {
     mapController = controller;
   }
 
+  void setMarkers(Set<Marker> markers) {
+    setState(() {
+      widget.markers = markers;
+    });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    searchBarController.dispose();
+  }
+
+  void setupSearchBar() async {
+    searchBarController.text = await getAddress(
+        widget.userLocation.latitude, widget.userLocation.longitude);
+  }
+
   @override
   void initState() {
     super.initState();
-    setLocation();
+    if (widget.isSelecting) {
+      setupSearchBar();
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        userLocation == null
-            ? const Center(
-                child: CircularProgressIndicator(),
-              )
-            : GoogleMap(
-                onMapCreated: onMapCreated,
-                initialCameraPosition: CameraPosition(
-                  target: userLocation!,
-                  zoom: 11.0,
-                ),
-                zoomControlsEnabled: false,
-                markers: crims
-                    .map((crim) => Marker(
-                        markerId: MarkerId(crim.id),
-                        position: LatLng(crim.lat, crim.lng)))
-                    .toSet(),
+        if (widget.isSelecting)
+          Positioned(
+            top: 8,
+            child: SizedBox(
+              width: double.infinity,
+              height: 40,
+              child: SearchBar(
+                controller: searchBarController,
               ),
-        Positioned(
-          bottom: 16,
-          right: 16,
-          child: FloatingActionButton(
-            onPressed: () {
-              AddNewCrimBottomSheet().show(context, addNewCrim, userLocation!);
-            },
-            child: const Icon(Icons.add),
+            ),
           ),
-        )
+        GoogleMap(
+          onMapCreated: onMapCreated,
+          initialCameraPosition: CameraPosition(
+            target: widget.userLocation,
+            zoom: widget.isSelecting ? 14.0 : 11.0,
+          ),
+          zoomControlsEnabled: false,
+          markers: widget.markers,
+          onTap: widget.isSelecting
+              ? (location) {
+                  setMarkers(
+                    {
+                      Marker(
+                        markerId: const MarkerId("m1"),
+                        position: location,
+                      ),
+                    },
+                  );
+                }
+              : null,
+        ),
       ],
     );
   }

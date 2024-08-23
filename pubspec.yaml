@@ -50,6 +50,12 @@ dependencies:
   firebase_auth: ^4.16.0
   get_it: ^7.7.0
   email_validator: ^3.0.0
+  cloud_firestore: ^4.17.5
+  freezed_annotation: ^2.4.4
+  json_annotation: ^4.9.0
+  flutter_riverpod: ^2.5.1
+  riverpod_annotation: ^2.3.5
+  http: ^1.2.2
 
 dev_dependencies:
   flutter_test:
@@ -62,7 +68,12 @@ dev_dependencies:
   # rules and activating additional ones.
   flutter_lints: ^3.0.0
   envied_generator: ^0.5.4+1
-  build_runner: ^2.4.11
+  build_runner: ^2.4.12
+  json_serializable: ^6.8.0
+  freezed: ^2.5.7
+  riverpod_generator: ^2.4.3
+  custom_lint: ^0.6.5
+  riverpod_lint: ^2.3.13
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

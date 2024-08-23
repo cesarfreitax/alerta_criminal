@@ -1,6 +1,8 @@
 import 'package:alerta_criminal/core/services/auth_service.dart';
 import 'package:alerta_criminal/core/services/string_service.dart';
+import 'package:alerta_criminal/data/repositories/crim_repository_impl.dart';
 import 'package:alerta_criminal/data/repositories/user_data_repository_impl.dart';
+import 'package:alerta_criminal/domain/repositories/crim_repository.dart';
 import 'package:alerta_criminal/domain/repositories/user_data_repository.dart';
 import 'package:alerta_criminal/domain/use_cases/crim_use_case.dart';
 import 'package:alerta_criminal/domain/use_cases/user_data_use_case.dart';
@@ -29,6 +31,8 @@ class DependencyInjection {
         getIt.registerLazySingleton<AuthService>(() => AuthService(getIt<FirebaseAuth>()));
 
         getIt.registerLazySingleton<FirebaseFirestore>(() => firebaseFirestoreInstance);
+        getIt.registerLazySingleton<CrimRepository>(() => CrimRepositoryImpl(firebaseFirestoreInstance));
+        getIt.registerLazySingleton<CrimUseCase>(() => CrimUseCase(getIt<CrimRepository>(), firebaseFirestoreInstance));
     }
 }
 

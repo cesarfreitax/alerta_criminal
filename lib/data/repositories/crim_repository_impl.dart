@@ -22,7 +22,6 @@ class CrimRepositoryImpl extends CrimRepository {
       fromFirestore: (snapshots, _) => CrimModel.fromJson(snapshots.data()!),
       toFirestore: (crim, _) => crim.toJson(),
     );
-
     return crimsRef;
   }
 
