@@ -1,18 +1,20 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:uuid/uuid.dart';
 
-part 'crim_model.g.dart';
+part 'crime_model.g.dart';
 
 const uuid = Uuid();
 
 @JsonSerializable()
-class CrimModel {
-  CrimModel({
+class CrimeModel {
+  CrimeModel({
     required this.userId,
     required this.title,
     required this.description,
     required this.lat,
     required this.lng,
+    required this.date,
     id,
     imageUrl,
   })  : id = id ?? uuid.v4(),
@@ -22,8 +24,9 @@ class CrimModel {
   String imageUrl;
   final double lat;
   final double lng;
+  final Timestamp date;
 
-  factory CrimModel.fromJson(Map<String, dynamic> json) =>
+  factory CrimeModel.fromJson(Map<String, dynamic> json) =>
       _$CrimModelFromJson(json);
 
   Map<String, dynamic> toJson() => _$CrimModelToJson(this);

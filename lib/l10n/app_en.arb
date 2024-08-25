@@ -70,5 +70,25 @@
   "registerTitle": "Register",
   "@registerTitle": {
     "description": "Register screen title"
+  },
+  "crimeLocale": "Crime Location",
+  "@crimeLocale": {
+    "description": "Where Did The Crime Happen?"
+  },
+  "send": "Send",
+  "@send": {
+    "description": "Send action"
+  },
+  "date": "Date",
+  "@date": {
+    "description": "Select the date"
+  },
+  "hour": "Hour",
+  "@hour": {
+    "description": "Select the hour"
+  },
+  "seeMoreDetails": "See more details",
+  "@seeMoreDetails": {
+    "description": "Button to see more details"
   }
 }

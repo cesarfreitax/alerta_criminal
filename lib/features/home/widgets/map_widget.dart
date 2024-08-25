@@ -4,17 +4,20 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class MapWidget extends ConsumerStatefulWidget {
-  MapWidget(
-    {
+  MapWidget({
     super.key,
     required this.markers,
     required this.userLocation,
     required this.isSelecting,
+    this.onSelectNewLocation,
+    this.onTapMap,
   });
 
   Set<Marker> markers;
   LatLng userLocation;
   final bool isSelecting;
+  final void Function(LatLng location)? onSelectNewLocation;
+  final void Function(String? id, bool show)? onTapMap;
 
   @override
   ConsumerState<MapWidget> createState() {
@@ -90,8 +93,11 @@ class _MapWidgetState extends ConsumerState<MapWidget> {
                       ),
                     },
                   );
+                  widget.onSelectNewLocation!(location);
                 }
-              : null,
+              : (location) {
+            widget.onTapMap!(null, false);
+          },
         ),
       ],
     );

@@ -97,8 +97,7 @@ class _AuthScreenState extends State<AuthScreen> {
             key: formKey,
             child: Column(
               children: [
-                if (!isLogin)
-                  nameTextFormField(context),
+                if (!isLogin) nameTextFormField(context),
                 verticalSpacing(height: 16),
                 emailTextFormField(context),
                 verticalSpacing(height: 16),
@@ -117,107 +116,103 @@ class _AuthScreenState extends State<AuthScreen> {
 
   TextButton changeAuthTypeButton(BuildContext context) {
     return TextButton(
-                onPressed: toggleAuthType,
-                child: Text(
-                  isLogin
-                      ? getStrings(context).signUpText
-                      : getStrings(context).signInText,
-                  style: Theme.of(context).textTheme.labelMedium,
-                  textAlign: TextAlign.center,
-                ),
-              );
+      onPressed: toggleAuthType,
+      child: Text(
+        isLogin
+            ? getStrings(context).signUpText
+            : getStrings(context).signInText,
+        style: Theme.of(context).textTheme.labelMedium,
+        textAlign: TextAlign.center,
+      ),
+    );
   }
 
   SizedBox submitButton(BuildContext context) {
     return SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: !isAuthenticating ? submit : null,
-                  child: isAuthenticating
-                      ? const SizedBox(
-                          height: 20,
-                          width: 20,
-                          child: CircularProgressIndicator())
-                      : Text(isLogin
-                          ? getStrings(context).signInButton
-                          : getStrings(context).signUpButton),
-                ),
-              );
+      width: double.infinity,
+      child: ElevatedButton(
+        onPressed: !isAuthenticating ? submit : null,
+        child: isAuthenticating
+            ? const SizedBox(
+                height: 20, width: 20, child: CircularProgressIndicator())
+            : Text(isLogin
+                ? getStrings(context).signInButton
+                : getStrings(context).signUpButton),
+      ),
+    );
   }
 
   TextFormField passwordTextFormField(BuildContext context) {
     return TextFormField(
-                controller: passwordController,
-                obscureText: true,
-                textCapitalization: TextCapitalization.none,
-                enableSuggestions: false,
-                autocorrect: false,
-                decoration: InputDecoration(
-                  labelText: getStrings(context).password,
-                  border: const OutlineInputBorder(
-                    borderRadius: BorderRadius.all(
-                      Radius.circular(30),
-                    ),
-                  ),
-                  prefixIcon: const Icon(Icons.lock),
-                ),
-                validator: (value) {
-                  if (value == null ||
-                      value.trim().isEmpty ||
-                      value.length < 6) {
-                    return getStrings(context).passwordInvalidMessage;
-                  }
-                  return null;
-                },
-              );
+      controller: passwordController,
+      obscureText: true,
+      textCapitalization: TextCapitalization.none,
+      enableSuggestions: false,
+      autocorrect: false,
+      decoration: InputDecoration(
+        labelText: getStrings(context).password,
+        border: const OutlineInputBorder(
+          borderRadius: BorderRadius.all(
+            Radius.circular(16),
+          ),
+        ),
+        prefixIcon: const Icon(Icons.lock),
+      ),
+      validator: (value) {
+        if (value == null || value.trim().isEmpty || value.length < 6) {
+          return getStrings(context).passwordInvalidMessage;
+        }
+        return null;
+      },
+    );
   }
 
   TextFormField emailTextFormField(BuildContext context) {
     return TextFormField(
-                controller: emailController,
-                keyboardType: TextInputType.emailAddress,
-                textCapitalization: TextCapitalization.none,
-                decoration: InputDecoration(
-                  labelText: getStrings(context).emailAddress,
-                  border: const OutlineInputBorder(
-                    borderRadius: BorderRadius.all(
-                      Radius.circular(30),
-                    ),
-                  ),
-                  prefixIcon: const Icon(Icons.email),
-                ),
-                validator: (value) {
-                  final emailIsNotValid = !EmailValidator.validate(value ?? "");
-                  if (emailIsNotValid) {
-                    return getStrings(context).emailInvalidMessage;
-                  }
-                  return null;
-                },
-              );
+      controller: emailController,
+      keyboardType: TextInputType.emailAddress,
+      textCapitalization: TextCapitalization.none,
+      decoration: InputDecoration(
+        labelText: getStrings(context).emailAddress,
+        border: const OutlineInputBorder(
+          borderRadius: BorderRadius.all(
+            Radius.circular(16),
+          ),
+        ),
+        prefixIcon: const Icon(Icons.email),
+      ),
+      validator: (value) {
+        final emailIsNotValid = !EmailValidator.validate(value ?? "");
+        if (emailIsNotValid) {
+          return getStrings(context).emailInvalidMessage;
+        }
+        return null;
+      },
+    );
   }
 
   TextFormField nameTextFormField(BuildContext context) {
     return TextFormField(
-                  controller: nameController,
-                  keyboardType: TextInputType.name,
-                  textCapitalization: TextCapitalization.none,
-                  decoration: InputDecoration(
-                    labelText: getStrings(context).fullName,
-                    border: const OutlineInputBorder(
-                      borderRadius: BorderRadius.all(
-                        Radius.circular(30),
-                      ),
-                    ),
-                    prefixIcon: const Icon(Icons.person),
-                  ),
-                  validator: (value) {
-                    if (value == null ||
-                        value.trim().isEmpty ||
-                        value.split(' ').length < 2) {
-                      return getStrings(context).fullNameInvalidMessage;
-                    }
-                    return null;
-                  },
-                );
+      controller: nameController,
+      keyboardType: TextInputType.name,
+      textCapitalization: TextCapitalization.none,
+      decoration: InputDecoration(
+        labelText: getStrings(context).fullName,
+        border: const OutlineInputBorder(
+          borderRadius: BorderRadius.all(
+            Radius.circular(16),
+          ),
+        ),
+        prefixIcon: const Icon(Icons.person),
+      ),
+      validator: (value) {
+        if (value == null ||
+            value.trim().isEmpty ||
+            value.split(' ').length < 2) {
+          return getStrings(context).fullNameInvalidMessage;
+        }
+        return null;
+      },
+    );
   }
 }

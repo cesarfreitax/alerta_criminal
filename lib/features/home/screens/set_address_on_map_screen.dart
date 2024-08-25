@@ -19,16 +19,28 @@ class SetAddressOnMapScreen extends StatefulWidget {
 }
 
 class _SetAddressOnMapScreenState extends State<SetAddressOnMapScreen> {
+  LatLng? userLocation;
+
+  void setLocation(LatLng location) => userLocation = location;
+  void saveAndBackWithUserLocation() => Navigator.of(context).pop(userLocation);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Set Address'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.check),
+            onPressed: saveAndBackWithUserLocation,
+          )
+        ],
       ),
       body: MapWidget(
         markers: widget.markers,
         userLocation: widget.userLocation,
         isSelecting: true,
+        onSelectNewLocation: setLocation,
       ),
     );
   }

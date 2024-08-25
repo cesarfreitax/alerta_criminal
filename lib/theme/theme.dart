@@ -44,7 +44,7 @@ ThemeData darkTheme = ThemeData.dark().copyWith(
       foregroundColor: dColorScheme.onPrimary,
     ),
   ),
-  textTheme: GoogleFonts.latoTextTheme(ThemeData.dark().textTheme),
+  textTheme: GoogleFonts.robotoTextTheme(ThemeData.dark().textTheme),
 );
 
 ThemeData lightTheme = ThemeData().copyWith(

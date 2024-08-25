@@ -14,5 +14,10 @@
   "signUpButton": "Registrar",
   "loginTitle": "Entrar",
   "registerTitle": "Registrar",
-  "fullName": "Nome Completo"
+  "fullName": "Nome Completo",
+  "crimeLocale": "Local do Crime",
+  "send": "Enviar",
+  "date": "Data",
+  "hour": "Horário",
+  "seeMoreDetails": "Ver mais detalhes"
 }

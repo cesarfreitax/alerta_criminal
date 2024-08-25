@@ -1,5 +1,6 @@
 import 'package:alerta_criminal/core/di/dependency_injection.dart';
 import 'package:alerta_criminal/core/utils/string_util.dart';
+import 'package:alerta_criminal/features/home/widgets/crime_details_widget.dart';
 import 'package:alerta_criminal/features/home/widgets/map_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -7,7 +8,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import '../../../core/providers/crims_notifier.dart';
 import '../../../core/utils/location_util.dart';
-import '../../../data/models/crim_model.dart';
+import '../../../data/models/crime_model.dart';
 import '../widgets/add_new_crim_bottom_sheet.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
@@ -22,6 +23,8 @@ class HomeScreen extends ConsumerStatefulWidget {
 class _HomeScreenState extends ConsumerState<HomeScreen> {
   late Future<void> futureCrims;
   LatLng? userLocation;
+  var isShowingCrimeDetails = false;
+  var selectedCrimeId = "";
 
   @override
   void initState() {
@@ -42,20 +45,32 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     });
   }
 
-  Set<Marker> getMarkers(List<CrimModel> crims) {
-    return crims
+  Set<Marker> getMarkers(List<CrimeModel> crimes) {
+    return crimes
         .map(
-          (crim) => Marker(
-            markerId: MarkerId(crim.id),
-            position: LatLng(crim.lat, crim.lng),
-          ),
+          (crime) => Marker(
+              markerId: MarkerId(crime.id),
+              position: LatLng(crime.lat, crime.lng),
+              onTap: () {
+                toggleCrimeDetails(crime.id, true);
+              }),
         )
         .toSet();
   }
 
+  void toggleCrimeDetails(String? id, bool show) {
+    setState(() {
+      isShowingCrimeDetails = show;
+    });
+
+    if (show) {
+      selectedCrimeId = id!;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final List<CrimModel> crims = ref.watch(crimsProvider);
+    final List<CrimeModel> crims = ref.watch(crimsProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -74,9 +89,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             builder: (context, snapshot) {
               return userLocation != null
                   ? MapWidget(
-                markers: getMarkers(crims),
-                userLocation: userLocation!,
-                isSelecting: false,
+                      markers: getMarkers(crims),
+                      userLocation: userLocation!,
+                      isSelecting: false,
+                onTapMap: toggleCrimeDetails
               )
                   : const Center(
                       child: CircularProgressIndicator(),
@@ -84,7 +100,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             },
           ),
           Positioned(
-              child: Positioned(
             bottom: 16,
             right: 16,
             child: FloatingActionButton(
@@ -94,7 +109,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               },
               child: const Icon(Icons.add),
             ),
-          ))
+          ),
+          if (isShowingCrimeDetails)
+            CrimeDetailsWidget(
+              crime: ref.read(crimsProvider.notifier).getCrim(selectedCrimeId),
+            ),
         ],
       ),
     );

@@ -1,4 +1,4 @@
-import 'package:alerta_criminal/data/models/crim_model.dart';
+import 'package:alerta_criminal/data/models/crime_model.dart';
 import 'package:alerta_criminal/domain/repositories/crim_repository.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -8,11 +8,11 @@ class CrimUseCase {
 
   CrimUseCase(this.repository, this.firebaseFirestoreInstance);
 
-  Future<void> add(CrimModel crim) async {
+  Future<void> add(CrimeModel crim) async {
     await repository.add(crim);
   }
 
-  CollectionReference<CrimModel> getCrimsRef() {
+  CollectionReference<CrimeModel> getCrimsRef() {
     return repository.getCrimsRef();
   }
 }
