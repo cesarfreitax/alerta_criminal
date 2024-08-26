@@ -15,9 +15,13 @@
   "@takePicture": {
     "description": "Button to take a picture"
   },
-  "addCrimTitleError": "Title must has 4 or more characters",
+  "addCrimTitleError": "Title must has at least 4 characters",
   "@addCrimTitleError": {
     "description": "Error on adding new crim: Title must has 4 or more characters"
+  },
+  "addCrimDescriptionError": "Description must has at least 10 characters",
+  "@addCrimDescriptionError": {
+    "description": "Error on adding new crim: Description must has 10 or more characters"
   },
   "signUpText": "Does not have an account yet? \n Do register.",
   "@signUpText": {
@@ -90,5 +94,23 @@
   "seeMoreDetails": "See more details",
   "@seeMoreDetails": {
     "description": "Button to see more details"
+  },
+  "today": "Today",
+  "@today": {
+    "description": "Today date"
+  },
+  "yesterday": "Yesterday",
+  "@yesterday": {
+    "description": "Yesterday date"
+  },
+  "hourSuffix": " at {hour}",
+  "@hourSuffix": {
+    "description": "suffix for the hour",
+    "placeholders": {
+      "hour": {
+        "type": "String",
+        "example": "12:00"
+      }
+    }
   }
 }

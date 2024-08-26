@@ -111,8 +111,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             ),
           ),
           if (isShowingCrimeDetails)
-            CrimeDetailsWidget(
-              crime: ref.read(crimsProvider.notifier).getCrim(selectedCrimeId),
+            Align(alignment: Alignment.topCenter,
+              child: CrimeDetailsWidget(
+                crime: ref.read(crimsProvider.notifier).getCrim(selectedCrimeId),
+              ),
             ),
         ],
       ),

@@ -43,13 +43,13 @@ class AddNewCrimBottomSheet {
 }
 
 class _AddNewCrimBottomSheet extends StatefulWidget {
-  _AddNewCrimBottomSheet({
+  const _AddNewCrimBottomSheet({
     required this.addNewCrim,
     required this.location,
   });
 
   final void Function(CrimeModel crim) addNewCrim;
-  LatLng location;
+  final LatLng location;
 
   @override
   State<_AddNewCrimBottomSheet> createState() {
@@ -64,7 +64,7 @@ class _AddNewCrimBottomSheetState extends State<_AddNewCrimBottomSheet> {
   final dateController = TextEditingController();
   final timeController = TextEditingController();
   late LatLng userLocation;
-  final currentDate = DateTime.now();
+  late DateTime currentDate;
   late TimeOfDay currentTime;
 
   File? image;
@@ -80,13 +80,16 @@ class _AddNewCrimBottomSheetState extends State<_AddNewCrimBottomSheet> {
   }
 
   void addNewCrim() async {
+    final pickedDate = DateTime(currentDate.year, currentDate.month, currentDate.day, currentTime.hour, currentTime.minute);
+    final pickedDateTimestamp = Timestamp.fromDate(pickedDate);
+
     final crim = CrimeModel(
       title: titleController.text,
       description: descriptionController.text,
       lat: userLocation.latitude,
       lng: userLocation.longitude,
       userId: getCurrentUser()!.uid,
-      date: Timestamp.fromDate(DateTime.now())
+      date: pickedDateTimestamp
     );
 
     if (image != null) {
@@ -101,7 +104,15 @@ class _AddNewCrimBottomSheetState extends State<_AddNewCrimBottomSheet> {
   @override
   void initState() {
     super.initState();
+    setDateAndTime();
     setLocation(widget.location);
+  }
+
+  void setDateAndTime() {
+    currentDate = DateTime.now();
+    currentTime = TimeOfDay(hour: currentDate.hour, minute: currentDate.minute);
+    dateController.text = formatDate(currentDate);
+    timeController.text = formatTime(currentTime);
   }
 
   @override
@@ -145,6 +156,7 @@ class _AddNewCrimBottomSheetState extends State<_AddNewCrimBottomSheet> {
     }
 
     setState(() {
+      currentDate = pickedDate;
       dateController.text = formatDate(pickedDate);
     });
   }
@@ -157,6 +169,7 @@ class _AddNewCrimBottomSheetState extends State<_AddNewCrimBottomSheet> {
     }
 
     setState(() {
+      currentTime = pickedTime;
       timeController.text = formatTime(pickedTime);
     });
   }
@@ -194,6 +207,14 @@ class _AddNewCrimBottomSheetState extends State<_AddNewCrimBottomSheet> {
                   TextFormField(
                     maxLines: 4,
                     controller: descriptionController,
+                    validator: (value) {
+                      if (value == null ||
+                          value.trim().isEmpty ||
+                          value.trim().length < 10) {
+                        return getStrings(context).addCrimDescriptionError;
+                      }
+                      return null;
+                    },
                     decoration: InputDecoration(
                         border: const OutlineInputBorder(
                           borderRadius: BorderRadius.all(
@@ -202,6 +223,48 @@ class _AddNewCrimBottomSheetState extends State<_AddNewCrimBottomSheet> {
                         ),
                         labelText: getStrings(context).description,
                         alignLabelWithHint: true),
+                  ),
+                  verticalSpacing,
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Flexible(
+                          child: TextFormField(
+                            controller: dateController,
+                            decoration: InputDecoration(
+                              labelText: getStrings(context).date,
+                              prefixIcon: const Icon(Icons.calendar_today),
+                              border: const OutlineInputBorder(
+                                borderRadius: BorderRadius.all(
+                                  Radius.circular(16),
+                                ),
+                              ),
+                            ),
+                            readOnly: true,
+                            onTap: setDatePicker,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(
+                        width: 8,
+                      ),
+                      Flexible(
+                        child: TextFormField(
+                          controller: timeController,
+                          decoration: InputDecoration(
+                            labelText: getStrings(context).hour,
+                            prefixIcon: const Icon(Icons.watch_later_outlined),
+                            border: const OutlineInputBorder(
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(16),
+                              ),
+                            ),
+                          ),
+                          readOnly: true,
+                          onTap: setTimePicker,
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),

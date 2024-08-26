@@ -4,6 +4,7 @@
   "description": "Descrição",
   "takePicture": "Tirar Foto",
   "addCrimTitleError": "Título precisa ter 4 ou mais caracteres",
+  "addCrimDescriptionError": "Descrição precisa ter 10 ou mais caracteres",
   "signUpText": "Ainda não possui uma conta? \n Crie agora.",
   "signInText": "Já tem uma conta? \n Entrar.",
   "passwordInvalidMessage": "Por favor, insira uma senha válida.",
@@ -19,5 +20,8 @@
   "send": "Enviar",
   "date": "Data",
   "hour": "Horário",
-  "seeMoreDetails": "Ver mais detalhes"
+  "seeMoreDetails": "Ver mais detalhes",
+  "today": "Hoje",
+  "yesterday": "Ontem",
+  "hourSuffix": " às {hour}"
 }
