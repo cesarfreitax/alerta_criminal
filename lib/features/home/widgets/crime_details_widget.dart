@@ -11,11 +11,11 @@ class CrimeDetailsWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final formattedDayText = formatDayText(
-      crime.date.toDate(),
+      crime.date,
       context,
     );
     final todayOrYesterday = isTodayOrYesterday(formattedDayText, context);
-    final dateDateTime = crime.date.toDate();
+    final dateDateTime = crime.date;
     final hour = getStrings(context).hourSuffix(
       formatTime(
         TimeOfDay(

@@ -81,7 +81,6 @@ class _AddNewCrimBottomSheetState extends State<_AddNewCrimBottomSheet> {
 
   void addNewCrim() async {
     final pickedDate = DateTime(currentDate.year, currentDate.month, currentDate.day, currentTime.hour, currentTime.minute);
-    final pickedDateTimestamp = Timestamp.fromDate(pickedDate);
 
     final crim = CrimeModel(
       title: titleController.text,
@@ -89,7 +88,7 @@ class _AddNewCrimBottomSheetState extends State<_AddNewCrimBottomSheet> {
       lat: userLocation.latitude,
       lng: userLocation.longitude,
       userId: getCurrentUser()!.uid,
-      date: pickedDateTimestamp
+      date: pickedDate
     );
 
     if (image != null) {

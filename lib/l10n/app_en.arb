@@ -51,6 +51,18 @@
   "@emailAddress": {
     "description": "Email Address"
   },
+  "cpf": "CPF",
+  "@cpf": {
+    "description": "CPF Document"
+  },
+  "cpfErrorMessageInvalid": "CPF is invalid",
+  "@cpfErrorMessageInvalid": {
+    "description": "CPF is invalid"
+  },
+  "cpfErrorMessageGeneric": "CPF is mandatory",
+  "@cpfErrorMessageGeneric": {
+    "description": "CPF is mandatory"
+  },
   "password": "Password",
   "@password": {
     "description": "Password"

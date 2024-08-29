@@ -1,14 +1,23 @@
+import 'package:alerta_criminal/core/utils/auth_util.dart';
+import 'package:alerta_criminal/core/utils/formatter_util.dart';
 import 'package:alerta_criminal/core/utils/message_util.dart';
+import 'package:alerta_criminal/core/utils/navigator_util.dart';
 import 'package:alerta_criminal/core/utils/string_util.dart';
-import 'package:alerta_criminal/core/widgets/widgets.dart';
+import 'package:alerta_criminal/data/models/user_model.dart';
+import 'package:alerta_criminal/features/home/screens/home_screen.dart';
+import 'package:alerta_criminal/features/main/screens/main_screen.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:validadores/Validador.dart';
 
 import '../../../core/di/dependency_injection.dart';
 
 class AuthScreen extends StatefulWidget {
-  const AuthScreen({super.key});
+  const AuthScreen({super.key, required this.isLogin});
+
+  final bool isLogin;
 
   @override
   State<AuthScreen> createState() {
@@ -17,13 +26,20 @@ class AuthScreen extends StatefulWidget {
 }
 
 class _AuthScreenState extends State<AuthScreen> {
+  late bool isLogin;
   final formKey = GlobalKey<FormState>();
-  var isLogin = false;
   var isAuthenticating = false;
   final nameController = TextEditingController();
   final emailController = TextEditingController();
+  final cpfController = TextEditingController();
   final passwordController = TextEditingController();
   final authService = DependencyInjection.authService;
+
+  @override
+  void initState() {
+    isLogin = widget.isLogin;
+    super.initState();
+  }
 
   @override
   void dispose() {
@@ -59,12 +75,27 @@ class _AuthScreenState extends State<AuthScreen> {
         await login();
       } else {
         await register();
+        saveUserData();
       }
       toggleAuthentication(false);
+      if (!context.mounted) {
+        return;
+      }
+      navigate(context, true, const MainScreen());
     } on FirebaseAuthException catch (e) {
       if (!context.mounted) return;
       handleAuthError(e);
     }
+  }
+
+  void saveUserData() {
+    final userData = UserModel(
+        userId: getCurrentUser()!.uid,
+        nickname: nameController.text.split(" ").first,
+        name: nameController.text,
+        email: emailController.text,
+        cpf: cpfController.text);
+    DependencyInjection.userDataUseCase.saveUserData(userData);
   }
 
   void handleAuthError(FirebaseAuthException e) {
@@ -98,13 +129,25 @@ class _AuthScreenState extends State<AuthScreen> {
             child: Column(
               children: [
                 if (!isLogin) nameTextFormField(context),
-                verticalSpacing(height: 16),
+                const SizedBox(
+                  height: 16,
+                ),
                 emailTextFormField(context),
-                verticalSpacing(height: 16),
+                const SizedBox(
+                  height: 16,
+                ),
+                if (!isLogin) cpfTextFormField(context),
+                const SizedBox(
+                  height: 16,
+                ),
                 passwordTextFormField(context),
-                verticalSpacing(height: 16),
+                const SizedBox(
+                  height: 16,
+                ),
                 submitButton(context),
-                verticalSpacing(height: 16),
+                const SizedBox(
+                  height: 16,
+                ),
                 changeAuthTypeButton(context),
               ],
             ),
@@ -163,6 +206,35 @@ class _AuthScreenState extends State<AuthScreen> {
           return getStrings(context).passwordInvalidMessage;
         }
         return null;
+      },
+    );
+  }
+
+  TextFormField cpfTextFormField(BuildContext context) {
+    return TextFormField(
+      controller: cpfController,
+      keyboardType: TextInputType.number,
+      inputFormatters: [
+        FilteringTextInputFormatter.digitsOnly,
+        CpfInputFormatter(),
+      ],
+      decoration: InputDecoration(
+        labelText: getStrings(context).cpf,
+        border: const OutlineInputBorder(
+          borderRadius: BorderRadius.all(
+            Radius.circular(16),
+          ),
+        ),
+        prefixIcon: const Icon(Icons.credit_card),
+      ),
+      validator: (value) {
+        return Validador()
+            .add(Validar.CPF, msg: getStrings(context).cpfErrorMessageInvalid)
+            .add(Validar.OBRIGATORIO,
+                msg: getStrings(context).cpfErrorMessageGeneric)
+            .minLength(11)
+            .maxLength(11)
+            .valido(value, clearNoNumber: true);
       },
     );
   }

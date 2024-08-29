@@ -56,6 +56,8 @@ dependencies:
   flutter_riverpod: ^2.5.1
   riverpod_annotation: ^2.3.5
   http: ^1.2.2
+  localstorage: ^5.0.0
+  validadores: ^1.0.9
 
 dev_dependencies:
   flutter_test:

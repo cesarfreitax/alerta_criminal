@@ -6,6 +6,7 @@ part 'crime_model.g.dart';
 
 const uuid = Uuid();
 
+@CustomTimestampConverter()
 @JsonSerializable()
 class CrimeModel {
   CrimeModel({
@@ -24,10 +25,21 @@ class CrimeModel {
   String imageUrl;
   final double lat;
   final double lng;
-  final Timestamp date;
+  final DateTime date;
 
   factory CrimeModel.fromJson(Map<String, dynamic> json) =>
-      _$CrimModelFromJson(json);
+      _$CrimeModelFromJson(json);
 
-  Map<String, dynamic> toJson() => _$CrimModelToJson(this);
+  Map<String, dynamic> toJson() => _$CrimeModelToJson(this);
+}
+
+class CustomTimestampConverter implements JsonConverter<DateTime, Timestamp> {
+  const CustomTimestampConverter();
+
+  @override
+  DateTime fromJson(Timestamp json) => json.toDate();
+
+  @override
+  Timestamp toJson(DateTime object) => Timestamp.fromDate(object);
+
 }
