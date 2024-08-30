@@ -26,5 +26,7 @@
   "seeMoreDetails": "Ver mais detalhes",
   "today": "Hoje",
   "yesterday": "Ontem",
-  "hourSuffix": " às {hour}"
+  "hourSuffix": " às {hour}",
+  "couldNotGetUserDataErrorMessage": "Não foi possível trazer os dados do usuário. Tente novamente mais tarde...",
+  "userNotFoundMessage": "Dados do usuário não encontrados."
 }

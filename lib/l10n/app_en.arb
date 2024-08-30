@@ -124,5 +124,13 @@
         "example": "12:00"
       }
     }
+  },
+  "couldNotGetUserDataErrorMessage": "Error getting user data. Try again later.",
+  "@couldNotGetUserDataErrorMessage": {
+    "description": "Error getting user data. Try again later."
+  },
+  "userNotFoundMessage": "User data not found.",
+  "@userNotFoundMessage": {
+    "description": "User data not found."
   }
 }

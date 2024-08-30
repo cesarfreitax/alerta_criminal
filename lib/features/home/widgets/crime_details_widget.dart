@@ -34,7 +34,7 @@ class CrimeDetailsWidget extends StatelessWidget {
         ),
         elevation: 20,
         child: Row(
-          spacing: 6,
+          // spacing: 6,
           children: [
             if (crime.imageUrl.isNotEmpty)
               ClipRRect(
@@ -53,6 +53,7 @@ class CrimeDetailsWidget extends StatelessWidget {
                   ),
                 ),
               ),
+            const SizedBox(width: 6,),
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),

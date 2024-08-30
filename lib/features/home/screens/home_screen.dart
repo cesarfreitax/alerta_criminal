@@ -7,6 +7,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 import '../../../core/providers/crims_notifier.dart';
 import '../../../core/utils/location_util.dart';
@@ -77,12 +78,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   Widget mapWidget() {
-    return MapWidget(
+    return userLocation != null ? MapWidget(
       markers: getMarkers(crims),
-      userLocation: userLocation!,
+      userLocation: userLocation ?? const LatLng(37.4221, 122.0853),
       isSelecting: false,
       onTapMap: toggleCrimeDetails,
-    );
+    ) : const SizedBox();
   }
 
   Widget fabWidget() {
@@ -91,8 +92,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       right: 16,
       child: FloatingActionButton(
         onPressed: () {
-          AddNewCrimBottomSheet().show(context,
-              DependencyInjection.crimUseCase.add, userLocation!);
+          AddNewCrimBottomSheet().show(
+              context, DependencyInjection.crimUseCase.add, userLocation!);
         },
         child: const Icon(Icons.add),
       ),
@@ -112,32 +113,24 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   Widget build(BuildContext context) {
     crims = ref.watch(crimsProvider);
     user = ref.watch(userProvider);
-    return Stack(
-      children: [
-        FutureBuilder(
-          future: futureCrims,
-          builder: (context, snapshot) {
-            return userLocation != null
-                ? mapWidget()
-                : const Center(
-                    child: CircularProgressIndicator(),
-                  );
-          },
-        ),
-        if (user != null)
-          fabWidget(),
-        if (isShowingCrimeDetails)
-          Align(
-            alignment: Alignment.topCenter,
-            child: CrimeDetailsWidget(
-              crime: ref.read(crimsProvider.notifier).getCrim(selectedCrimeId),
-            ),
-          ),
-        if (user == null)
-          loginWarningWidget()
-      ],
+    return         FutureBuilder(
+      future: futureCrims,
+      builder: (context, snapshot) {
+        return Stack(
+          children: [
+            mapWidget(),
+            if (user != null) fabWidget(),
+            if (isShowingCrimeDetails)
+              Align(
+                alignment: Alignment.topCenter,
+                child: CrimeDetailsWidget(
+                  crime: ref.read(crimsProvider.notifier).getCrim(selectedCrimeId),
+                ),
+              ),
+            if (user == null) loginWarningWidget()
+          ],
+        );
+      },
     );
   }
 }
-
-

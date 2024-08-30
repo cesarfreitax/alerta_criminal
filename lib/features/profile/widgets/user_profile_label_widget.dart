@@ -13,7 +13,7 @@ class UserProfileLabelWidget extends StatelessWidget {
       children: [
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          spacing: 4,
+          // spacing: 4,
           children: [
             Text(
               label,
@@ -22,6 +22,7 @@ class UserProfileLabelWidget extends StatelessWidget {
                   .labelLarge!
                   .copyWith(fontWeight: FontWeight.bold),
             ),
+            const SizedBox(height: 4),
             Text(
               text,
               style: Theme.of(context).textTheme.labelMedium,
