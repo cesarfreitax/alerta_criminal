@@ -44,5 +44,6 @@ app.*.map.json
 
 # Set your custom files here
 .env
+/lib/core/utils/env.g.dart
 /android/gradle.properties
 /android/app/google-services.json

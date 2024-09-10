@@ -1,8 +1,11 @@
 import 'dart:convert';
 
-import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:location/location.dart';
+import 'package:alerta_criminal/core/utils/env.dart';
 import 'package:http/http.dart' as http;
+import 'package:location/location.dart';
+
+final mapsApiKey = Env.mapsApiKey;
+const mapsApi = 'https://maps.googleapis.com/maps/api';
 
 Future<LocationData?> getLocation() async {
   Location location = Location();
@@ -33,7 +36,7 @@ Future<LocationData?> getLocation() async {
 
 Future<String> getAddress(double lat, double lng) async {
   final url = Uri.parse(
-      "https://maps.googleapis.com/maps/api/geocode/json?latlng=$lat,$lng&key=AIzaSyBWHsEntvEayuW_HOIGGF4ZaUpYQeakwNw");
+      "$mapsApi/geocode/json?latlng=$lat,$lng&key=$mapsApiKey");
   final response = await http.get(url);
   final resData = jsonDecode(response.body);
   final address = resData["results"][0]["formatted_address"];
@@ -43,5 +46,5 @@ Future<String> getAddress(double lat, double lng) async {
 
 String getLocationImagePreview(double lat, double lng,
     [int? zoom, String? size, String? type, String? markerColor]) {
-  return "https://maps.googleapis.com/maps/api/staticmap?center=$lat,$lng&zoom=${zoom ?? 16}&size=${size ?? "600x300"}&maptype=${type ?? "roadmap"}&markers=color:${markerColor ?? "red"}%7Clabel:S%7C$lat,$lng&key=AIzaSyBWHsEntvEayuW_HOIGGF4ZaUpYQeakwNw";
+  return "$mapsApi/staticmap?center=$lat,$lng&zoom=${zoom ?? 16}&size=${size ?? "600x300"}&maptype=${type ?? "roadmap"}&markers=color:${markerColor ?? "red"}%7Clabel:S%7C$lat,$lng&key=$mapsApiKey";
 }
