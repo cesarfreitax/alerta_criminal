@@ -2,6 +2,7 @@ import 'package:alerta_criminal/core/utils/string_util.dart';
 import 'package:alerta_criminal/data/models/crime_model.dart';
 import 'package:flutter/material.dart';
 import 'package:alerta_criminal/core/utils/date_util.dart';
+import 'package:transparent_image/transparent_image.dart';
 
 class CrimeDetailsWidget extends StatelessWidget {
   const CrimeDetailsWidget({super.key, required this.crime});
@@ -45,11 +46,19 @@ class CrimeDetailsWidget extends StatelessWidget {
                 child: SizedBox(
                   height: double.infinity,
                   width: 150,
-                  child: Image.network(
-                    crime.imageUrl,
-                    fit: BoxFit.cover,
-                    width: double.infinity,
-                    height: double.infinity,
+                  child: Stack(
+                    children: <Widget>[
+                      const Center(child: CircularProgressIndicator()),
+                      Center(
+                        child: FadeInImage.memoryNetwork(
+                          placeholder: kTransparentImage,
+                          image: crime.imageUrl,
+                          fit: BoxFit.cover,
+                          width: double.infinity,
+                          height: double.infinity,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),

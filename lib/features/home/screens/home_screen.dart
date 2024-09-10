@@ -1,4 +1,5 @@
 import 'package:alerta_criminal/core/di/dependency_injection.dart';
+import 'package:alerta_criminal/core/providers/location_notifier.dart';
 import 'package:alerta_criminal/core/providers/user_notifier.dart';
 import 'package:alerta_criminal/core/widgets/login_warning_widget.dart';
 import 'package:alerta_criminal/features/home/widgets/crime_details_widget.dart';
@@ -7,10 +8,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:skeletonizer/skeletonizer.dart';
 
 import '../../../core/providers/crims_notifier.dart';
-import '../../../core/utils/location_util.dart';
 import '../../../data/models/crime_model.dart';
 import '../widgets/add_new_crim_bottom_sheet.dart';
 
@@ -24,7 +23,6 @@ class HomeScreen extends ConsumerStatefulWidget {
 }
 
 class _HomeScreenState extends ConsumerState<HomeScreen> {
-  late Future<void> futureCrims;
   LatLng? userLocation;
   var isShowingCrimeDetails = false;
   var selectedCrimeId = "";
@@ -34,20 +32,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    futureCrims = ref.read(crimsProvider.notifier).getCrims();
-    setLocation();
-  }
-
-  void setLocation() async {
-    final locationData = await getLocation();
-
-    if (locationData == null) {
-      return;
-    }
-
-    setState(() {
-      userLocation = LatLng(locationData.latitude!, locationData.longitude!);
-    });
   }
 
   Set<Marker> getMarkers(List<CrimeModel> crimes) {
@@ -78,12 +62,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   Widget mapWidget() {
-    return userLocation != null ? MapWidget(
-      markers: getMarkers(crims),
-      userLocation: userLocation ?? const LatLng(37.4221, 122.0853),
-      isSelecting: false,
-      onTapMap: toggleCrimeDetails,
-    ) : const SizedBox();
+    return userLocation != null
+        ? MapWidget(
+            markers: getMarkers(crims),
+            userLocation: userLocation ?? const LatLng(37.4221, 122.0853),
+            isSelecting: false,
+            onTapMap: toggleCrimeDetails,
+          )
+        : const Center(
+            child: CircularProgressIndicator(),
+          );
   }
 
   Widget fabWidget() {
@@ -111,26 +99,29 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    setProviders();
+    return SafeArea(
+      child: Stack(
+        children: [
+          mapWidget(),
+          if (user != null) fabWidget(),
+          if (isShowingCrimeDetails)
+            Align(
+              alignment: Alignment.topCenter,
+              child: CrimeDetailsWidget(
+                crime:
+                    ref.read(crimsProvider.notifier).getCrim(selectedCrimeId),
+              ),
+            ),
+          if (user == null) loginWarningWidget()
+        ],
+      ),
+    );
+  }
+
+  void setProviders() {
     crims = ref.watch(crimsProvider);
     user = ref.watch(userProvider);
-    return         FutureBuilder(
-      future: futureCrims,
-      builder: (context, snapshot) {
-        return Stack(
-          children: [
-            mapWidget(),
-            if (user != null) fabWidget(),
-            if (isShowingCrimeDetails)
-              Align(
-                alignment: Alignment.topCenter,
-                child: CrimeDetailsWidget(
-                  crime: ref.read(crimsProvider.notifier).getCrim(selectedCrimeId),
-                ),
-              ),
-            if (user == null) loginWarningWidget()
-          ],
-        );
-      },
-    );
+    userLocation = ref.watch(locationProvider);
   }
 }
