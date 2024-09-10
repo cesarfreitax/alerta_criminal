@@ -45,3 +45,4 @@ app.*.map.json
 # Set your custom files here
 .env
 /android/gradle.properties
+/android/app/google-services.json
