@@ -9,7 +9,6 @@ import 'package:alerta_criminal/data/models/crime_model.dart';
 import 'package:alerta_criminal/features/home/screens/set_address_on_map_screen.dart';
 import 'package:alerta_criminal/features/home/widgets/photo_preview_widget.dart';
 import 'package:alerta_criminal/theme/custom_colors.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
@@ -93,7 +92,7 @@ class _AddNewCrimBottomSheetState extends State<_AddNewCrimBottomSheet> {
 
     if (image != null) {
       final imageUrl = await DependencyInjection.userDataUseCase
-          .saveCrimImage(image!, getCurrentUser()!.uid);
+          .saveCrimImage(image!, crim.id);
       crim.imageUrl = imageUrl;
     }
 

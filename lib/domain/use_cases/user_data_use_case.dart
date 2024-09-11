@@ -13,8 +13,8 @@ class UserDataUseCase {
     return repository.getUserRef();
   }
 
-  Future<String> saveCrimImage(File image, String userId) async {
-   return await repository.saveCrimImage(image, userId);
+  Future<String> saveCrimImage(File image, String crimeId) async {
+   return await repository.saveCrimImage(image, crimeId);
   }
 
   Future<void> saveUserData(UserModel userData) async {

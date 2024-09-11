@@ -64,17 +64,6 @@ class _MapWidgetState extends ConsumerState<MapWidget> {
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        if (widget.isSelecting)
-          Positioned(
-            top: 8,
-            child: SizedBox(
-              width: double.infinity,
-              height: 40,
-              child: SearchBar(
-                controller: searchBarController,
-              ),
-            ),
-          ),
         GoogleMap(
           onMapCreated: onMapCreated,
           initialCameraPosition: CameraPosition(
@@ -99,6 +88,36 @@ class _MapWidgetState extends ConsumerState<MapWidget> {
             widget.onTapMap!(null, false);
           },
         ),
+        if (widget.isSelecting)
+          Positioned(
+              top: 4,
+              left: 4,
+              right: 4,
+              child: SearchAnchor(
+                  builder: (BuildContext context, SearchController controller) {
+                    return SearchBar(
+                      padding: const WidgetStatePropertyAll<EdgeInsets>(
+                        EdgeInsets.symmetric(horizontal: 16)
+                      ),
+                      controller: controller,
+                      onTap: controller.openView,
+                      onChanged: (_) => controller.openView,
+                      leading: const Icon(Icons.search),
+                    );
+                  }, suggestionsBuilder: (BuildContext context, SearchController controller) {
+                return List<ListTile>.generate(5, (int index) {
+                  final String item = 'item $index';
+                  return ListTile(
+                    title: Text(item),
+                    onTap: () {
+                      setState(() {
+                        controller.closeView(item);
+                      });
+                    },
+                  );
+                });
+              })
+          ),
       ],
     );
   }

@@ -51,6 +51,7 @@ class CrimeDetailsWidget extends StatelessWidget {
                       const Center(child: CircularProgressIndicator()),
                       Center(
                         child: FadeInImage.memoryNetwork(
+                          key: ValueKey(crime.id),
                           placeholder: kTransparentImage,
                           image: crime.imageUrl,
                           fit: BoxFit.cover,
