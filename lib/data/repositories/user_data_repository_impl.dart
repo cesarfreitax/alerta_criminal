@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:ui';
 
 import 'package:alerta_criminal/core/di/dependency_injection.dart';
 import 'package:alerta_criminal/core/utils/constants.dart';
@@ -7,6 +8,8 @@ import 'package:alerta_criminal/data/models/user_model.dart';
 import 'package:alerta_criminal/domain/repositories/user_data_repository.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:localstorage/localstorage.dart';
 
 const crimImagesTable = 'crim_images';
 
@@ -51,5 +54,19 @@ class UserDataRepositoryImpl implements UserDataRepository {
       printDebug(error.toString());
     }
     return user!;
+  }
+
+  @override
+  void setPreferredLanguage(Locale locale) {
+    localStorage.setItem(Constants.preferredLanguage, locale.toString());
+  }
+
+  @override
+  Locale? getPreferredLanguage() {
+    final preferredLanguage = localStorage.getItem(Constants.preferredLanguage);
+
+    if (preferredLanguage == null) return null;
+
+    return Locale.fromSubtags(languageCode: preferredLanguage.split('_')[0], countryCode: preferredLanguage.split('_')[1]);
   }
 }

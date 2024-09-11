@@ -1,6 +1,8 @@
 import 'dart:convert';
 
 import 'package:alerta_criminal/core/utils/env.dart';
+import 'package:alerta_criminal/data/models/place_suggestions_model.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:location/location.dart';
 
@@ -34,7 +36,30 @@ Future<LocationData?> getLocation() async {
   return locationData;
 }
 
-Future<String> getAddress(double lat, double lng) async {
+Future<PlaceSuggestionsModel> getPlaceSuggestions(String enteredAddress, LatLng userLocation, int radiusAreaInMeters, String userLanguage) async {
+  final lat = userLocation.latitude;
+  final lng = userLocation.longitude;
+  final url = Uri.parse(
+      "$mapsApi/place/autocomplete/json?input=${Uri.encodeComponent(enteredAddress)}&location=$lat,$lng&radius=$radiusAreaInMeters&language=$userLanguage&key=$mapsApiKey");
+  final response = await http.get(url);
+  final resData = jsonDecode(response.body);
+  final predictions = PlaceSuggestionsModel.fromJson(resData);
+  return predictions;
+}
+
+Future<LatLng> getLatLngByAddress(String enteredAddress) async {
+  final url = Uri.parse(
+      "$mapsApi/geocode/json?address=$enteredAddress&key=$mapsApiKey");
+  final response = await http.get(url);
+  final resData = jsonDecode(response.body);
+  final location = resData["results"][0]["geometry"]["location"];
+  final lat = location["lat"];
+  final lng = location["lng"];
+
+  return LatLng(lat, lng);
+}
+
+Future<String> getAddressByLatLng(double lat, double lng) async {
   final url = Uri.parse(
       "$mapsApi/geocode/json?latlng=$lat,$lng&key=$mapsApiKey");
   final response = await http.get(url);

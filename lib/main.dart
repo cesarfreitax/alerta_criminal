@@ -1,7 +1,6 @@
 import 'package:alerta_criminal/core/di/dependency_injection.dart';
 import 'package:alerta_criminal/core/providers/crims_notifier.dart';
 import 'package:alerta_criminal/core/providers/location_notifier.dart';
-import 'package:alerta_criminal/data/models/crime_model.dart';
 import 'package:alerta_criminal/features/main/screens/main_screen.dart';
 import 'package:alerta_criminal/firebase_options.dart';
 import 'package:alerta_criminal/theme/theme.dart';
@@ -16,24 +15,22 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-
   DependencyInjection().setup();
-
-  FlutterNativeSplash.preserve(widgetsBinding: WidgetsFlutterBinding.ensureInitialized());
-
+  FlutterNativeSplash.preserve(
+    widgetsBinding: WidgetsFlutterBinding.ensureInitialized(),
+  );
   runApp(const ProviderScope(child: MyApp()));
 }
 
 class MyApp extends ConsumerWidget {
   const MyApp({super.key});
 
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     var isFetchingLocation = true;
     var isFetchingCrimes = true;
 
-    ref.read(locationProvider.notifier).setLocation().whenComplete(() {
+    ref.read(locationProvider.notifier).fetchLocation().whenComplete(() {
       isFetchingLocation = false;
       handleSplashLoading(isFetchingLocation, isFetchingCrimes);
     });

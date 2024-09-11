@@ -6,13 +6,17 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 class LocationNotifier extends StateNotifier<LatLng?> {
   LocationNotifier() : super(null);
 
-  Future<void> setLocation() async {
+  Future<void> fetchLocation() async {
     try {
       final location = await getLocation();
       state = location != null ? LatLng(location.latitude!, location.longitude!) : null;
     } catch (e) {
-      printDebug('Error fetching crims: $e');
+      printDebug('Error fetching location: $e');
     }
+  }
+
+  void setLocation(LatLng location) {
+    state = location;
   }
 }
 

@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../notifications/screens/notifications_screen.dart';
 
+
 class MainScreen extends ConsumerStatefulWidget {
   const MainScreen({super.key});
 
@@ -18,7 +19,6 @@ class MainScreen extends ConsumerStatefulWidget {
 
 class _MainScreenState extends ConsumerState<MainScreen> {
   var currentScreenIndex = 0;
-
   static const List<Widget> screenOptions = <Widget>[
     HomeScreen(),
     NotificationsScreen(),

@@ -3,14 +3,16 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class SetAddressOnMapScreen extends StatefulWidget {
-  const SetAddressOnMapScreen({
+  SetAddressOnMapScreen({
     super.key,
     required this.markers,
     required this.userLocation,
+    required this.onSetLocation,
   });
 
   final Set<Marker> markers;
-  final LatLng userLocation;
+  LatLng userLocation;
+  final void Function(LatLng location) onSetLocation;
 
   @override
   State<StatefulWidget> createState() {
@@ -19,10 +21,11 @@ class SetAddressOnMapScreen extends StatefulWidget {
 }
 
 class _SetAddressOnMapScreenState extends State<SetAddressOnMapScreen> {
-  LatLng? userLocation;
-
-  void setLocation(LatLng location) => userLocation = location;
-  void saveAndBackWithUserLocation() => Navigator.of(context).pop(userLocation);
+  void setLocation(LatLng location) {
+    widget.userLocation = location;
+    widget.onSetLocation(location);
+  }
+  void saveAndBackWithUserLocation() => Navigator.of(context).pop(widget.userLocation);
 
   @override
   Widget build(BuildContext context) {
@@ -41,6 +44,7 @@ class _SetAddressOnMapScreenState extends State<SetAddressOnMapScreen> {
         userLocation: widget.userLocation,
         isSelecting: true,
         onSelectNewLocation: setLocation,
+
       ),
     );
   }

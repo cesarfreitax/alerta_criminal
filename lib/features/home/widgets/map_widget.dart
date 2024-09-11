@@ -1,3 +1,4 @@
+import 'package:alerta_criminal/core/utils/language_util.dart';
 import 'package:alerta_criminal/core/utils/location_util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -30,6 +31,7 @@ class _MapWidgetState extends ConsumerState<MapWidget> {
 
   late GoogleMapController mapController;
   final searchBarController = TextEditingController();
+  var enteredAddress = "";
 
   void onMapCreated(GoogleMapController controller) {
     mapController = controller;
@@ -43,12 +45,13 @@ class _MapWidgetState extends ConsumerState<MapWidget> {
 
   @override
   void dispose() {
-    super.dispose();
     searchBarController.dispose();
+    mapController.dispose();
+    super.dispose();
   }
 
   void setupSearchBar() async {
-    searchBarController.text = await getAddress(
+    searchBarController.text = await getAddressByLatLng(
         widget.userLocation.latitude, widget.userLocation.longitude);
   }
 
@@ -62,7 +65,7 @@ class _MapWidgetState extends ConsumerState<MapWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
+    return  Stack(
       children: [
         GoogleMap(
           onMapCreated: onMapCreated,
@@ -85,38 +88,56 @@ class _MapWidgetState extends ConsumerState<MapWidget> {
                   widget.onSelectNewLocation!(location);
                 }
               : (location) {
-            widget.onTapMap!(null, false);
-          },
+                  widget.onTapMap!(null, false);
+                },
         ),
         if (widget.isSelecting)
           Positioned(
-              top: 4,
-              left: 4,
-              right: 4,
-              child: SearchAnchor(
-                  builder: (BuildContext context, SearchController controller) {
-                    return SearchBar(
-                      padding: const WidgetStatePropertyAll<EdgeInsets>(
-                        EdgeInsets.symmetric(horizontal: 16)
-                      ),
-                      controller: controller,
-                      onTap: controller.openView,
-                      onChanged: (_) => controller.openView,
-                      leading: const Icon(Icons.search),
-                    );
-                  }, suggestionsBuilder: (BuildContext context, SearchController controller) {
-                return List<ListTile>.generate(5, (int index) {
-                  final String item = 'item $index';
+            top: 4,
+            left: 4,
+            right: 4,
+            child: SearchAnchor(
+              builder: (BuildContext context, SearchController controller) {
+                return SearchBar(
+                  padding: const WidgetStatePropertyAll<EdgeInsets>(
+                      EdgeInsets.symmetric(horizontal: 16)),
+                  controller: controller,
+                  onTap: controller.openView,
+                  onChanged: (_) => controller.openView,
+                  leading: const Icon(Icons.search),
+                );
+              },
+              suggestionsBuilder:
+                  (BuildContext context, SearchController controller) async {
+                final enteredAddress = controller.text;
+                if (enteredAddress.isEmpty) {
+                  return const Iterable.empty();
+                }
+                final placeSuggestions = await getPlaceSuggestions(controller.text, widget.userLocation, 500, getUserLanguage(context));
+                return List<ListTile>.generate(placeSuggestions.predictions.length, (int index) {
+                  final addressSuggestion = placeSuggestions.predictions[index].description;
                   return ListTile(
-                    title: Text(item),
-                    onTap: () {
-                      setState(() {
-                        controller.closeView(item);
-                      });
+                    title: Text(addressSuggestion),
+                    onTap: () async {
+                        final location = await getLatLngByAddress(addressSuggestion);
+                        setMarkers(
+                          {
+                            Marker(
+                              markerId: const MarkerId("m1"),
+                              position: location,
+                            ),
+                          },
+                        );
+                        widget.onSelectNewLocation!(location);
+                        mapController.animateCamera(CameraUpdate.newLatLng(location));
+                        setState(() {
+                          controller.closeView(addressSuggestion);
+                        });
                     },
                   );
                 });
-              })
+              },
+            ),
           ),
       ],
     );

@@ -81,7 +81,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       child: FloatingActionButton(
         onPressed: () {
           AddNewCrimBottomSheet().show(
-              context, DependencyInjection.crimUseCase.add, userLocation!);
+            context,
+            DependencyInjection.crimUseCase.add,
+            resetCurrentLocation,
+          );
         },
         child: const Icon(Icons.add),
       ),
@@ -123,5 +126,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     crims = ref.watch(crimsProvider);
     user = ref.watch(userProvider);
     userLocation = ref.watch(locationProvider);
+  }
+
+  Future<void> resetCurrentLocation() async {
+    await ref.read(locationProvider.notifier).fetchLocation();
   }
 }

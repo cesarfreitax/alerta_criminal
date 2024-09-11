@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:alerta_criminal/core/di/dependency_injection.dart';
+import 'package:alerta_criminal/core/providers/location_notifier.dart';
 import 'package:alerta_criminal/core/utils/auth_util.dart';
 import 'package:alerta_criminal/core/utils/date_util.dart';
 import 'package:alerta_criminal/core/utils/location_util.dart';
@@ -10,13 +11,14 @@ import 'package:alerta_criminal/features/home/screens/set_address_on_map_screen.
 import 'package:alerta_criminal/features/home/widgets/photo_preview_widget.dart';
 import 'package:alerta_criminal/theme/custom_colors.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class AddNewCrimBottomSheet {
   Future<dynamic> show(
     BuildContext ctx,
     void Function(CrimeModel crim) addNewCrim,
-    LatLng location,
+    Future<void> Function() resetCurrentLocation,
   ) async {
     addNewCrim = addNewCrim;
     return showModalBottomSheet(
@@ -32,7 +34,7 @@ class AddNewCrimBottomSheet {
           ], begin: Alignment.topCenter, end: Alignment.bottomCenter)),
           child: _AddNewCrimBottomSheet(
             addNewCrim: addNewCrim,
-            location: location,
+            resetCurrentLocation: resetCurrentLocation,
           ),
         );
       },
@@ -41,30 +43,32 @@ class AddNewCrimBottomSheet {
   }
 }
 
-class _AddNewCrimBottomSheet extends StatefulWidget {
+class _AddNewCrimBottomSheet extends ConsumerStatefulWidget {
   const _AddNewCrimBottomSheet({
     required this.addNewCrim,
-    required this.location,
+    required this.resetCurrentLocation,
   });
 
   final void Function(CrimeModel crim) addNewCrim;
-  final LatLng location;
+  final Future<void> Function() resetCurrentLocation;
 
   @override
-  State<_AddNewCrimBottomSheet> createState() {
+  ConsumerState<_AddNewCrimBottomSheet> createState() {
     return _AddNewCrimBottomSheetState();
   }
 }
 
-class _AddNewCrimBottomSheetState extends State<_AddNewCrimBottomSheet> {
+class _AddNewCrimBottomSheetState
+    extends ConsumerState<_AddNewCrimBottomSheet> {
   final formKey = GlobalKey<FormState>();
   final titleController = TextEditingController();
   final descriptionController = TextEditingController();
   final dateController = TextEditingController();
   final timeController = TextEditingController();
-  late LatLng userLocation;
+  late LatLng? userLocation;
   late DateTime currentDate;
   late TimeOfDay currentTime;
+  var locationManuallyChanged = false;
 
   File? image;
 
@@ -79,16 +83,16 @@ class _AddNewCrimBottomSheetState extends State<_AddNewCrimBottomSheet> {
   }
 
   void addNewCrim() async {
-    final pickedDate = DateTime(currentDate.year, currentDate.month, currentDate.day, currentTime.hour, currentTime.minute);
+    final pickedDate = DateTime(currentDate.year, currentDate.month,
+        currentDate.day, currentTime.hour, currentTime.minute);
 
     final crim = CrimeModel(
-      title: titleController.text,
-      description: descriptionController.text,
-      lat: userLocation.latitude,
-      lng: userLocation.longitude,
-      userId: getCurrentUser()!.uid,
-      date: pickedDate
-    );
+        title: titleController.text,
+        description: descriptionController.text,
+        lat: userLocation!.latitude,
+        lng: userLocation!.longitude,
+        userId: getCurrentUser()!.uid,
+        date: pickedDate);
 
     if (image != null) {
       final imageUrl = await DependencyInjection.userDataUseCase
@@ -103,7 +107,6 @@ class _AddNewCrimBottomSheetState extends State<_AddNewCrimBottomSheet> {
   void initState() {
     super.initState();
     setDateAndTime();
-    setLocation(widget.location);
   }
 
   void setDateAndTime() {
@@ -113,19 +116,24 @@ class _AddNewCrimBottomSheetState extends State<_AddNewCrimBottomSheet> {
     timeController.text = formatTime(currentTime);
   }
 
+  void resetUserLocation() =>
+      ref.read(locationProvider.notifier).fetchLocation();
+
   @override
-  void dispose() {
-    super.dispose();
+  void dispose() async {
+    if (locationManuallyChanged) {
+      await widget.resetCurrentLocation();
+    }
     titleController.dispose();
     descriptionController.dispose();
     dateController.dispose();
     timeController.dispose();
+    super.dispose();
   }
 
   void setLocation(LatLng location) {
-    setState(() {
-      userLocation = location;
-    });
+    locationManuallyChanged = true;
+    ref.read(locationProvider.notifier).setLocation(location);
   }
 
   void setOnMap() async {
@@ -133,9 +141,10 @@ class _AddNewCrimBottomSheetState extends State<_AddNewCrimBottomSheet> {
       MaterialPageRoute(
         builder: (context) => SetAddressOnMapScreen(
           markers: {
-            Marker(markerId: const MarkerId("m1"), position: userLocation)
+            Marker(markerId: const MarkerId("m1"), position: userLocation!)
           },
-          userLocation: widget.location,
+          userLocation: userLocation!,
+          onSetLocation: setLocation,
         ),
       ),
     );
@@ -174,6 +183,8 @@ class _AddNewCrimBottomSheetState extends State<_AddNewCrimBottomSheet> {
 
   @override
   Widget build(BuildContext context) {
+    userLocation = ref.watch(locationProvider);
+
     Widget verticalSpacing = const SizedBox(
       height: 16,
     );
@@ -292,8 +303,8 @@ class _AddNewCrimBottomSheetState extends State<_AddNewCrimBottomSheet> {
                               .withOpacity(0.2))),
                   child: Image.network(
                     getLocationImagePreview(
-                      userLocation.latitude,
-                      userLocation.longitude,
+                      userLocation!.latitude,
+                      userLocation!.longitude,
                     ),
                     width: double.infinity,
                     height: double.infinity,
