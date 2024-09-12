@@ -41,5 +41,4 @@ class CustomTimestampConverter implements JsonConverter<DateTime, Timestamp> {
 
   @override
   Timestamp toJson(DateTime object) => Timestamp.fromDate(object);
-
 }

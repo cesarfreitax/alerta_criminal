@@ -95,6 +95,10 @@
   "@send": {
     "description": "Send action"
   },
+  "setAddress": "Set Address",
+  "@setAddress": {
+    "description": "Title of the screen to set the address on map"
+  },
   "date": "Date",
   "@date": {
     "description": "Select the date"

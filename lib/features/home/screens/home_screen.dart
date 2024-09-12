@@ -24,6 +24,7 @@ class HomeScreen extends ConsumerStatefulWidget {
 
 class _HomeScreenState extends ConsumerState<HomeScreen> {
   LatLng? userLocation;
+  LatLng? userPreviousLocation;
   var isShowingCrimeDetails = false;
   var selectedCrimeId = "";
   List<CrimeModel> crims = [];
@@ -83,7 +84,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           AddNewCrimBottomSheet().show(
             context,
             DependencyInjection.crimUseCase.add,
-            resetCurrentLocation,
+            resetLocation
           );
         },
         child: const Icon(Icons.add),
@@ -103,6 +104,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     setProviders();
+    userPreviousLocation ??= userLocation;
     return SafeArea(
       child: Stack(
         children: [
@@ -128,7 +130,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     userLocation = ref.watch(locationProvider);
   }
 
-  Future<void> resetCurrentLocation() async {
-    await ref.read(locationProvider.notifier).fetchLocation();
-  }
+  void resetLocation() => ref.read(locationProvider.notifier).setLocation(userPreviousLocation!);
+
 }

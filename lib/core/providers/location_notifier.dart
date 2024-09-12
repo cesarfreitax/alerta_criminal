@@ -9,15 +9,16 @@ class LocationNotifier extends StateNotifier<LatLng?> {
   Future<void> fetchLocation() async {
     try {
       final location = await getLocation();
-      state = location != null ? LatLng(location.latitude!, location.longitude!) : null;
+      state = location != null
+          ? LatLng(location.latitude!, location.longitude!)
+          : null;
     } catch (e) {
-      printDebug('Error fetching location: $e');
+      final className = runtimeType.toString();
+      printDebug('$className - Error Fetching Location: $e');
     }
   }
 
-  void setLocation(LatLng location) {
-    state = location;
-  }
+  void setLocation(LatLng location) => state = location;
 }
 
 final locationProvider = StateNotifierProvider<LocationNotifier, LatLng?>(

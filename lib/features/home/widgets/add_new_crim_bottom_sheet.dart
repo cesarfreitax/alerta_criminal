@@ -18,7 +18,7 @@ class AddNewCrimBottomSheet {
   Future<dynamic> show(
     BuildContext ctx,
     void Function(CrimeModel crim) addNewCrim,
-    Future<void> Function() resetCurrentLocation,
+      void Function() resetLocation,
   ) async {
     addNewCrim = addNewCrim;
     return showModalBottomSheet(
@@ -34,7 +34,7 @@ class AddNewCrimBottomSheet {
           ], begin: Alignment.topCenter, end: Alignment.bottomCenter)),
           child: _AddNewCrimBottomSheet(
             addNewCrim: addNewCrim,
-            resetCurrentLocation: resetCurrentLocation,
+            resetLocation: resetLocation,
           ),
         );
       },
@@ -46,11 +46,11 @@ class AddNewCrimBottomSheet {
 class _AddNewCrimBottomSheet extends ConsumerStatefulWidget {
   const _AddNewCrimBottomSheet({
     required this.addNewCrim,
-    required this.resetCurrentLocation,
+    required this.resetLocation,
   });
 
   final void Function(CrimeModel crim) addNewCrim;
-  final Future<void> Function() resetCurrentLocation;
+  final void Function() resetLocation;
 
   @override
   ConsumerState<_AddNewCrimBottomSheet> createState() {
@@ -66,9 +66,10 @@ class _AddNewCrimBottomSheetState
   final dateController = TextEditingController();
   final timeController = TextEditingController();
   late LatLng? userLocation;
+  LatLng? userPreviousLocation;
   late DateTime currentDate;
   late TimeOfDay currentTime;
-  var locationManuallyChanged = false;
+  var isPreciseLocation = true;
 
   File? image;
 
@@ -116,24 +117,16 @@ class _AddNewCrimBottomSheetState
     timeController.text = formatTime(currentTime);
   }
 
-  void resetUserLocation() =>
-      ref.read(locationProvider.notifier).fetchLocation();
-
   @override
   void dispose() async {
-    if (locationManuallyChanged) {
-      await widget.resetCurrentLocation();
+    if (!isPreciseLocation) {
+      widget.resetLocation();
     }
     titleController.dispose();
     descriptionController.dispose();
     dateController.dispose();
     timeController.dispose();
     super.dispose();
-  }
-
-  void setLocation(LatLng location) {
-    locationManuallyChanged = true;
-    ref.read(locationProvider.notifier).setLocation(location);
   }
 
   void setOnMap() async {
@@ -144,7 +137,6 @@ class _AddNewCrimBottomSheetState
             Marker(markerId: const MarkerId("m1"), position: userLocation!)
           },
           userLocation: userLocation!,
-          onSetLocation: setLocation,
         ),
       ),
     );
@@ -152,7 +144,9 @@ class _AddNewCrimBottomSheetState
     if (location == null) {
       return;
     }
-    setLocation(location);
+
+    ref.read(locationProvider.notifier).setLocation(location);
+    isPreciseLocation = false;
   }
 
   void setDatePicker() async {

@@ -21,6 +21,7 @@
   "fullName": "Nome Completo",
   "crimeLocale": "Local do Crime",
   "send": "Enviar",
+  "setAddress": "Selecionar Endereço",
   "date": "Data",
   "hour": "Horário",
   "seeMoreDetails": "Ver mais detalhes",
