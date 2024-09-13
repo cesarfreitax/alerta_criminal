@@ -31,7 +31,7 @@ class _MapWidgetState extends ConsumerState<MapWidget> {
 
   late GoogleMapController mapController;
   final searchBarController = TextEditingController();
-  var enteredAddress = "";
+  var addressSearchBarText = "";
 
   void onMapCreated(GoogleMapController controller) {
     mapController = controller;
@@ -50,22 +50,24 @@ class _MapWidgetState extends ConsumerState<MapWidget> {
     super.dispose();
   }
 
+  @override
+  void initState() {
+    super.initState();
+    if (widget.isSelecting) {
+      setState(() {
+        setupSearchBar();
+      });
+    }
+  }
+
   void setupSearchBar() async {
     searchBarController.text = await getAddressByLatLng(
         widget.userLocation.latitude, widget.userLocation.longitude);
   }
 
   @override
-  void initState() {
-    super.initState();
-    if (widget.isSelecting) {
-      setupSearchBar();
-    }
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return  Stack(
+    return Stack(
       children: [
         GoogleMap(
           onMapCreated: onMapCreated,
@@ -97,11 +99,12 @@ class _MapWidgetState extends ConsumerState<MapWidget> {
             left: 4,
             right: 4,
             child: SearchAnchor(
+              isFullScreen: false,
               builder: (BuildContext context, SearchController controller) {
                 return SearchBar(
                   padding: const WidgetStatePropertyAll<EdgeInsets>(
                       EdgeInsets.symmetric(horizontal: 16)),
-                  controller: controller,
+                  controller: searchBarController,
                   onTap: controller.openView,
                   onChanged: (_) => controller.openView,
                   leading: const Icon(Icons.search),
@@ -113,26 +116,35 @@ class _MapWidgetState extends ConsumerState<MapWidget> {
                 if (enteredAddress.isEmpty) {
                   return const Iterable.empty();
                 }
-                final placeSuggestions = await getPlaceSuggestions(controller.text, widget.userLocation, 500, getUserLanguage(context));
-                return List<ListTile>.generate(placeSuggestions.predictions.length, (int index) {
-                  final addressSuggestion = placeSuggestions.predictions[index].description;
+                final placeSuggestions = await getPlaceSuggestions(
+                    controller.text,
+                    widget.userLocation,
+                    500,
+                    getUserLanguage(context));
+                return List<ListTile>.generate(
+                    placeSuggestions.predictions.length, (int index) {
+                  final addressSuggestion =
+                      placeSuggestions.predictions[index].description;
                   return ListTile(
                     title: Text(addressSuggestion),
                     onTap: () async {
-                        final location = await getLatLngByAddress(addressSuggestion);
-                        setMarkers(
-                          {
-                            Marker(
-                              markerId: const MarkerId("m1"),
-                              position: location,
-                            ),
-                          },
-                        );
-                        widget.onSelectNewLocation!(location);
-                        mapController.animateCamera(CameraUpdate.newLatLng(location));
-                        setState(() {
-                          controller.closeView(addressSuggestion);
-                        });
+                      final location =
+                          await getLatLngByAddress(addressSuggestion);
+                      setMarkers(
+                        {
+                          Marker(
+                            markerId: const MarkerId("m1"),
+                            position: location,
+                          ),
+                        },
+                      );
+                      widget.onSelectNewLocation!(location);
+                      mapController
+                          .animateCamera(CameraUpdate.newLatLng(location));
+                      setState(() {
+                        controller.closeView(addressSuggestion);
+                        searchBarController.text = addressSuggestion;
+                      });
                     },
                   );
                 });
