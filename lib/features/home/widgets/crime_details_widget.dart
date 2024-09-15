@@ -1,5 +1,6 @@
 import 'package:alerta_criminal/core/utils/string_util.dart';
 import 'package:alerta_criminal/data/models/crime_model.dart';
+import 'package:alerta_criminal/features/crime_details/screens/crime_details_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:alerta_criminal/core/utils/date_util.dart';
 import 'package:transparent_image/transparent_image.dart';
@@ -63,7 +64,9 @@ class CrimeDetailsWidget extends StatelessWidget {
                   ),
                 ),
               ),
-            const SizedBox(width: 6,),
+            const SizedBox(
+              width: 6,
+            ),
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
@@ -98,11 +101,20 @@ class CrimeDetailsWidget extends StatelessWidget {
                         ),
                       ],
                     ),
-                    Text(
-                      getStrings(context).seeMoreDetails,
-                      style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                            decoration: TextDecoration.underline,
+                    TextButton(
+                      onPressed: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (ctx) => CrimeDetailsScreen(crime: crime),
                           ),
+                        );
+                      },
+                      child: Text(
+                        getStrings(context).seeMoreDetails,
+                        style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                              decoration: TextDecoration.underline,
+                            ),
+                      ),
                     ),
                     Padding(
                       padding: const EdgeInsets.only(right: 6),

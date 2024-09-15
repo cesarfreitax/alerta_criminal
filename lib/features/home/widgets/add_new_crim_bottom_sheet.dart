@@ -6,6 +6,7 @@ import 'package:alerta_criminal/core/utils/auth_util.dart';
 import 'package:alerta_criminal/core/utils/date_util.dart';
 import 'package:alerta_criminal/core/utils/location_util.dart';
 import 'package:alerta_criminal/core/utils/string_util.dart';
+import 'package:alerta_criminal/data/models/address.dart';
 import 'package:alerta_criminal/data/models/crime_model.dart';
 import 'package:alerta_criminal/features/home/screens/set_address_on_map_screen.dart';
 import 'package:alerta_criminal/features/home/widgets/photo_preview_widget.dart';
@@ -18,7 +19,7 @@ class AddNewCrimBottomSheet {
   Future<dynamic> show(
     BuildContext ctx,
     void Function(CrimeModel crim) addNewCrim,
-      void Function() resetLocation,
+    void Function() resetLocation,
   ) async {
     addNewCrim = addNewCrim;
     return showModalBottomSheet(
@@ -58,14 +59,17 @@ class _AddNewCrimBottomSheet extends ConsumerStatefulWidget {
   }
 }
 
-class _AddNewCrimBottomSheetState
-    extends ConsumerState<_AddNewCrimBottomSheet> {
+class _AddNewCrimBottomSheetState extends ConsumerState<_AddNewCrimBottomSheet> {
+  // *** VARIABLES *** //
+
   final formKey = GlobalKey<FormState>();
   final titleController = TextEditingController();
   final descriptionController = TextEditingController();
   final dateController = TextEditingController();
   final timeController = TextEditingController();
+  final crimeTypeController = TextEditingController();
   late LatLng? userLocation;
+  String? crimeAddress;
   LatLng? userPreviousLocation;
   late DateTime currentDate;
   late TimeOfDay currentTime;
@@ -73,41 +77,63 @@ class _AddNewCrimBottomSheetState
 
   File? image;
 
+  // *** OVERRIDE FUNCTIONS *** //
+
+  @override
+  void initState() {
+    super.initState();
+    setDateAndTime();
+  }
+
+  @override
+  void dispose() async {
+    if (!isPreciseLocation) {
+      Future.delayed(const Duration(milliseconds: 300), () => widget.resetLocation());
+    }
+    titleController.dispose();
+    descriptionController.dispose();
+    dateController.dispose();
+    timeController.dispose();
+    super.dispose();
+  }
+
+  // **** FUNCTIONS *** //
+
   void submit() {
     final formInvalid = !formKey.currentState!.validate();
+
     if (formInvalid) {
       return;
     }
 
-    addNewCrim();
-    Navigator.pop(context);
+    addCrim();
   }
 
-  void addNewCrim() async {
-    final pickedDate = DateTime(currentDate.year, currentDate.month,
-        currentDate.day, currentTime.hour, currentTime.minute);
+  void addCrim() async {
+    final pickedDate =
+        DateTime(currentDate.year, currentDate.month, currentDate.day, currentTime.hour, currentTime.minute);
 
     final crim = CrimeModel(
         title: titleController.text,
         description: descriptionController.text,
         lat: userLocation!.latitude,
         lng: userLocation!.longitude,
+        address: crimeAddress!,
         userId: getCurrentUser()!.uid,
         date: pickedDate);
 
     if (image != null) {
-      final imageUrl = await DependencyInjection.userDataUseCase
-          .saveCrimImage(image!, crim.id);
+      final imageUrl = await DependencyInjection.userDataUseCase.saveCrimImage(image!, crim.id);
       crim.imageUrl = imageUrl;
     }
 
     widget.addNewCrim(crim);
-  }
 
-  @override
-  void initState() {
-    super.initState();
-    setDateAndTime();
+    if (!context.mounted) {
+      return;
+    }
+
+    Navigator.pop(context);
   }
 
   void setDateAndTime() {
@@ -117,47 +143,35 @@ class _AddNewCrimBottomSheetState
     timeController.text = formatTime(currentTime);
   }
 
-  @override
-  void dispose() async {
-    if (!isPreciseLocation) {
-      widget.resetLocation();
-    }
-    titleController.dispose();
-    descriptionController.dispose();
-    dateController.dispose();
-    timeController.dispose();
-    super.dispose();
-  }
-
   void setOnMap() async {
-    final location = await Navigator.of(context).push<LatLng>(
+    final address = await Navigator.of(context).push<Address>(
       MaterialPageRoute(
         builder: (context) => SetAddressOnMapScreen(
-          markers: {
-            Marker(markerId: const MarkerId("m1"), position: userLocation!)
-          },
+          markers: {Marker(markerId: const MarkerId("m1"), position: userLocation!)},
           userLocation: userLocation!,
         ),
       ),
     );
 
-    if (location == null) {
+    if (address == null) {
       return;
     }
 
-    ref.read(locationProvider.notifier).setLocation(location);
+    ref.read(locationProvider.notifier).setLocation(address.location);
+    crimeAddress = address.name;
     isPreciseLocation = false;
   }
 
-  void setDatePicker() async {
+  void selectDate() async {
     final pickedDate = await openDatePicker(context);
 
     if (pickedDate == null) {
       return;
     }
 
+    currentDate = pickedDate;
+
     setState(() {
-      currentDate = pickedDate;
       dateController.text = formatDate(pickedDate);
     });
   }
@@ -169,8 +183,9 @@ class _AddNewCrimBottomSheetState
       return;
     }
 
+    currentTime = pickedTime;
+
     setState(() {
-      currentTime = pickedTime;
       timeController.text = formatTime(pickedTime);
     });
   }
@@ -183,157 +198,185 @@ class _AddNewCrimBottomSheetState
       height: 16,
     );
 
+    return content(context, verticalSpacing);
+  }
+
+  // *** COMPONENTS *** //
+
+  SingleChildScrollView content(BuildContext context, Widget verticalSpacing) {
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            PhotoPreviewWidget(setImage: (img) => image = img),
-            Form(
-              key: formKey,
-              child: Column(
-                children: [
-                  TextFormField(
-                    controller: titleController,
-                    validator: (value) {
-                      if (value == null ||
-                          value.trim().isEmpty ||
-                          value.trim().length < 4) {
-                        return getStrings(context).addCrimTitleError;
-                      }
-                      return null;
-                    },
-                    decoration:
-                        InputDecoration(labelText: getStrings(context).title),
-                  ),
-                  verticalSpacing,
-                  TextFormField(
-                    maxLines: 4,
-                    controller: descriptionController,
-                    validator: (value) {
-                      if (value == null ||
-                          value.trim().isEmpty ||
-                          value.trim().length < 10) {
-                        return getStrings(context).addCrimDescriptionError;
-                      }
-                      return null;
-                    },
-                    decoration: InputDecoration(
-                        border: const OutlineInputBorder(
-                          borderRadius: BorderRadius.all(
-                            Radius.circular(16),
-                          ),
-                        ),
-                        labelText: getStrings(context).description,
-                        alignLabelWithHint: true),
-                  ),
-                  verticalSpacing,
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Flexible(
-                          child: TextFormField(
-                            controller: dateController,
-                            decoration: InputDecoration(
-                              labelText: getStrings(context).date,
-                              prefixIcon: const Icon(Icons.calendar_today),
-                              border: const OutlineInputBorder(
-                                borderRadius: BorderRadius.all(
-                                  Radius.circular(16),
-                                ),
-                              ),
-                            ),
-                            readOnly: true,
-                            onTap: setDatePicker,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(
-                        width: 8,
-                      ),
-                      Flexible(
-                        child: TextFormField(
-                          controller: timeController,
-                          decoration: InputDecoration(
-                            labelText: getStrings(context).hour,
-                            prefixIcon: const Icon(Icons.watch_later_outlined),
-                            border: const OutlineInputBorder(
-                              borderRadius: BorderRadius.all(
-                                Radius.circular(16),
-                              ),
-                            ),
-                          ),
-                          readOnly: true,
-                          onTap: setTimePicker,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
+            photoPreviewWidget(),
+            form(context, verticalSpacing),
             verticalSpacing,
-            SizedBox(
-              width: double.infinity,
-              child: Opacity(
-                opacity: 0.8,
-                child: Text(
-                  getStrings(context).crimeLocale,
-                  style: Theme.of(context).textTheme.bodyLarge,
-                ),
-              ),
-            ),
-            Stack(
-              children: [
-                Container(
-                  height: 120,
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                      border: Border.all(
-                          width: 2,
-                          color: Theme.of(context)
-                              .colorScheme
-                              .primary
-                              .withOpacity(0.2))),
-                  child: Image.network(
-                    getLocationImagePreview(
-                      userLocation!.latitude,
-                      userLocation!.longitude,
-                    ),
-                    width: double.infinity,
-                    height: double.infinity,
-                    fit: BoxFit.cover,
-                  ),
-                ),
-                Positioned(
-                  bottom: 8,
-                  right: 8,
-                  child: CircleAvatar(
-                    child: IconButton(
-                      onPressed: setOnMap,
-                      icon: Icon(
-                        Icons.map_rounded,
-                        color: CustomColors().blue,
-                      ),
-                    ),
-                  ),
-                )
-              ],
-            ),
+            crimeLocationText(context),
+            locationPreview(context),
             verticalSpacing,
-            Row(
-              children: [
-                const Spacer(),
-                ElevatedButton.icon(
-                  icon: const Icon(Icons.send),
-                  onPressed: submit,
-                  label: Text(getStrings(context).send),
-                ),
-              ],
-            )
+            sendButton(context)
           ],
         ),
       ),
     );
   }
+
+  Row sendButton(BuildContext context) {
+    return Row(
+      children: [
+        const Spacer(),
+        ElevatedButton.icon(
+          icon: const Icon(Icons.send),
+          onPressed: submit,
+          label: Text(getStrings(context).send),
+        ),
+      ],
+    );
+  }
+
+  Stack locationPreview(BuildContext context) {
+    return Stack(
+      children: [
+        Container(
+          height: 120,
+          width: double.infinity,
+          decoration: BoxDecoration(
+              border: Border.all(width: 2, color: Theme.of(context).colorScheme.primary.withOpacity(0.2))),
+          child: Image.network(
+            getLocationImagePreview(
+              userLocation!.latitude,
+              userLocation!.longitude,
+            ),
+            width: double.infinity,
+            height: double.infinity,
+            fit: BoxFit.cover,
+          ),
+        ),
+        Positioned(
+          bottom: 8,
+          right: 8,
+          child: CircleAvatar(
+            child: IconButton(
+              onPressed: setOnMap,
+              icon: Icon(
+                Icons.map_rounded,
+                color: CustomColors().blue,
+              ),
+            ),
+          ),
+        )
+      ],
+    );
+  }
+
+  SizedBox crimeLocationText(BuildContext context) {
+    return SizedBox(
+      width: double.infinity,
+      child: Opacity(
+        opacity: 0.8,
+        child: Text(
+          getStrings(context).crimeLocale,
+          style: Theme.of(context).textTheme.bodyLarge,
+        ),
+      ),
+    );
+  }
+
+  Form form(BuildContext context, Widget verticalSpacing) {
+    return Form(
+      key: formKey,
+      child: Column(
+        children: [
+          titleField(context),
+          verticalSpacing,
+          descriptionField(context),
+          verticalSpacing,
+          Row(
+            children: [
+              dateField(context),
+              const SizedBox(
+                width: 8,
+              ),
+              hourField(context),
+            ],
+          )
+        ],
+      ),
+    );
+  }
+
+  Flexible hourField(BuildContext context) {
+    return Flexible(
+      child: TextFormField(
+        controller: timeController,
+        decoration: InputDecoration(
+          labelText: getStrings(context).hour,
+          prefixIcon: const Icon(Icons.watch_later_outlined),
+          border: const OutlineInputBorder(
+            borderRadius: BorderRadius.all(
+              Radius.circular(16),
+            ),
+          ),
+        ),
+        readOnly: true,
+        onTap: setTimePicker,
+      ),
+    );
+  }
+
+  Flexible dateField(BuildContext context) {
+    return Flexible(
+      child: TextFormField(
+        controller: dateController,
+        decoration: InputDecoration(
+          labelText: getStrings(context).date,
+          prefixIcon: const Icon(Icons.calendar_today),
+          border: const OutlineInputBorder(
+            borderRadius: BorderRadius.all(
+              Radius.circular(16),
+            ),
+          ),
+        ),
+        readOnly: true,
+        onTap: selectDate,
+      ),
+    );
+  }
+
+  TextFormField descriptionField(BuildContext context) {
+    return TextFormField(
+      maxLines: 4,
+      controller: descriptionController,
+      validator: (value) {
+        if (value == null || value.trim().isEmpty || value.trim().length < 10) {
+          return getStrings(context).addCrimDescriptionError;
+        }
+        return null;
+      },
+      decoration: InputDecoration(
+          border: const OutlineInputBorder(
+            borderRadius: BorderRadius.all(
+              Radius.circular(16),
+            ),
+          ),
+          labelText: getStrings(context).description,
+          alignLabelWithHint: true),
+    );
+  }
+
+  TextFormField titleField(BuildContext context) {
+    return TextFormField(
+      controller: titleController,
+      validator: (value) {
+        if (value == null || value.trim().isEmpty || value.trim().length < 4) {
+          return getStrings(context).addCrimTitleError;
+        }
+        return null;
+      },
+      decoration: InputDecoration(labelText: getStrings(context).title),
+    );
+  }
+
+  PhotoPreviewWidget photoPreviewWidget() => PhotoPreviewWidget(setImage: (img) => image = img);
 }

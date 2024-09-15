@@ -15,6 +15,7 @@ class CrimeModel {
     required this.description,
     required this.lat,
     required this.lng,
+    required this.address,
     required this.date,
     id,
     imageUrl,
@@ -25,6 +26,7 @@ class CrimeModel {
   String imageUrl;
   final double lat;
   final double lng;
+  final String address;
   final DateTime date;
 
   factory CrimeModel.fromJson(Map<String, dynamic> json) =>

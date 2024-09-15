@@ -136,5 +136,9 @@
   "userNotFoundMessage": "User data not found.",
   "@userNotFoundMessage": {
     "description": "User data not found."
+  },
+  "crimeDetails": "Crime details",
+  "@crimeDetails": {
+    "description": "Crime details"
   }
 }

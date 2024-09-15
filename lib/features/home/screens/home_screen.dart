@@ -30,11 +30,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   List<CrimeModel> crims = [];
   User? user;
 
-  @override
-  void initState() {
-    super.initState();
-  }
-
   Set<Marker> getMarkers(List<CrimeModel> crimes) {
     return crimes
         .map(
@@ -84,7 +79,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           AddNewCrimBottomSheet().show(
             context,
             DependencyInjection.crimUseCase.add,
-            resetLocation
+            resetLocation,
           );
         },
         child: const Icon(Icons.add),

@@ -29,5 +29,6 @@
   "yesterday": "Ontem",
   "hourSuffix": " às {hour}",
   "couldNotGetUserDataErrorMessage": "Não foi possível trazer os dados do usuário. Tente novamente mais tarde...",
-  "userNotFoundMessage": "Dados do usuário não encontrados."
+  "userNotFoundMessage": "Dados do usuário não encontrados.",
+  "crimeDetails": "Detalhes do crime"
 }
