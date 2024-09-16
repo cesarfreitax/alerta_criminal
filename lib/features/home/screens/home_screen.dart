@@ -2,9 +2,9 @@ import 'package:alerta_criminal/core/di/dependency_injection.dart';
 import 'package:alerta_criminal/core/providers/location_notifier.dart';
 import 'package:alerta_criminal/core/providers/user_notifier.dart';
 import 'package:alerta_criminal/core/widgets/login_warning_widget.dart';
+import 'package:alerta_criminal/data/models/user_model.dart';
 import 'package:alerta_criminal/features/home/widgets/crime_details_widget.dart';
 import 'package:alerta_criminal/features/home/widgets/map_widget.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -28,7 +28,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   var isShowingCrimeDetails = false;
   var selectedCrimeId = "";
   List<CrimeModel> crims = [];
-  User? user;
+  UserModel? user;
 
   Set<Marker> getMarkers(List<CrimeModel> crimes) {
     return crimes

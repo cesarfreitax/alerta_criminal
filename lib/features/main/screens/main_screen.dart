@@ -1,5 +1,6 @@
 import 'package:alerta_criminal/core/providers/user_notifier.dart';
 import 'package:alerta_criminal/core/utils/auth_util.dart';
+import 'package:alerta_criminal/data/models/user_model.dart';
 import 'package:alerta_criminal/features/home/screens/home_screen.dart';
 import 'package:alerta_criminal/features/profile/screens/profile_screen.dart';
 import 'package:flutter/material.dart';
@@ -17,6 +18,7 @@ class MainScreen extends ConsumerStatefulWidget {
 }
 
 class _MainScreenState extends ConsumerState<MainScreen> {
+  UserModel? user;
   var currentScreenIndex = 0;
   static const List<Widget> screenOptions = <Widget>[
     HomeScreen(),
@@ -34,6 +36,10 @@ class _MainScreenState extends ConsumerState<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
+    user = ref.watch(userProvider);
+    if (user != null) {
+
+    }
     return Scaffold(
       appBar: currentScreenIndex == 0 ? null : appBar(),
       body: IndexedStack(
@@ -48,7 +54,7 @@ class _MainScreenState extends ConsumerState<MainScreen> {
     return AppBar(
       title: screenTitle(),
       actions: [
-        if (isProfileScreen() && ref.watch(userProvider) != null) logoutBtn(),
+        if (isProfileScreen() && user != null) logoutBtn(),
       ],
     );
   }
