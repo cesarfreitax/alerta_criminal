@@ -36,6 +36,7 @@ dependencies:
   validadores: ^1.0.9
   skeletonizer: ^1.4.2
   transparent_image: ^2.0.1
+  font_awesome_flutter: ^10.7.0
 
 dev_dependencies:
   flutter_test:
@@ -69,3 +70,6 @@ flutter_launcher_icons:
 flutter:
   generate: true
   uses-material-design: true
+
+  assets:
+    - assets/

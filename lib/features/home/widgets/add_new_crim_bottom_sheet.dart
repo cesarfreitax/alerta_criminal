@@ -8,6 +8,7 @@ import 'package:alerta_criminal/core/utils/location_util.dart';
 import 'package:alerta_criminal/core/utils/string_util.dart';
 import 'package:alerta_criminal/data/models/address.dart';
 import 'package:alerta_criminal/data/models/crime_model.dart';
+import 'package:alerta_criminal/data/models/crime_type.dart';
 import 'package:alerta_criminal/features/home/screens/set_address_on_map_screen.dart';
 import 'package:alerta_criminal/features/home/widgets/photo_preview_widget.dart';
 import 'package:alerta_criminal/theme/custom_colors.dart';
@@ -73,7 +74,9 @@ class _AddNewCrimBottomSheetState extends ConsumerState<_AddNewCrimBottomSheet> 
   LatLng? userPreviousLocation;
   late DateTime currentDate;
   late TimeOfDay currentTime;
+  var selectedCrimeType = crimeTypeMenuItems.first;
   var isPreciseLocation = true;
+  var isSubmiting = false;
 
   File? image;
 
@@ -97,7 +100,7 @@ class _AddNewCrimBottomSheetState extends ConsumerState<_AddNewCrimBottomSheet> 
     super.dispose();
   }
 
-  // **** FUNCTIONS *** //
+  // **** REGULAR FUNCTIONS *** //
 
   void submit() {
     final formInvalid = !formKey.currentState!.validate();
@@ -106,27 +109,15 @@ class _AddNewCrimBottomSheetState extends ConsumerState<_AddNewCrimBottomSheet> 
       return;
     }
 
+    setState(() {
+      isSubmiting = true;
+    });
+
     addCrim();
   }
 
   void addCrim() async {
-    final pickedDate =
-        DateTime(currentDate.year, currentDate.month, currentDate.day, currentTime.hour, currentTime.minute);
-
-    final crim = CrimeModel(
-        title: titleController.text,
-        description: descriptionController.text,
-        lat: userLocation!.latitude,
-        lng: userLocation!.longitude,
-        address: crimeAddress!,
-        userId: getCurrentUser()!.uid,
-        date: pickedDate);
-
-    if (image != null) {
-      final imageUrl = await DependencyInjection.userDataUseCase.saveCrimImage(image!, crim.id);
-      crim.imageUrl = imageUrl;
-    }
-
+    final crim = await getCrimeCreatedByUser();
     widget.addNewCrim(crim);
 
     if (!context.mounted) {
@@ -136,6 +127,30 @@ class _AddNewCrimBottomSheetState extends ConsumerState<_AddNewCrimBottomSheet> 
     Navigator.pop(context);
   }
 
+  Future<CrimeModel> getCrimeCreatedByUser() async {
+    final pickedDate =
+    DateTime(currentDate.year, currentDate.month, currentDate.day, currentTime.hour, currentTime.minute);
+
+    final crime =  CrimeModel(
+    title: titleController.text,
+    description: descriptionController.text,
+    lat: userLocation!.latitude,
+    lng: userLocation!.longitude,
+    address: crimeAddress ??=
+        await DependencyInjection.locationUseCase.getAddressByLatLng(userLocation!.latitude, userLocation!.longitude),
+    crimeTypeId: selectedCrimeType.id,
+    userId: getCurrentUser()!.uid,
+    date: pickedDate,
+  );
+
+    if (image != null) {
+      final imageUrl = await DependencyInjection.userDataUseCase.saveCrimImage(image!, crime.id);
+      crime.imageUrl = imageUrl;
+    }
+
+    return crime;
+  }
+
   void setDateAndTime() {
     currentDate = DateTime.now();
     currentTime = TimeOfDay(hour: currentDate.hour, minute: currentDate.minute);
@@ -143,7 +158,7 @@ class _AddNewCrimBottomSheetState extends ConsumerState<_AddNewCrimBottomSheet> 
     timeController.text = formatTime(currentTime);
   }
 
-  void setOnMap() async {
+  void selectLocationOnMap() async {
     final address = await Navigator.of(context).push<Address>(
       MaterialPageRoute(
         builder: (context) => SetAddressOnMapScreen(
@@ -215,23 +230,25 @@ class _AddNewCrimBottomSheetState extends ConsumerState<_AddNewCrimBottomSheet> 
             crimeLocationText(context),
             locationPreview(context),
             verticalSpacing,
-            sendButton(context)
+            Row(
+              children: [
+                crimeTypeDropdown(),
+                const Spacer(),
+                sendButton(context),
+              ],
+            )
           ],
         ),
       ),
     );
   }
 
-  Row sendButton(BuildContext context) {
-    return Row(
-      children: [
-        const Spacer(),
-        ElevatedButton.icon(
-          icon: const Icon(Icons.send),
-          onPressed: submit,
-          label: Text(getStrings(context).send),
-        ),
-      ],
+  ElevatedButton sendButton(BuildContext context) {
+    return ElevatedButton.icon(
+      icon: const Icon(Icons.send),
+      onPressed: !isSubmiting ? submit : null,
+      label:
+          isSubmiting ? const SizedBox(height: 24, child: CircularProgressIndicator()) : Text(getStrings(context).send),
     );
   }
 
@@ -258,7 +275,7 @@ class _AddNewCrimBottomSheetState extends ConsumerState<_AddNewCrimBottomSheet> 
           right: 8,
           child: CircleAvatar(
             child: IconButton(
-              onPressed: setOnMap,
+              onPressed: selectLocationOnMap,
               icon: Icon(
                 Icons.map_rounded,
                 color: CustomColors().blue,
@@ -303,6 +320,30 @@ class _AddNewCrimBottomSheetState extends ConsumerState<_AddNewCrimBottomSheet> 
           )
         ],
       ),
+    );
+  }
+
+  DropdownMenu<CrimeType> crimeTypeDropdown() {
+    return DropdownMenu<CrimeType>(
+      initialSelection: crimeTypeMenuItems.first,
+      controller: crimeTypeController,
+      requestFocusOnTap: true,
+      label: const Text('Tipo de crime'),
+      onSelected: (CrimeType? crimeType) {
+        setState(() {
+          selectedCrimeType = crimeType!;
+        });
+      },
+      keyboardType: TextInputType.none,
+      dropdownMenuEntries: crimeTypeMenuItems.map<DropdownMenuEntry<CrimeType>>((CrimeType crimeType) {
+        return DropdownMenuEntry<CrimeType>(
+          value: crimeType,
+          label: crimeType.label,
+          // style: MenuItemButton.styleFrom(
+          //   foregroundColor: crimeType.color,
+          // ),
+        );
+      }).toList(),
     );
   }
 

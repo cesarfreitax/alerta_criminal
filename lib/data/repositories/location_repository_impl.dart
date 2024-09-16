@@ -4,6 +4,8 @@ import 'package:alerta_criminal/data/models/place_suggestions_model.dart';
 import 'package:alerta_criminal/domain/repositories/location_repository.dart';
 import 'package:google_maps_flutter_platform_interface/src/types/location.dart';
 import 'package:http/http.dart' as http;
+import 'package:location/location.dart';
+import 'package:location_platform_interface/location_platform_interface.dart';
 
 import '../../core/utils/env.dart';
 
@@ -31,6 +33,34 @@ class LocationRepositoryImpl extends LocationRepository {
     String userLanguage,
   ) =>
       Uri.parse("$mapsApi/place/autocomplete/json?input=${Uri.encodeComponent(address)}&location=$lat,$lng&radius=$radiusAreaInMeters&language=$userLanguage&key=$mapsApiKey");
+
+  @override
+  Future<LocationData?> getLocation() async {
+    Location location = Location();
+
+    bool serviceEnabled;
+    PermissionStatus permissionGranted;
+    LocationData locationData;
+
+    serviceEnabled = await location.serviceEnabled();
+    if (!serviceEnabled) {
+      serviceEnabled = await location.requestService();
+      if (!serviceEnabled) {
+        return null;
+      }
+    }
+
+    permissionGranted = await location.hasPermission();
+    if (permissionGranted == PermissionStatus.denied) {
+      permissionGranted = await location.requestPermission();
+      if (permissionGranted != PermissionStatus.granted) {
+        return null;
+      }
+    }
+
+    locationData = await location.getLocation();
+    return locationData;
+  }
 
   @override
   Future<String> getAddressByLatLng(double lat, double lng) async {

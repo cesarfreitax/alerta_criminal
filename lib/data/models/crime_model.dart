@@ -1,3 +1,4 @@
+import 'package:alerta_criminal/data/models/crime_type.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:uuid/uuid.dart';
@@ -17,6 +18,7 @@ class CrimeModel {
     required this.lng,
     required this.address,
     required this.date,
+    required this.crimeTypeId,
     id,
     imageUrl,
   })  : id = id ?? uuid.v4(),
@@ -28,6 +30,7 @@ class CrimeModel {
   final double lng;
   final String address;
   final DateTime date;
+  final int crimeTypeId;
 
   factory CrimeModel.fromJson(Map<String, dynamic> json) =>
       _$CrimeModelFromJson(json);

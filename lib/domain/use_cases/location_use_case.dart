@@ -1,5 +1,6 @@
 import 'package:alerta_criminal/domain/repositories/location_repository.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:location/location.dart';
 
 import '../../data/models/place_suggestions_model.dart';
 
@@ -7,6 +8,8 @@ class LocationUseCase {
   final LocationRepository repository;
 
   LocationUseCase(this.repository);
+
+  Future<LocationData?> getLocation() async => repository.getLocation();
 
   Future<String> getAddressByLatLng(double lat, double lng) async => repository.getAddressByLatLng(lat, lng);
 
