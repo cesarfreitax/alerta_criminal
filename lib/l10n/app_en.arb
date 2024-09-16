@@ -140,5 +140,41 @@
   "crimeDetails": "Crime details",
   "@crimeDetails": {
     "description": "Crime details"
+  },
+  "hello": "Hello, ",
+  "@hello": {
+    "description": "Hello"
+  },
+  "nicknameInfo": "That is the visible name for all users.",
+  "@nicknameInfo": {
+    "description": "The nickname above is visible for all users."
+  },
+  "nameProfileLabel": "NAME",
+  "@nameProfileLabel": {
+    "description": "Name"
+  },
+  "emailProfileLabel": "EMAIL",
+  "@emailProfileLabel": {
+    "description": "Email"
+  },
+  "cpfProfileLabel": "CPF",
+  "@cpfProfileLabel": {
+    "description": "CPF"
+  },
+  "changePassword": "Change password",
+  "@changePassword": {
+    "description": "Tap to change your password"
+  },
+  "home": "Home",
+  "@home": {
+    "description": "Home"
+  },
+  "notifications": "Notifications",
+  "@notifications": {
+    "description": "Notifications"
+  },
+  "profile": "Profile",
+  "@profile": {
+    "description": "Profile"
   }
 }

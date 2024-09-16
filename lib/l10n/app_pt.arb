@@ -30,5 +30,14 @@
   "hourSuffix": " às {hour}",
   "couldNotGetUserDataErrorMessage": "Não foi possível trazer os dados do usuário. Tente novamente mais tarde...",
   "userNotFoundMessage": "Dados do usuário não encontrados.",
-  "crimeDetails": "Detalhes do crime"
+  "crimeDetails": "Detalhes do crime",
+  "hello": "Olá, ",
+  "nicknameInfo": "Esse é o nome que ficará visível para outros usuários.",
+  "nameProfileLabel": "NOME",
+  "emailProfileLabel": "EMAIL",
+  "cpfProfileLabel": "CPF",
+  "changePassword": "Alterar senha",
+  "home": "Início",
+  "notifications": "Notificações",
+  "profile": "Perfil"
 }

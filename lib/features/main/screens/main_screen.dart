@@ -6,6 +6,7 @@ import 'package:alerta_criminal/features/profile/screens/profile_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/utils/string_util.dart';
 import '../../notifications/screens/notifications_screen.dart';
 
 class MainScreen extends ConsumerStatefulWidget {
@@ -26,20 +27,14 @@ class _MainScreenState extends ConsumerState<MainScreen> {
     ProfileScreen(),
   ];
 
-  void onItemTapped(int index) {
-    setState(() {
-      currentScreenIndex = index;
-    });
-  }
+  void onItemTapped(int index) => setState(() => currentScreenIndex = index);
 
   bool isProfileScreen() => currentScreenIndex == 2;
 
   @override
   Widget build(BuildContext context) {
     user = ref.watch(userProvider);
-    if (user != null) {
-
-    }
+    if (user != null) {}
     return Scaffold(
       appBar: currentScreenIndex == 0 ? null : appBar(),
       body: IndexedStack(
@@ -61,7 +56,7 @@ class _MainScreenState extends ConsumerState<MainScreen> {
 
   IconButton logoutBtn() => const IconButton(onPressed: logout, icon: Icon(Icons.logout_rounded));
 
-  Text screenTitle() => Text(currentScreenIndex == 1 ? "Notifications" : "Profile");
+  Text screenTitle() => Text(currentScreenIndex == 1 ? getStrings(context).notifications : getStrings(context).profile);
 
   BottomNavigationBar bottomNavBar(BuildContext context) {
     return BottomNavigationBar(
@@ -77,23 +72,23 @@ class _MainScreenState extends ConsumerState<MainScreen> {
   }
 
   BottomNavigationBarItem homeNavItem() {
-    return const BottomNavigationBarItem(
-        icon: Icon(Icons.home),
-        label: 'Home',
-      );
+    return BottomNavigationBarItem(
+      icon: const Icon(Icons.home),
+      label: getStrings(context).home,
+    );
   }
 
   BottomNavigationBarItem notificationsNavItem() {
-    return const BottomNavigationBarItem(
-        icon: Icon(Icons.notifications),
-        label: 'Notifications',
-      );
+    return BottomNavigationBarItem(
+      icon: const Icon(Icons.notifications),
+      label: getStrings(context).notifications,
+    );
   }
 
   BottomNavigationBarItem profileNavItem() {
-    return const BottomNavigationBarItem(
-        icon: Icon(Icons.account_circle),
-        label: 'Profile',
-      );
+    return BottomNavigationBarItem(
+      icon: const Icon(Icons.account_circle),
+      label: getStrings(context).profile,
+    );
   }
 }
