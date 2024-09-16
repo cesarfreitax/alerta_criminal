@@ -1,9 +1,9 @@
 import 'package:alerta_criminal/core/di/dependency_injection.dart';
 import 'package:alerta_criminal/core/providers/user_notifier.dart';
-import 'package:alerta_criminal/core/utils/auth_util.dart';
 import 'package:alerta_criminal/core/utils/message_util.dart';
 import 'package:alerta_criminal/core/utils/string_util.dart';
 import 'package:alerta_criminal/core/widgets/divisor_widget.dart';
+import 'package:alerta_criminal/core/widgets/login_warning_widget.dart';
 import 'package:alerta_criminal/features/profile/widgets/user_profile_label_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -103,8 +103,6 @@ class ProfileScreen extends ConsumerWidget {
                 ),
               );
             })
-        : const Center(
-            child: Text(("No user logged in.")),
-          );
+        : const LoginWarningWidget(canClose: false);
   }
 }

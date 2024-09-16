@@ -127,7 +127,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       bottom: 8,
       left: 8,
       right: 8,
-      child: LoginWarningWidget(),
+      child: LoginWarningWidget(canClose: true),
     );
   }
 }
