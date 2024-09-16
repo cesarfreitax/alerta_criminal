@@ -10,7 +10,7 @@ class CrimeType {
   CrimeType(this.id, this.label, this.icon, this.color);
 }
 
-List<CrimeType> crimeTypeMenuItems = [
+List<CrimeType> crimeTypes = [
     CrimeType(1, 'Assalto', Image.asset('assets/icon_crime_black50.png'), CustomColors().black50),
     CrimeType(2, 'Roubo de veículo', Image.asset('assets/icon_crime_black60.png'), CustomColors().black60),
     CrimeType(3, 'Tiroteio', Image.asset('assets/icon_crime_black90.png'), CustomColors().black90),

@@ -4,7 +4,6 @@ import 'package:alerta_criminal/core/utils/message_util.dart';
 import 'package:alerta_criminal/core/utils/navigator_util.dart';
 import 'package:alerta_criminal/core/utils/string_util.dart';
 import 'package:alerta_criminal/data/models/user_model.dart';
-import 'package:alerta_criminal/features/home/screens/home_screen.dart';
 import 'package:alerta_criminal/features/main/screens/main_screen.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -106,8 +105,7 @@ class _AuthScreenState extends State<AuthScreen> {
     toggleAuthentication(false);
   }
 
-  Future<void> login() async =>
-      await authService.signIn(emailController.text, passwordController.text);
+  Future<void> login() async => await authService.signIn(emailController.text, passwordController.text);
 
   Future<void> register() async {
     await authService.signUp(emailController.text, passwordController.text);
@@ -117,124 +115,57 @@ class _AuthScreenState extends State<AuthScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(isLogin
-            ? getStrings(context).loginTitle
-            : getStrings(context).registerTitle),
+        title: screenTitle(context),
       ),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16),
-          child: Form(
-            key: formKey,
-            child: Column(
-              children: [
-                if (!isLogin) nameTextFormField(context),
-                const SizedBox(
-                  height: 16,
-                ),
-                emailTextFormField(context),
-                const SizedBox(
-                  height: 16,
-                ),
-                if (!isLogin) cpfTextFormField(context),
-                const SizedBox(
-                  height: 16,
-                ),
-                passwordTextFormField(context),
-                const SizedBox(
-                  height: 16,
-                ),
-                submitButton(context),
-                const SizedBox(
-                  height: 16,
-                ),
-                changeAuthTypeButton(context),
-              ],
-            ),
-          ),
+          child: form(context),
         ),
       ),
     );
   }
 
-  TextButton changeAuthTypeButton(BuildContext context) {
-    return TextButton(
-      onPressed: toggleAuthType,
-      child: Text(
-        isLogin
-            ? getStrings(context).signUpText
-            : getStrings(context).signInText,
-        style: Theme.of(context).textTheme.labelMedium,
-        textAlign: TextAlign.center,
+  Text screenTitle(BuildContext context) {
+    return Text(isLogin ? getStrings(context).loginTitle : getStrings(context).registerTitle);
+  }
+
+  Form form(BuildContext context) {
+    return Form(
+      key: formKey,
+      child: Column(
+        spacing: 16,
+        children: [
+          if (!isLogin) nameTextFormField(context),
+          emailTextFormField(context),
+          if (!isLogin) cpfTextFormField(context),
+          passwordTextFormField(context),
+          submitButton(context),
+          changeAuthTypeButton(context),
+        ],
       ),
     );
   }
 
-  SizedBox submitButton(BuildContext context) {
-    return SizedBox(
-      width: double.infinity,
-      child: ElevatedButton(
-        onPressed: !isAuthenticating ? submit : null,
-        child: isAuthenticating
-            ? const SizedBox(
-                height: 20, width: 20, child: CircularProgressIndicator())
-            : Text(isLogin
-                ? getStrings(context).signInButton
-                : getStrings(context).signUpButton),
-      ),
-    );
-  }
-
-  TextFormField passwordTextFormField(BuildContext context) {
+  TextFormField nameTextFormField(BuildContext context) {
     return TextFormField(
-      controller: passwordController,
-      obscureText: true,
+      controller: nameController,
+      keyboardType: TextInputType.name,
       textCapitalization: TextCapitalization.none,
-      enableSuggestions: false,
-      autocorrect: false,
       decoration: InputDecoration(
-        labelText: getStrings(context).password,
+        labelText: getStrings(context).fullName,
         border: const OutlineInputBorder(
           borderRadius: BorderRadius.all(
             Radius.circular(16),
           ),
         ),
-        prefixIcon: const Icon(Icons.lock),
+        prefixIcon: const Icon(Icons.person),
       ),
       validator: (value) {
-        if (value == null || value.trim().isEmpty || value.length < 6) {
-          return getStrings(context).passwordInvalidMessage;
+        if (value == null || value.trim().isEmpty || value.split(' ').length < 2) {
+          return getStrings(context).fullNameInvalidMessage;
         }
         return null;
-      },
-    );
-  }
-
-  TextFormField cpfTextFormField(BuildContext context) {
-    return TextFormField(
-      controller: cpfController,
-      keyboardType: TextInputType.number,
-      inputFormatters: [
-        FilteringTextInputFormatter.digitsOnly,
-        CpfInputFormatter(),
-      ],
-      decoration: InputDecoration(
-        labelText: getStrings(context).cpf,
-        border: const OutlineInputBorder(
-          borderRadius: BorderRadius.all(
-            Radius.circular(16),
-          ),
-        ),
-        prefixIcon: const Icon(Icons.credit_card),
-      ),
-      validator: (value) {
-        return Validador()
-            .add(Validar.CPF, msg: getStrings(context).cpfErrorMessageInvalid)
-            .add(Validar.OBRIGATORIO,
-                msg: getStrings(context).cpfErrorMessageGeneric)
-            .minLength(11)
-            .maxLength(11)
-            .valido(value, clearNoNumber: true);
       },
     );
   }
@@ -263,28 +194,79 @@ class _AuthScreenState extends State<AuthScreen> {
     );
   }
 
-  TextFormField nameTextFormField(BuildContext context) {
+  TextFormField cpfTextFormField(BuildContext context) {
     return TextFormField(
-      controller: nameController,
-      keyboardType: TextInputType.name,
-      textCapitalization: TextCapitalization.none,
+      controller: cpfController,
+      keyboardType: TextInputType.number,
+      inputFormatters: [
+        FilteringTextInputFormatter.digitsOnly,
+        CpfInputFormatter(),
+      ],
       decoration: InputDecoration(
-        labelText: getStrings(context).fullName,
+        labelText: getStrings(context).cpf,
         border: const OutlineInputBorder(
           borderRadius: BorderRadius.all(
             Radius.circular(16),
           ),
         ),
-        prefixIcon: const Icon(Icons.person),
+        prefixIcon: const Icon(Icons.credit_card),
       ),
       validator: (value) {
-        if (value == null ||
-            value.trim().isEmpty ||
-            value.split(' ').length < 2) {
-          return getStrings(context).fullNameInvalidMessage;
+        return Validador()
+            .add(Validar.CPF, msg: getStrings(context).cpfErrorMessageInvalid)
+            .add(Validar.OBRIGATORIO, msg: getStrings(context).cpfErrorMessageGeneric)
+            .minLength(11)
+            .maxLength(11)
+            .valido(value, clearNoNumber: true);
+      },
+    );
+  }
+
+  TextFormField passwordTextFormField(BuildContext context) {
+    return TextFormField(
+      controller: passwordController,
+      obscureText: true,
+      textCapitalization: TextCapitalization.none,
+      enableSuggestions: false,
+      autocorrect: false,
+      decoration: InputDecoration(
+        labelText: getStrings(context).password,
+        border: const OutlineInputBorder(
+          borderRadius: BorderRadius.all(
+            Radius.circular(16),
+          ),
+        ),
+        prefixIcon: const Icon(Icons.lock),
+      ),
+      validator: (value) {
+        if (value == null || value.trim().isEmpty || value.length < 6) {
+          return getStrings(context).passwordInvalidMessage;
         }
         return null;
       },
+    );
+  }
+
+  SizedBox submitButton(BuildContext context) {
+    return SizedBox(
+      width: double.infinity,
+      child: ElevatedButton(
+        onPressed: !isAuthenticating ? submit : null,
+        child: isAuthenticating
+            ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator())
+            : Text(isLogin ? getStrings(context).signInButton : getStrings(context).signUpButton),
+      ),
+    );
+  }
+
+  TextButton changeAuthTypeButton(BuildContext context) {
+    return TextButton(
+      onPressed: toggleAuthType,
+      child: Text(
+        isLogin ? getStrings(context).signUpText : getStrings(context).signInText,
+        style: Theme.of(context).textTheme.labelMedium,
+        textAlign: TextAlign.center,
+      ),
     );
   }
 }

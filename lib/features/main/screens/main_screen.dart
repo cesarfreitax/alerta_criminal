@@ -7,7 +7,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../notifications/screens/notifications_screen.dart';
 
-
 class MainScreen extends ConsumerStatefulWidget {
   const MainScreen({super.key});
 
@@ -36,39 +35,59 @@ class _MainScreenState extends ConsumerState<MainScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: currentScreenIndex == 0
-          ? null
-          : AppBar(
-              title:
-                  Text(currentScreenIndex == 1 ? "Notifications" : "Profile"),
-              actions: [
-                if (isProfileScreen() && ref.watch(userProvider) != null)
-                  const IconButton(onPressed: logout, icon: Icon(Icons.logout_rounded))
-              ],
-            ),
+      appBar: currentScreenIndex == 0 ? null : appBar(),
       body: IndexedStack(
         index: currentScreenIndex,
         children: screenOptions,
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.notifications),
-            label: 'Notifications',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.account_circle),
-            label: 'Profile',
-          ),
-        ],
-        currentIndex: currentScreenIndex,
-        selectedItemColor: Theme.of(context).colorScheme.primary,
-        onTap: onItemTapped,
-      ),
+      bottomNavigationBar: bottomNavBar(context),
     );
+  }
+
+  AppBar appBar() {
+    return AppBar(
+      title: screenTitle(),
+      actions: [
+        if (isProfileScreen() && ref.watch(userProvider) != null) logoutBtn(),
+      ],
+    );
+  }
+
+  IconButton logoutBtn() => const IconButton(onPressed: logout, icon: Icon(Icons.logout_rounded));
+
+  Text screenTitle() => Text(currentScreenIndex == 1 ? "Notifications" : "Profile");
+
+  BottomNavigationBar bottomNavBar(BuildContext context) {
+    return BottomNavigationBar(
+      items: <BottomNavigationBarItem>[
+        homeNavItem(),
+        notificationsNavItem(),
+        profileNavItem(),
+      ],
+      currentIndex: currentScreenIndex,
+      selectedItemColor: Theme.of(context).colorScheme.primary,
+      onTap: onItemTapped,
+    );
+  }
+
+  BottomNavigationBarItem homeNavItem() {
+    return const BottomNavigationBarItem(
+        icon: Icon(Icons.home),
+        label: 'Home',
+      );
+  }
+
+  BottomNavigationBarItem notificationsNavItem() {
+    return const BottomNavigationBarItem(
+        icon: Icon(Icons.notifications),
+        label: 'Notifications',
+      );
+  }
+
+  BottomNavigationBarItem profileNavItem() {
+    return const BottomNavigationBarItem(
+        icon: Icon(Icons.account_circle),
+        label: 'Profile',
+      );
   }
 }

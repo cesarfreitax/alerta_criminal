@@ -17,6 +17,7 @@ class PhotoPreviewWidget extends StatefulWidget {
 
 class _PhotoPreviewWidgetState extends State<PhotoPreviewWidget> {
   XFile? imagePreview;
+
   void takePicture() async {
     final XFile? picture = await ImagePicker().pickImage(
       source: ImageSource.camera,
@@ -41,39 +42,46 @@ class _PhotoPreviewWidgetState extends State<PhotoPreviewWidget> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        if (imagePreview != null)
-          Container(
-          height: 150,
-          width: 150,
-          decoration: BoxDecoration(
-            border: Border.all(
-              color: Theme.of(context).colorScheme.onPrimaryContainer,
-            ),
-            borderRadius: const BorderRadius.all(
-              Radius.circular(
-                2,
-              ),
-            ),
-          ),
-          clipBehavior: Clip.hardEdge,
-          child: imagePreview != null
-              ? Image.file(
-                  File(imagePreview!.path),
-                  fit: BoxFit.cover,
-                  width: double.infinity,
-                  height: double.infinity,
-                )
-              : null,
+        if (imagePreview != null) imgPreview(context),
+        const SizedBox(
+          height: 16,
         ),
-          const SizedBox(
-            height: 16,
-          ),
-        OutlinedButton.icon(
-          onPressed: takePicture,
-          label: Text(getStrings(context).takePicture),
-          icon: const Icon(Icons.camera_alt),
-        )
+        takePictureBtn(context),
       ],
+    );
+  }
+
+  Container imgPreview(BuildContext context) {
+    return Container(
+      height: 150,
+      width: 150,
+      decoration: BoxDecoration(
+        border: Border.all(
+          color: Theme.of(context).colorScheme.onPrimaryContainer,
+        ),
+        borderRadius: const BorderRadius.all(
+          Radius.circular(
+            2,
+          ),
+        ),
+      ),
+      clipBehavior: Clip.hardEdge,
+      child: imagePreview != null
+          ? Image.file(
+              File(imagePreview!.path),
+              fit: BoxFit.cover,
+              width: double.infinity,
+              height: double.infinity,
+            )
+          : null,
+    );
+  }
+
+  OutlinedButton takePictureBtn(BuildContext context) {
+    return OutlinedButton.icon(
+      onPressed: takePicture,
+      label: Text(getStrings(context).takePicture),
+      icon: const Icon(Icons.camera_alt),
     );
   }
 }

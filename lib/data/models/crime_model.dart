@@ -32,6 +32,8 @@ class CrimeModel {
   final DateTime date;
   final int crimeTypeId;
 
+  CrimeType getCrimeType() => crimeTypes.firstWhere( (crimeType) => crimeType.id == crimeTypeId);
+
   factory CrimeModel.fromJson(Map<String, dynamic> json) =>
       _$CrimeModelFromJson(json);
 

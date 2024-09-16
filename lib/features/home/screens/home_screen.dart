@@ -57,6 +57,31 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     DependencyInjection.authService.signOut;
   }
 
+  void setProviders() {
+    crims = ref.watch(crimsProvider);
+    user = ref.watch(userProvider);
+    userLocation = ref.watch(locationProvider);
+  }
+
+  void resetLocation() => ref.read(locationProvider.notifier).setLocation(userPreviousLocation!);
+
+  @override
+  Widget build(BuildContext context) {
+    setProviders();
+    userPreviousLocation ??= userLocation;
+    return SafeArea(
+      child: Stack(
+        children: [
+          mapWidget(),
+          if (user != null) fabWidget(),
+          if (isShowingCrimeDetails)
+            crimeDetailsCard(),
+          if (user == null) loginWarningWidget()
+        ],
+      ),
+    );
+  }
+
   Widget mapWidget() {
     return userLocation != null
         ? MapWidget(
@@ -87,6 +112,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     );
   }
 
+  Align crimeDetailsCard() {
+    return Align(
+      alignment: Alignment.topCenter,
+      child: CrimeDetailsWidget(
+        crime:
+        ref.read(crimsProvider.notifier).getCrim(selectedCrimeId),
+      ),
+    );
+  }
+
   Widget loginWarningWidget() {
     return const Positioned(
       bottom: 8,
@@ -95,36 +130,4 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       child: LoginWarningWidget(),
     );
   }
-
-  @override
-  Widget build(BuildContext context) {
-    setProviders();
-    userPreviousLocation ??= userLocation;
-    return SafeArea(
-      child: Stack(
-        children: [
-          mapWidget(),
-          if (user != null) fabWidget(),
-          if (isShowingCrimeDetails)
-            Align(
-              alignment: Alignment.topCenter,
-              child: CrimeDetailsWidget(
-                crime:
-                    ref.read(crimsProvider.notifier).getCrim(selectedCrimeId),
-              ),
-            ),
-          if (user == null) loginWarningWidget()
-        ],
-      ),
-    );
-  }
-
-  void setProviders() {
-    crims = ref.watch(crimsProvider);
-    user = ref.watch(userProvider);
-    userLocation = ref.watch(locationProvider);
-  }
-
-  void resetLocation() => ref.read(locationProvider.notifier).setLocation(userPreviousLocation!);
-
 }

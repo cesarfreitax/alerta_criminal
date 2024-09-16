@@ -32,20 +32,30 @@ class _SetAddressOnMapScreenState extends State<SetAddressOnMapScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(getStrings(context).setAddress),
+        title: screenTitle(context),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.check),
-            onPressed: saveAndBackWithUserLocation,
-          )
+          saveLocationBtn()
         ],
       ),
-      body: MapWidget(
-        markers: widget.markers,
-        userLocation: widget.userLocation,
-        isSelecting: true,
-        onSelectNewLocation: onSelectNewLocation,
-      ),
+      body: map(),
     );
+  }
+
+  Text screenTitle(BuildContext context) => Text(getStrings(context).setAddress);
+
+  MapWidget map() {
+    return MapWidget(
+      markers: widget.markers,
+      userLocation: widget.userLocation,
+      isSelecting: true,
+      onSelectNewLocation: onSelectNewLocation,
+    );
+  }
+
+  IconButton saveLocationBtn() {
+    return IconButton(
+          icon: const Icon(Icons.check),
+          onPressed: saveAndBackWithUserLocation,
+        );
   }
 }

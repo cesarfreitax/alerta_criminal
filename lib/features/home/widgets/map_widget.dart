@@ -49,7 +49,6 @@ class _MapWidgetState extends ConsumerState<MapWidget> {
     super.initState();
   }
 
-  // Functions
   void setMarkers(LatLng location) {
     setState(() {
       widget.markers = {
@@ -85,6 +84,15 @@ class _MapWidgetState extends ConsumerState<MapWidget> {
     });
   }
 
+
+  void onTapMapWhenSelecting(LatLng location) {
+    setMarkers(location);
+    toggleFetchingLocation();
+    setTextOnSearchBar(LatLng(location.latitude, location.longitude));
+    widget.onSelectNewLocation!(currentAddress, location);
+    toggleFetchingLocation();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -95,24 +103,22 @@ class _MapWidgetState extends ConsumerState<MapWidget> {
     );
   }
 
-  // Components
-  Positioned searchBar() {
-    return Positioned(
-      top: 4,
-      left: 4,
-      right: 4,
-      child: SearchAnchor(
-          isFullScreen: false,
-          builder: (BuildContext context, SearchController controller) {
-            return SearchBar(
-              padding: const WidgetStatePropertyAll<EdgeInsets>(EdgeInsets.symmetric(horizontal: 16)),
-              controller: searchBarController,
-              onTap: controller.openView,
-              onChanged: (_) => controller.openView,
-              leading: const Icon(Icons.search),
-            );
-          },
-          suggestionsBuilder: setSuggestionsBuilder),
+  GoogleMap mapWidget() {
+    return GoogleMap(
+      onMapCreated: (controller) => mapController = controller,
+      initialCameraPosition: CameraPosition(
+        target: widget.userLocation,
+        zoom: widget.isSelecting ? 18.0 : 14.0,
+      ),
+      zoomControlsEnabled: false,
+      markers: widget.markers,
+      onTap: widget.isSelecting && !isFetchingLocation
+          ? (location) async {
+        onTapMapWhenSelecting(location);
+      }
+          : (location) {
+        widget.onTapMap!(null, false);
+      },
     );
   }
 
@@ -136,32 +142,24 @@ class _MapWidgetState extends ConsumerState<MapWidget> {
     });
   }
 
-
-
-  GoogleMap mapWidget() {
-    return GoogleMap(
-      onMapCreated: (controller) => mapController = controller,
-      initialCameraPosition: CameraPosition(
-        target: widget.userLocation,
-        zoom: widget.isSelecting ? 18.0 : 14.0,
-      ),
-      zoomControlsEnabled: false,
-      markers: widget.markers,
-      onTap: widget.isSelecting && !isFetchingLocation
-          ? (location) async {
-              onTapMapWhenSelecting(location);
-            }
-          : (location) {
-              widget.onTapMap!(null, false);
-            },
+  Positioned searchBar() {
+    return Positioned(
+      top: 4,
+      left: 4,
+      right: 4,
+      child: SearchAnchor(
+          isFullScreen: false,
+          builder: (BuildContext context, SearchController controller) {
+            return SearchBar(
+              padding: const WidgetStatePropertyAll<EdgeInsets>(EdgeInsets.symmetric(horizontal: 16)),
+              controller: searchBarController,
+              onTap: controller.openView,
+              onChanged: (_) => controller.openView,
+              leading: const Icon(Icons.search),
+            );
+          },
+          suggestionsBuilder: setSuggestionsBuilder),
     );
   }
 
-  void onTapMapWhenSelecting(LatLng location) {
-    setMarkers(location);
-    toggleFetchingLocation();
-    setTextOnSearchBar(LatLng(location.latitude, location.longitude));
-    widget.onSelectNewLocation!(currentAddress, location);
-    toggleFetchingLocation();
-  }
 }

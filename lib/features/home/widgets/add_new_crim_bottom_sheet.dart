@@ -61,8 +61,6 @@ class _AddNewCrimBottomSheet extends ConsumerStatefulWidget {
 }
 
 class _AddNewCrimBottomSheetState extends ConsumerState<_AddNewCrimBottomSheet> {
-  // *** VARIABLES *** //
-
   final formKey = GlobalKey<FormState>();
   final titleController = TextEditingController();
   final descriptionController = TextEditingController();
@@ -74,13 +72,11 @@ class _AddNewCrimBottomSheetState extends ConsumerState<_AddNewCrimBottomSheet> 
   LatLng? userPreviousLocation;
   late DateTime currentDate;
   late TimeOfDay currentTime;
-  var selectedCrimeType = crimeTypeMenuItems.first;
+  var selectedCrimeType = crimeTypes.first;
   var isPreciseLocation = true;
   var isSubmiting = false;
 
   File? image;
-
-  // *** OVERRIDE FUNCTIONS *** //
 
   @override
   void initState() {
@@ -99,8 +95,6 @@ class _AddNewCrimBottomSheetState extends ConsumerState<_AddNewCrimBottomSheet> 
     timeController.dispose();
     super.dispose();
   }
-
-  // **** REGULAR FUNCTIONS *** //
 
   void submit() {
     final formInvalid = !formKey.currentState!.validate();
@@ -213,12 +207,6 @@ class _AddNewCrimBottomSheetState extends ConsumerState<_AddNewCrimBottomSheet> 
       height: 16,
     );
 
-    return content(context, verticalSpacing);
-  }
-
-  // *** COMPONENTS *** //
-
-  SingleChildScrollView content(BuildContext context, Widget verticalSpacing) {
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -325,7 +313,7 @@ class _AddNewCrimBottomSheetState extends ConsumerState<_AddNewCrimBottomSheet> 
 
   DropdownMenu<CrimeType> crimeTypeDropdown() {
     return DropdownMenu<CrimeType>(
-      initialSelection: crimeTypeMenuItems.first,
+      initialSelection: crimeTypes.first,
       controller: crimeTypeController,
       requestFocusOnTap: true,
       label: const Text('Tipo de crime'),
@@ -335,7 +323,7 @@ class _AddNewCrimBottomSheetState extends ConsumerState<_AddNewCrimBottomSheet> 
         });
       },
       keyboardType: TextInputType.none,
-      dropdownMenuEntries: crimeTypeMenuItems.map<DropdownMenuEntry<CrimeType>>((CrimeType crimeType) {
+      dropdownMenuEntries: crimeTypes.map<DropdownMenuEntry<CrimeType>>((CrimeType crimeType) {
         return DropdownMenuEntry<CrimeType>(
           value: crimeType,
           label: crimeType.label,

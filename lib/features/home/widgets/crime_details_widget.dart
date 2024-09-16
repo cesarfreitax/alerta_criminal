@@ -1,8 +1,8 @@
+import 'package:alerta_criminal/core/utils/date_util.dart';
 import 'package:alerta_criminal/core/utils/string_util.dart';
 import 'package:alerta_criminal/data/models/crime_model.dart';
 import 'package:alerta_criminal/features/crime_details/screens/crime_details_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:alerta_criminal/core/utils/date_util.dart';
 import 'package:transparent_image/transparent_image.dart';
 
 class CrimeDetailsWidget extends StatelessWidget {
@@ -39,116 +39,133 @@ class CrimeDetailsWidget extends StatelessWidget {
           // spacing: 6,
           children: [
             if (crime.imageUrl.isNotEmpty)
-              ClipRRect(
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(12.0),
-                  bottomLeft: Radius.circular(12.0),
-                ),
-                child: SizedBox(
-                  height: double.infinity,
-                  width: 150,
-                  child: Stack(
-                    children: <Widget>[
-                      const Center(child: CircularProgressIndicator()),
-                      Center(
-                        child: FadeInImage.memoryNetwork(
-                          key: ValueKey(crime.id),
-                          placeholder: kTransparentImage,
-                          image: crime.imageUrl,
-                          fit: BoxFit.cover,
-                          width: double.infinity,
-                          height: double.infinity,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
+              crimeImage(),
             const SizedBox(
               width: 6,
             ),
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
-                child: Column(
-                  crossAxisAlignment: crime.imageUrl.isNotEmpty
-                      ? CrossAxisAlignment.start
-                      : CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Column(
-                      crossAxisAlignment: crime.imageUrl.isNotEmpty
-                          ? CrossAxisAlignment.start
-                          : CrossAxisAlignment.center,
-                      children: [
-                        Text(
-                          crime.title,
-                          style: Theme.of(context).textTheme.titleSmall,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        const SizedBox(
-                          height: 8,
-                        ),
-                        Opacity(
-                          opacity: 0.8,
-                          child: Text(
-                            crime.description,
-                            maxLines: 3,
-                            overflow: TextOverflow.ellipsis,
-                            style: Theme.of(context).textTheme.bodySmall,
-                          ),
-                        ),
-                      ],
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (ctx) => CrimeDetailsScreen(crime: crime),
-                          ),
-                        );
-                      },
-                      child: Text(
-                        getStrings(context).seeMoreDetails,
-                        style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                              decoration: TextDecoration.underline,
-                            ),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(right: 6),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          Text(
-                            formattedDayText,
-                            style:
-                                Theme.of(context).textTheme.bodySmall!.copyWith(
-                                      fontSize: 8,
-                                      fontWeight: todayOrYesterday
-                                          ? FontWeight.bold
-                                          : FontWeight.normal,
-                                    ),
-                          ),
-                          Text(
-                            hour,
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodySmall!
-                                .copyWith(
-                                    fontSize: 8, fontWeight: FontWeight.w200),
-                          ),
-                        ],
+            crimeDetails(context, formattedDayText, todayOrYesterday, hour),
+          ],
+        ),
+      ),
+    );
+  }
+
+  ClipRRect crimeImage() {
+    return ClipRRect(
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(12.0),
+                bottomLeft: Radius.circular(12.0),
+              ),
+              child: SizedBox(
+                height: double.infinity,
+                width: 150,
+                child: Stack(
+                  children: <Widget>[
+                    const Center(child: CircularProgressIndicator()),
+                    Center(
+                      child: FadeInImage.memoryNetwork(
+                        key: ValueKey(crime.id),
+                        placeholder: kTransparentImage,
+                        image: crime.imageUrl,
+                        fit: BoxFit.cover,
+                        width: double.infinity,
+                        height: double.infinity,
                       ),
                     ),
                   ],
                 ),
               ),
+            );
+  }
+
+  Expanded crimeDetails(BuildContext context, String formattedDayText, bool todayOrYesterday, String hour) {
+    return Expanded(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+        child: Column(
+          crossAxisAlignment: crime.imageUrl.isNotEmpty ? CrossAxisAlignment.start : CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Column(
+              crossAxisAlignment:
+              crime.imageUrl.isNotEmpty ? CrossAxisAlignment.start : CrossAxisAlignment.center,
+              children: [
+                crimeTitle(context),
+                const SizedBox(
+                  height: 8,
+                ),
+                crimeDescription(context),
+              ],
             ),
+            seeMoreDetailsTextButton(context),
+            crimeDate(formattedDayText, context, todayOrYesterday, hour),
           ],
         ),
       ),
     );
+  }
+
+  Padding crimeDate(String formattedDayText, BuildContext context, bool todayOrYesterday, String hour) {
+    return Padding(
+            padding: const EdgeInsets.only(right: 6),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Text(
+                  formattedDayText,
+                  style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                    fontSize: 8,
+                    fontWeight: todayOrYesterday ? FontWeight.bold : FontWeight.normal,
+                  ),
+                ),
+                Text(
+                  hour,
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodySmall!
+                      .copyWith(fontSize: 8, fontWeight: FontWeight.w200),
+                ),
+              ],
+            ),
+          );
+  }
+
+  TextButton seeMoreDetailsTextButton(BuildContext context) {
+    return TextButton(
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (ctx) => CrimeDetailsScreen(crime: crime),
+                ),
+              );
+            },
+            child: Text(
+              getStrings(context).seeMoreDetails,
+              style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                decoration: TextDecoration.underline,
+              ),
+            ),
+          );
+  }
+
+  Opacity crimeDescription(BuildContext context) {
+    return Opacity(
+                opacity: 0.8,
+                child: Text(
+                  crime.description,
+                  maxLines: 3,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
+              );
+  }
+
+  Text crimeTitle(BuildContext context) {
+    return Text(
+                crime.title,
+                style: Theme.of(context).textTheme.titleSmall,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              );
   }
 }
