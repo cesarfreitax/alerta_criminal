@@ -176,5 +176,13 @@
   "profile": "Profile",
   "@profile": {
     "description": "Profile"
+  },
+  "nickname": "Nickname",
+  "@nickname": {
+    "description": "Nickname"
+  },
+  "changeNickname": "Change nickname",
+  "@changeNickname": {
+    "description": "Title for screen to change your nickname"
   }
 }

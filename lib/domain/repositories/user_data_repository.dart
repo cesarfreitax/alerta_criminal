@@ -9,7 +9,7 @@ abstract class UserDataRepository {
   Future<String> saveCrimImage(File image, String crimId);
   CollectionReference<Map<String, dynamic>> getUserRef();
   Future<void> saveUserData(UserModel userData);
-  Future<UserModel> getUserData(String userId);
+  Future<UserModel?> getUserData(String userId);
   void setPreferredLanguage(Locale locale);
   Locale? getPreferredLanguage();
 }

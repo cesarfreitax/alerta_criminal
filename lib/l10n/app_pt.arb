@@ -39,5 +39,7 @@
   "changePassword": "Alterar senha",
   "home": "Início",
   "notifications": "Notificações",
-  "profile": "Perfil"
+  "profile": "Perfil",
+  "nickname": "Apelido",
+  "changeNickname": "Alterar apelido"
 }

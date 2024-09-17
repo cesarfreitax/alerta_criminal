@@ -23,7 +23,7 @@ class UserDataUseCase {
     return await repository.saveUserData(userData);
   }
 
-  Future<UserModel> getUserData(String userId) async {
+  Future<UserModel?> getUserData(String userId) async {
     return await repository.getUserData(userId);
   }
 

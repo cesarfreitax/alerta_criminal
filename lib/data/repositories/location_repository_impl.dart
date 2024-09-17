@@ -5,7 +5,6 @@ import 'package:alerta_criminal/domain/repositories/location_repository.dart';
 import 'package:google_maps_flutter_platform_interface/src/types/location.dart';
 import 'package:http/http.dart' as http;
 import 'package:location/location.dart';
-import 'package:location_platform_interface/location_platform_interface.dart';
 
 import '../../core/utils/env.dart';
 

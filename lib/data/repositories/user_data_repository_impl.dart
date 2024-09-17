@@ -44,7 +44,7 @@ class UserDataRepositoryImpl implements UserDataRepository {
   }
 
   @override
-  Future<UserModel> getUserData(String userId) async {
+  Future<UserModel?> getUserData(String userId) async {
     final userData =  await getUserRef().doc(userId).get();
     UserModel? user;
     try {
@@ -53,7 +53,7 @@ class UserDataRepositoryImpl implements UserDataRepository {
       final error = e;
       printDebug(error.toString());
     }
-    return user!;
+    return user;
   }
 
   @override

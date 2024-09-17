@@ -13,6 +13,6 @@ class NotificationsScreen extends ConsumerWidget {
 
     return user != null ? const Center(
       child: Text("Notifications Screen"),
-    ) : const LoginWarningWidget(canClose: false);
+    ) : const Center(child: LoginWarningWidget(canClose: false));
   }
 }

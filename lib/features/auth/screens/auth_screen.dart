@@ -87,14 +87,14 @@ class _AuthScreenState extends State<AuthScreen> {
     }
   }
 
-  void saveUserData() {
+  void saveUserData() async {
     final userData = UserModel(
         userId: getCurrentUser()!.uid,
-        nickname: nameController.text.split(" ").first,
         name: nameController.text,
         email: emailController.text,
         cpf: cpfController.text);
-    DependencyInjection.userDataUseCase.saveUserData(userData);
+    await DependencyInjection.userDataUseCase.saveUserData(userData);
+    firebaseAuthInstance.currentUser!.updateDisplayName(nameController.text.split(" ").first);
   }
 
   void handleAuthError(FirebaseAuthException e) {
