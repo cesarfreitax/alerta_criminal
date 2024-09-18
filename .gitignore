@@ -47,3 +47,4 @@ app.*.map.json
 /lib/core/utils/env.g.dart
 /android/gradle.properties
 /android/app/google-services.json
+/firebase.json
