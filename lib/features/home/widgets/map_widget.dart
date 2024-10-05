@@ -1,4 +1,7 @@
-import 'package:alerta_criminal/core/utils/location_util.dart';
+import 'dart:async';
+
+import 'package:alerta_criminal/core/di/dependency_injection.dart';
+import 'package:alerta_criminal/core/utils/language_util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -16,7 +19,7 @@ class MapWidget extends ConsumerStatefulWidget {
   Set<Marker> markers;
   LatLng userLocation;
   final bool isSelecting;
-  final void Function(LatLng location)? onSelectNewLocation;
+  final void Function(String address, LatLng location)? onSelectNewLocation;
   final void Function(String? id, bool show)? onTapMap;
 
   @override
@@ -26,99 +29,137 @@ class MapWidget extends ConsumerStatefulWidget {
 }
 
 class _MapWidgetState extends ConsumerState<MapWidget> {
-  late Future<void> futureCrims;
-
   late GoogleMapController mapController;
   final searchBarController = TextEditingController();
-
-  void onMapCreated(GoogleMapController controller) {
-    mapController = controller;
-  }
-
-  void setMarkers(Set<Marker> markers) {
-    setState(() {
-      widget.markers = markers;
-    });
-  }
+  var isFetchingLocation = false;
+  var currentAddress = "";
 
   @override
   void dispose() {
-    super.dispose();
     searchBarController.dispose();
-  }
-
-  void setupSearchBar() async {
-    searchBarController.text = await getAddress(
-        widget.userLocation.latitude, widget.userLocation.longitude);
+    mapController.dispose();
+    super.dispose();
   }
 
   @override
   void initState() {
-    super.initState();
     if (widget.isSelecting) {
-      setupSearchBar();
+      setTextOnSearchBar(widget.userLocation);
     }
+    super.initState();
+  }
+
+  void setMarkers(LatLng location) {
+    setState(() {
+      widget.markers = {
+        Marker(
+          markerId: const MarkerId("m1"),
+          position: location,
+        ),
+      };
+    });
+  }
+
+  void setTextOnSearchBar(LatLng location) async {
+    currentAddress = await DependencyInjection.locationUseCase.getAddressByLatLng(location.latitude, location.longitude);
+    setState(() {
+      searchBarController.text = currentAddress;
+    });
+  }
+
+  void toggleFetchingLocation() => isFetchingLocation = !isFetchingLocation;
+
+  Future<void> onTapSuggestion(String addressSuggestion, SearchController controller) async {
+    final location = await DependencyInjection.locationUseCase.getLatLngByAddress(addressSuggestion);
+
+    setMarkers(location);
+
+    widget.onSelectNewLocation!(addressSuggestion, location);
+
+    mapController.animateCamera(CameraUpdate.newLatLng(location));
+
+    setState(() {
+      controller.closeView(addressSuggestion);
+      searchBarController.text = addressSuggestion;
+    });
+  }
+
+
+  void onTapMapWhenSelecting(LatLng location) {
+    setMarkers(location);
+    toggleFetchingLocation();
+    setTextOnSearchBar(LatLng(location.latitude, location.longitude));
+    widget.onSelectNewLocation!(currentAddress, location);
+    toggleFetchingLocation();
   }
 
   @override
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        GoogleMap(
-          onMapCreated: onMapCreated,
-          initialCameraPosition: CameraPosition(
-            target: widget.userLocation,
-            zoom: widget.isSelecting ? 14.0 : 11.0,
-          ),
-          zoomControlsEnabled: false,
-          markers: widget.markers,
-          onTap: widget.isSelecting
-              ? (location) {
-                  setMarkers(
-                    {
-                      Marker(
-                        markerId: const MarkerId("m1"),
-                        position: location,
-                      ),
-                    },
-                  );
-                  widget.onSelectNewLocation!(location);
-                }
-              : (location) {
-            widget.onTapMap!(null, false);
-          },
-        ),
-        if (widget.isSelecting)
-          Positioned(
-              top: 4,
-              left: 4,
-              right: 4,
-              child: SearchAnchor(
-                  builder: (BuildContext context, SearchController controller) {
-                    return SearchBar(
-                      padding: const WidgetStatePropertyAll<EdgeInsets>(
-                        EdgeInsets.symmetric(horizontal: 16)
-                      ),
-                      controller: controller,
-                      onTap: controller.openView,
-                      onChanged: (_) => controller.openView,
-                      leading: const Icon(Icons.search),
-                    );
-                  }, suggestionsBuilder: (BuildContext context, SearchController controller) {
-                return List<ListTile>.generate(5, (int index) {
-                  final String item = 'item $index';
-                  return ListTile(
-                    title: Text(item),
-                    onTap: () {
-                      setState(() {
-                        controller.closeView(item);
-                      });
-                    },
-                  );
-                });
-              })
-          ),
+        mapWidget(),
+        if (widget.isSelecting) searchBar(),
       ],
     );
   }
+
+  GoogleMap mapWidget() {
+    return GoogleMap(
+      onMapCreated: (controller) => mapController = controller,
+      initialCameraPosition: CameraPosition(
+        target: widget.userLocation,
+        zoom: widget.isSelecting ? 18.0 : 14.0,
+      ),
+      zoomControlsEnabled: false,
+      markers: widget.markers,
+      onTap: widget.isSelecting && !isFetchingLocation
+          ? (location) async {
+        onTapMapWhenSelecting(location);
+      }
+          : (location) {
+        widget.onTapMap!(null, false);
+      },
+    );
+  }
+
+  FutureOr<Iterable<Widget>> setSuggestionsBuilder(BuildContext context, SearchController controller) async {
+    if (controller.text.isEmpty) {
+      return const Iterable.empty();
+    }
+
+    final placeSuggestions = await DependencyInjection.locationUseCase.getPlaceSuggestions(
+      controller.text,
+      widget.userLocation,
+      500,
+      getUserLanguage(context),
+    );
+
+    return List<ListTile>.generate(placeSuggestions.predictions.length, (int index) {
+      final addressSuggestion = placeSuggestions.predictions[index].description;
+
+      return ListTile(
+          title: Text(addressSuggestion), onTap: () async => await onTapSuggestion(addressSuggestion, controller));
+    });
+  }
+
+  Positioned searchBar() {
+    return Positioned(
+      top: 4,
+      left: 4,
+      right: 4,
+      child: SearchAnchor(
+          isFullScreen: false,
+          builder: (BuildContext context, SearchController controller) {
+            return SearchBar(
+              padding: const WidgetStatePropertyAll<EdgeInsets>(EdgeInsets.symmetric(horizontal: 16)),
+              controller: searchBarController,
+              onTap: controller.openView,
+              onChanged: (_) => controller.openView,
+              leading: const Icon(Icons.search),
+            );
+          },
+          suggestionsBuilder: setSuggestionsBuilder),
+    );
+  }
+
 }

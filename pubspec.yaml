@@ -36,7 +36,10 @@ dependencies:
   validadores: ^1.0.9
   skeletonizer: ^1.4.2
   transparent_image: ^2.0.1
+  font_awesome_flutter: ^10.7.0
 
+  flutter_native_splash: any
+  google_maps_flutter_platform_interface: any
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -48,7 +51,6 @@ dev_dependencies:
   riverpod_generator: ^2.4.3
   custom_lint: ^0.6.5
   riverpod_lint: ^2.3.13
-  flutter_native_splash: ^2.4.1
   flutter_launcher_icons: "^0.13.1"
 
 flutter_native_splash:
@@ -69,3 +71,6 @@ flutter_launcher_icons:
 flutter:
   generate: true
   uses-material-design: true
+
+  assets:
+    - assets/

@@ -3,7 +3,9 @@ import 'package:alerta_criminal/features/auth/screens/auth_screen.dart';
 import 'package:flutter/material.dart';
 
 class LoginWarningWidget extends StatefulWidget {
-  const LoginWarningWidget({super.key});
+  const LoginWarningWidget({super.key, required this.canClose});
+
+  final bool canClose;
 
   @override
   State<LoginWarningWidget> createState() {
@@ -63,13 +65,8 @@ class _LoginWarningWidgetState extends State<LoginWarningWidget> {
                               },
                               child: Text(
                                 "Criar conta",
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .labelSmall!
-                                    .copyWith(
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .onPrimary,
+                                style: Theme.of(context).textTheme.labelSmall!.copyWith(
+                                      color: Theme.of(context).colorScheme.onPrimary,
                                     ),
                               ),
                             ),
@@ -79,18 +76,19 @@ class _LoginWarningWidgetState extends State<LoginWarningWidget> {
                     ),
                   ),
                 ),
-                Positioned(
-                  top: 8,
-                  right: 8,
-                  child: GestureDetector(
-                    onTap: closeWarning,
-                    child: Icon(
-                      Icons.close,
-                      size: 18,
-                      color: Theme.of(context).colorScheme.primary,
+                if (widget.canClose)
+                  Positioned(
+                    top: 8,
+                    right: 8,
+                    child: GestureDetector(
+                      onTap: closeWarning,
+                      child: Icon(
+                        Icons.close,
+                        size: 18,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
                     ),
                   ),
-                ),
               ],
             ),
           )

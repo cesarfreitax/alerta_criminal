@@ -8,34 +8,24 @@ class UserProfileLabelWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      spacing: 4,
       children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          // spacing: 4,
-          children: [
-            Text(
-              label,
-              style: Theme.of(context)
-                  .textTheme
-                  .labelLarge!
-                  .copyWith(fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              text,
-              style: Theme.of(context).textTheme.labelMedium,
-              softWrap: true,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ],
+        Text(
+          label,
+          style: Theme.of(context)
+              .textTheme
+              .labelLarge!
+              .copyWith(fontWeight: FontWeight.bold),
         ),
-        IconButton(
-          onPressed: () {},
-          icon: const Icon(Icons.navigate_next),
-        )
+        Text(
+          text,
+          style: Theme.of(context).textTheme.labelMedium,
+          softWrap: true,
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
+        ),
       ],
     );
   }

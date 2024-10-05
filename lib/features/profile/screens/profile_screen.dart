@@ -1,15 +1,12 @@
 import 'package:alerta_criminal/core/di/dependency_injection.dart';
 import 'package:alerta_criminal/core/providers/user_notifier.dart';
-import 'package:alerta_criminal/core/utils/auth_util.dart';
-import 'package:alerta_criminal/core/utils/message_util.dart';
 import 'package:alerta_criminal/core/utils/string_util.dart';
 import 'package:alerta_criminal/core/widgets/divisor_widget.dart';
+import 'package:alerta_criminal/core/widgets/login_warning_widget.dart';
+import 'package:alerta_criminal/features/profile/screens/change_nickname_screen.dart';
 import 'package:alerta_criminal/features/profile/widgets/user_profile_label_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:skeletonizer/skeletonizer.dart';
-
-final _userDataUseCase = DependencyInjection.userDataUseCase;
 
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
@@ -19,92 +16,99 @@ class ProfileScreen extends ConsumerWidget {
     final user = ref.watch(userProvider);
 
     return user != null
-        ? FutureBuilder(
-            future: _userDataUseCase.getUserData(user.uid),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const SizedBox();
-              } if (snapshot.hasError) {
-                showSnackBarError(getStrings(context).couldNotGetUserDataErrorMessage, context);
-              } else if (!snapshot.hasData || snapshot.data == null) {
-                showSnackBarError(getStrings(context).userNotFoundMessage, context);
-              }
-
-              final userData = snapshot.data;
-
-              return Skeletonizer(
-                enabled: !snapshot.hasData,
-                child: Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    // spacing: 8,
-                    children: [
-                      const SizedBox(height: 8),
-                      Row(
-                        children: [
-                          Text(
-                            "Olá, ",
-                            style: Theme.of(context).textTheme.headlineMedium,
-                          ),
-                          const SizedBox(width: 4,),
-                          Text(
-                            userData!.nickname,
-                            style: Theme.of(context)
-                                .textTheme
-                                .headlineLarge!
-                                .copyWith(fontWeight: FontWeight.bold),
-                          ),
-                          IconButton(
-                              onPressed: () {}, icon: const Icon(Icons.edit))
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-                      Opacity(
-                        opacity: 0.8,
-                        child: Text(
-                          "Esse é o nome que ficará visível para outros usuários.",
-                          style: Theme.of(context).textTheme.bodySmall!.copyWith(
-                                fontWeight: FontWeight.w100,
-                              ),
+        ? Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 8),
+                const SizedBox(height: 8),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Text(
+                          getStrings(context).hello,
+                          style: Theme.of(context).textTheme.headlineMedium,
                         ),
-                      ),
-                      const SizedBox(height: 8),
-                      const SizedBox(
-                        height: 16,
-                      ),
-                      const SizedBox(height: 8),
-                      const DivisorWidget(),
-                      const SizedBox(height: 8),
-                      UserProfileLabelWidget(
-                        label: "NAME",
-                        text: userData.name,
-                      ),
-                      const SizedBox(height: 8),
-                      const DivisorWidget(),
-                      const SizedBox(height: 8),
-                      UserProfileLabelWidget(
-                        label: "EMAIL",
-                        text: userData.email,
-                      ),
-                      const SizedBox(height: 8),
-                      const DivisorWidget(),
-                      UserProfileLabelWidget(
-                        label: "CPF",
-                        text: userData.cpf,
-                      ),
-                      const SizedBox(height: 8),
-                      const DivisorWidget(),
-                      const SizedBox(height: 8),
-                      ElevatedButton(onPressed: () {}, child: const Text("Alterar senha"), style: ElevatedButton.styleFrom(shape: BeveledRectangleBorder()),)
-                    ],
-                  ),
+                        const SizedBox(
+                          width: 4,
+                        ),
+                        Text(
+                          firebaseAuthInstance.currentUser!.displayName!,
+                          style: Theme.of(context)
+                              .textTheme
+                              .headlineLarge!
+                              .copyWith(fontWeight: FontWeight.bold),
+                        ),
+                        IconButton(
+                          onPressed: () async {
+                            Navigator.of(context)
+                                .push(MaterialPageRoute(
+                                    builder: (ctx) => ChangeNicknameScreen()));
+
+                          },
+                          icon: const Icon(Icons.edit),
+                        )
+                      ],
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      getStrings(context).nicknameInfo,
+                      style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                          fontWeight: FontWeight.w100,
+                          color: Theme.of(context)
+                              .colorScheme
+                              .primary
+                              .withOpacity(0.6)),
+                    ),
+                  ],
                 ),
-              );
-            })
-        : const Center(
-            child: Text(("No user logged in.")),
-          );
+                const SizedBox(
+                  height: 16,
+                ),
+                const SizedBox(height: 8),
+                const DivisorWidget(),
+                const SizedBox(height: 8),
+                UserProfileLabelWidget(
+                  label: getStrings(context).nameProfileLabel,
+                  text: user.name,
+                ),
+                const SizedBox(height: 8),
+                const DivisorWidget(),
+                const SizedBox(height: 8),
+                UserProfileLabelWidget(
+                  label: getStrings(context).emailProfileLabel,
+                  text: user.email,
+                ),
+                const SizedBox(height: 8),
+                const DivisorWidget(),
+                const SizedBox(height: 8),
+                UserProfileLabelWidget(
+                  label: getStrings(context).cpfProfileLabel,
+                  text: user.cpf,
+                ),
+                const SizedBox(height: 8),
+                const DivisorWidget(),
+                const SizedBox(height: 8),
+                const SizedBox(
+                  height: 16,
+                ),
+                SizedBox(
+                  width: double.infinity,
+                  child: Text(
+                    textAlign: TextAlign.center,
+                    getStrings(context).changePassword,
+                    style: Theme.of(context)
+                        .textTheme
+                        .labelMedium!
+                        .copyWith(fontWeight: FontWeight.bold),
+                  ),
+                )
+              ],
+            ),
+          )
+        : const Center(child: LoginWarningWidget(canClose: false));
   }
 }
