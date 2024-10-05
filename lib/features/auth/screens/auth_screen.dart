@@ -9,22 +9,24 @@ import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:validadores/Validador.dart';
 
 import '../../../core/di/dependency_injection.dart';
+import '../../../core/keys/auth_keys.dart';
 
-class AuthScreen extends StatefulWidget {
+class AuthScreen extends ConsumerStatefulWidget {
   const AuthScreen({super.key, required this.isLogin});
 
   final bool isLogin;
 
   @override
-  State<AuthScreen> createState() {
+  ConsumerState<AuthScreen> createState() {
     return _AuthScreenState();
   }
 }
 
-class _AuthScreenState extends State<AuthScreen> {
+class _AuthScreenState extends ConsumerState<AuthScreen> {
   late bool isLogin;
   final formKey = GlobalKey<FormState>();
   var isAuthenticating = false;
@@ -42,13 +44,21 @@ class _AuthScreenState extends State<AuthScreen> {
 
   @override
   void dispose() {
-    nameController.dispose();
+    final isRegister = !isLogin;
+    if (isRegister) {
+      nameController.dispose();
+      cpfController.dispose();
+    }
     emailController.dispose();
     passwordController.dispose();
     super.dispose();
   }
 
   void toggleAuthType() {
+    if (!isLogin) {
+      nameController.dispose();
+      cpfController.dispose();
+    }
     setState(() {
       isLogin = !isLogin;
     });
@@ -69,15 +79,17 @@ class _AuthScreenState extends State<AuthScreen> {
     formKey.currentState!.save();
     toggleAuthentication(true);
 
+    UserCredential? userCredential;
+
     try {
       if (isLogin) {
-        await login();
+        userCredential = await login();
       } else {
-        await register();
-        saveUserData();
+        userCredential = await register();
+        await saveUserData();
       }
       toggleAuthentication(false);
-      if (!context.mounted) {
+      if (!context.mounted || userCredential == null) {
         return;
       }
       navigate(context, true, const MainScreen());
@@ -87,14 +99,14 @@ class _AuthScreenState extends State<AuthScreen> {
     }
   }
 
-  void saveUserData() async {
+  Future<void> saveUserData() async {
     final userData = UserModel(
         userId: getCurrentUser()!.uid,
         name: nameController.text,
         email: emailController.text,
         cpf: cpfController.text);
     await DependencyInjection.userDataUseCase.saveUserData(userData);
-    firebaseAuthInstance.currentUser!.updateDisplayName(nameController.text.split(" ").first);
+    await firebaseAuthInstance.currentUser!.updateDisplayName(nameController.text.split(" ").first);
   }
 
   void handleAuthError(FirebaseAuthException e) {
@@ -105,10 +117,10 @@ class _AuthScreenState extends State<AuthScreen> {
     toggleAuthentication(false);
   }
 
-  Future<void> login() async => await authService.signIn(emailController.text, passwordController.text);
+  Future<UserCredential?> login() async => await authService.signIn(emailController.text, passwordController.text);
 
-  Future<void> register() async {
-    await authService.signUp(emailController.text, passwordController.text);
+  Future<UserCredential> register() async {
+    return await authService.signUp(emailController.text, passwordController.text);
   }
 
   @override
