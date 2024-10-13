@@ -48,5 +48,8 @@
   "confirmPassword": "Confirmar senha",
   "passwordConfirmationInvalidMessage": "As senhas devem ser iguais.",
   "nicknameUpdatedSuccessfullyMessage": "Apelido atualizado com sucesso!",
-  "passwordUpdatedSuccessfullyMessage": "Senha atualizada com sucesso!"
+  "passwordUpdatedSuccessfullyMessage": "Senha atualizada com sucesso!",
+  "forgotPassword": "Esqueci minha senha",
+  "recoverPasswordScreenTitle": "Recuperar senha",
+  "emailRecoverSent": "Email de recuperação de senha enviado com sucesso!"
 }

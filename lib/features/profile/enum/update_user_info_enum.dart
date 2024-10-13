@@ -1,4 +1,5 @@
 enum UpdateUserInfoEnum {
   nickname,
-  password
+  password,
+  recoverPassword
 }

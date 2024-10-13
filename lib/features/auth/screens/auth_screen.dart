@@ -5,6 +5,7 @@ import 'package:alerta_criminal/core/utils/navigator_util.dart';
 import 'package:alerta_criminal/core/utils/string_util.dart';
 import 'package:alerta_criminal/data/models/user_model.dart';
 import 'package:alerta_criminal/features/main/screens/main_screen.dart';
+import 'package:alerta_criminal/features/profile/screens/update_user_info_screen.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -13,6 +14,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:validadores/Validador.dart';
 
 import '../../../core/di/dependency_injection.dart';
+import '../../profile/enum/update_user_info_enum.dart';
 
 class AuthScreen extends ConsumerStatefulWidget {
   const AuthScreen({super.key, required this.isLogin});
@@ -100,10 +102,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
 
   Future<void> saveUserData() async {
     final userData = UserModel(
-        userId: getCurrentUser()!.uid,
-        name: nameController.text,
-        email: emailController.text,
-        cpf: cpfController.text);
+        userId: getCurrentUser()!.uid, name: nameController.text, email: emailController.text, cpf: cpfController.text);
     await DependencyInjection.userDataUseCase.saveUserData(userData);
     await getCurrentUser()!.updateDisplayName(nameController.text.split(" ").first);
   }
@@ -151,6 +150,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
           emailTextFormField(context),
           if (!isLogin) cpfTextFormField(context),
           passwordTextFormField(context),
+          if (isLogin) recoverPasswordButton(context),
           submitButton(context),
           changeAuthTypeButton(context),
         ],
@@ -280,4 +280,17 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
       ),
     );
   }
+
+  TextButton recoverPasswordButton(BuildContext context) {
+    return TextButton(
+      onPressed: recoverPassword,
+      child: Text(
+        getStrings(context).forgotPassword,
+        style: Theme.of(context).textTheme.labelMedium,
+        textAlign: TextAlign.center,
+      ),
+    );
+  }
+
+  recoverPassword() => navigate(context, false, UpdateUserInfoScreen(infoType: UpdateUserInfoEnum.recoverPassword,));
 }

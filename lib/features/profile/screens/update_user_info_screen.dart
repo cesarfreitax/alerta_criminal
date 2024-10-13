@@ -1,8 +1,12 @@
+import 'dart:async';
+
+import 'package:alerta_criminal/core/di/dependency_injection.dart';
 import 'package:alerta_criminal/core/dialog/loading_screen.dart';
 import 'package:alerta_criminal/core/utils/auth_util.dart';
 import 'package:alerta_criminal/core/utils/keyboard_util.dart';
 import 'package:alerta_criminal/core/utils/message_util.dart';
-import 'package:alerta_criminal/data/update_user_info_enum.dart';
+import 'package:alerta_criminal/features/profile/enum/update_user_info_enum.dart';
+import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -15,7 +19,9 @@ class _UpdateUserInfoScreenConfig {
   final String confirmInputLabelText;
   final String successMessage;
   final String? Function(String?) validator;
-  final Future<void> Function(String) update;
+  final Future<void> Function() updateAction;
+  final void Function(BuildContext) handleSuccess;
+  final Widget actionWidget;
 
   _UpdateUserInfoScreenConfig(
     this.title,
@@ -24,7 +30,9 @@ class _UpdateUserInfoScreenConfig {
     this.confirmInputLabelText,
     this.successMessage,
     this.validator,
-    this.update,
+    this.updateAction,
+    this.handleSuccess,
+    this.actionWidget,
   );
 }
 
@@ -35,6 +43,7 @@ class UpdateUserInfoScreen extends StatefulWidget {
   final _formKey = GlobalKey<FormState>();
   final _newValueController = TextEditingController();
   final _confirmNewValueController = TextEditingController();
+  bool isRecoverPasswordTimeout = false;
 
   @override
   State<UpdateUserInfoScreen> createState() {
@@ -43,6 +52,9 @@ class UpdateUserInfoScreen extends StatefulWidget {
 }
 
 class _UpdateUserInfoScreenState extends State<UpdateUserInfoScreen> {
+  late Timer timer;
+  int remainingSeconds = 60;
+
   @override
   void initState() {
     super.initState();
@@ -54,7 +66,7 @@ class _UpdateUserInfoScreenState extends State<UpdateUserInfoScreen> {
       appBar: AppBar(
         title: Text(screenConfig.title),
         actions: [
-          saveBtn(context),
+          screenConfig.actionWidget,
         ],
       ),
       body: Padding(
@@ -67,6 +79,7 @@ class _UpdateUserInfoScreenState extends State<UpdateUserInfoScreen> {
               inputTxtField(widget._newValueController, context, screenConfig.inputLabelText),
               if (widget._infoType == UpdateUserInfoEnum.password)
                 inputTxtField(widget._confirmNewValueController, context, screenConfig.confirmInputLabelText),
+              if (widget.isRecoverPasswordTimeout) recoverPasswordCoutdown(context)
             ],
           ),
         ),
@@ -95,19 +108,39 @@ class _UpdateUserInfoScreenState extends State<UpdateUserInfoScreen> {
     );
   }
 
-  Padding saveBtn(BuildContext context) {
+  Padding saveButton(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(right: 8),
       child: IconButton(
         icon: const Icon(Icons.check),
         onPressed: () async {
-          await save(context);
+          await update(context);
         },
       ),
     );
   }
 
-  Future<void> save(BuildContext context) async {
+  Padding sendButton(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(right: 8),
+      child: TextButton(
+        child: Text(
+          "Enviar",
+          style: Theme.of(context).textTheme.labelMedium!.copyWith(
+              color: widget.isRecoverPasswordTimeout ? Theme.of(context).colorScheme.primary.withOpacity(0.5) : null),
+        ),
+        onPressed: () async {
+          widget.isRecoverPasswordTimeout ? null : await update(context);
+        },
+      ),
+    );
+  }
+
+  Widget recoverPasswordCoutdown(BuildContext context) {
+    return Text("Aguarde $remainingSeconds segundos para enviar novamente.");
+  }
+
+  Future<void> update(BuildContext context) async {
     final formIsInvalid = !widget._formKey.currentState!.validate();
     if (formIsInvalid) {
       return;
@@ -120,11 +153,11 @@ class _UpdateUserInfoScreenState extends State<UpdateUserInfoScreen> {
     loadingScreen.show(context: context);
 
     try {
-      await screenConfig.update(widget._newValueController.text);
+      await screenConfig.updateAction();
       if (!context.mounted) {
         return;
       }
-      handleSuccessOnUpdateUserInfo(context);
+      screenConfig.handleSuccess(context);
     } on FirebaseAuthException catch (e) {
       handleErrorOnUpdateUserInfo(e, context);
     }
@@ -135,16 +168,20 @@ class _UpdateUserInfoScreenState extends State<UpdateUserInfoScreen> {
     showSnackBarError(e.message.toString(), context);
   }
 
-  void handleSuccessOnUpdateUserInfo(BuildContext context) {
-    switch (widget._infoType) {
-      case UpdateUserInfoEnum.nickname:
-        Navigator.pop(context, widget._newValueController.text);
-      case UpdateUserInfoEnum.password:
-        logout();
-        Navigator.pop(context);
-    }
-
+  void handleSuccessOnNickname(BuildContext context) {
+    Navigator.pop(context, widget._newValueController.text);
     showSnackBarSuccess(screenConfig.successMessage, context);
+  }
+
+  void handleSuccessOnUpdatingPassword(BuildContext context) {
+    logout();
+    Navigator.pop(context);
+    showSnackBarSuccess(screenConfig.successMessage, context);
+  }
+
+  void handleSuccessOnRecoveringPassword(BuildContext context) {
+    showSnackBarSuccess(screenConfig.successMessage, context);
+    setState(() => widget.isRecoverPasswordTimeout = true);
   }
 
   _UpdateUserInfoScreenConfig get screenConfig {
@@ -156,7 +193,10 @@ class _UpdateUserInfoScreenState extends State<UpdateUserInfoScreen> {
           "",
           getStrings(context).nicknameUpdatedSuccessfullyMessage,
           nicknameValidator,
-          updateNickname),
+          updateNickname,
+          handleSuccessOnNickname,
+          saveButton(context),
+        ),
       UpdateUserInfoEnum.password => _UpdateUserInfoScreenConfig(
           getStrings(context).changePasswordScreenTitle,
           const Icon(Icons.lock),
@@ -164,15 +204,32 @@ class _UpdateUserInfoScreenState extends State<UpdateUserInfoScreen> {
           getStrings(context).confirmPassword,
           getStrings(context).passwordUpdatedSuccessfullyMessage,
           passwordValidator,
-          updatePassword),
+          updatePassword,
+          handleSuccessOnUpdatingPassword,
+          saveButton(context),
+        ),
+      UpdateUserInfoEnum.recoverPassword => _UpdateUserInfoScreenConfig(
+          getStrings(context).recoverPasswordScreenTitle,
+          const Icon(Icons.email),
+          getStrings(context).emailAddress,
+          "",
+          getStrings(context).emailRecoverSent,
+          emailValidator,
+          sendEmailToRecoverPassword,
+          handleSuccessOnRecoveringPassword,
+          sendButton(context),
+        ),
     };
   }
 
-  Future<void> updatePassword(String newValue) async =>
-      await getCurrentUser()!.updatePassword(newValue);
+  Future<void> updatePassword() async => await getCurrentUser()!.updatePassword(widget._newValueController.text);
 
-  Future<void> updateNickname(String newValue) async =>
-      await getCurrentUser()!.updateDisplayName(newValue);
+  Future<void> updateNickname() async => await getCurrentUser()!.updateDisplayName(widget._newValueController.text);
+
+  Future<void> sendEmailToRecoverPassword() async {
+    await firebaseAuthInstance.sendPasswordResetEmail(email: widget._newValueController.text);
+    startCountdown();
+  }
 
   String? nicknameValidator(String? nickname) {
     if (nickname == null || nickname.trim().isEmpty || nickname.trim().length < 3) {
@@ -189,5 +246,29 @@ class _UpdateUserInfoScreenState extends State<UpdateUserInfoScreen> {
       return getStrings(context).passwordConfirmationInvalidMessage;
     }
     return null;
+  }
+
+  String? emailValidator(String? email) {
+    final emailIsNotValid = !EmailValidator.validate(email ?? "");
+    if (emailIsNotValid) {
+      return getStrings(context).emailInvalidMessage;
+    }
+    return null;
+  }
+
+  void startCountdown() {
+    timer = Timer.periodic(
+      const Duration(seconds: 1),
+      (timer) {
+        setState(() {
+          if (remainingSeconds > 0) {
+            remainingSeconds--;
+          } else {
+            widget.isRecoverPasswordTimeout = false;
+            timer.cancel();
+          }
+        });
+      },
+    );
   }
 }

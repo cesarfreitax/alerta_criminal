@@ -4,7 +4,7 @@ import 'package:alerta_criminal/core/utils/string_util.dart';
 import 'package:alerta_criminal/core/widgets/divisor_widget.dart';
 import 'package:alerta_criminal/core/widgets/login_warning_widget.dart';
 import 'package:alerta_criminal/data/models/user_model.dart';
-import 'package:alerta_criminal/data/update_user_info_enum.dart';
+import 'package:alerta_criminal/features/profile/enum/update_user_info_enum.dart';
 import 'package:alerta_criminal/features/profile/screens/update_user_info_screen.dart';
 import 'package:alerta_criminal/features/profile/widgets/user_profile_label_widget.dart';
 import 'package:flutter/material.dart';

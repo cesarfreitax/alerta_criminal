@@ -208,5 +208,17 @@
   "passwordUpdatedSuccessfullyMessage": "Password updated successfully!",
   "@passwordUpdatedSuccessfullyMessage": {
     "description": "Password updated successfully!"
+  },
+  "forgotPassword": "Forgot password",
+  "@forgotPassword": {
+    "description": "Button to recover your password"
+  },
+  "recoverPasswordScreenTitle": "Recover password",
+  "@recoverPasswordScreenTitle": {
+    "description": "Screen title for recovering password"
+  },
+  "emailRecoverSent": "Email recover was sent. Check your mailbox.",
+  "@emailRecoverSent": {
+    "description": "Email recover was sent. Check your mailbox."
   }
 }
