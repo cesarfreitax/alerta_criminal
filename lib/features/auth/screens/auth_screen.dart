@@ -13,7 +13,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:validadores/Validador.dart';
 
 import '../../../core/di/dependency_injection.dart';
-import '../../../core/keys/auth_keys.dart';
 
 class AuthScreen extends ConsumerStatefulWidget {
   const AuthScreen({super.key, required this.isLogin});
@@ -106,7 +105,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
         email: emailController.text,
         cpf: cpfController.text);
     await DependencyInjection.userDataUseCase.saveUserData(userData);
-    await firebaseAuthInstance.currentUser!.updateDisplayName(nameController.text.split(" ").first);
+    await getCurrentUser()!.updateDisplayName(nameController.text.split(" ").first);
   }
 
   void handleAuthError(FirebaseAuthException e) {

@@ -46,5 +46,7 @@
   "changePasswordScreenTitle": "Alterar senha",
   "nicknameValidatorMessage": "Um apelido válido deve ter ao menos 3 caracteres.",
   "confirmPassword": "Confirmar senha",
-  "passwordConfirmationInvalidMessage": "As senhas devem ser iguais."
+  "passwordConfirmationInvalidMessage": "As senhas devem ser iguais.",
+  "nicknameUpdatedSuccessfullyMessage": "Apelido atualizado com sucesso!",
+  "passwordUpdatedSuccessfullyMessage": "Senha atualizada com sucesso!"
 }

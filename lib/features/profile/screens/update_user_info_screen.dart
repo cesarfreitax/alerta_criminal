@@ -1,4 +1,3 @@
-import 'package:alerta_criminal/core/di/dependency_injection.dart';
 import 'package:alerta_criminal/core/dialog/loading_screen.dart';
 import 'package:alerta_criminal/core/utils/auth_util.dart';
 import 'package:alerta_criminal/core/utils/keyboard_util.dart';
@@ -9,13 +8,33 @@ import 'package:flutter/material.dart';
 
 import '../../../core/utils/string_util.dart';
 
-class UpdateUserInfoScreen extends StatefulWidget {
-  UpdateUserInfoScreen({super.key, required this.infoType});
+class _UpdateUserInfoScreenConfig {
+  final String title;
+  final Icon prefixIcon;
+  final String inputLabelText;
+  final String confirmInputLabelText;
+  final String successMessage;
+  final String? Function(String?) validator;
+  final Future<void> Function(String) update;
 
-  final UpdateUserInfoEnum infoType;
-  final formKey = GlobalKey<FormState>();
-  final newValueController = TextEditingController();
-  final confirmNewValueController = TextEditingController();
+  _UpdateUserInfoScreenConfig(
+    this.title,
+    this.prefixIcon,
+    this.inputLabelText,
+    this.confirmInputLabelText,
+    this.successMessage,
+    this.validator,
+    this.update,
+  );
+}
+
+class UpdateUserInfoScreen extends StatefulWidget {
+  UpdateUserInfoScreen({super.key, required UpdateUserInfoEnum infoType}) : _infoType = infoType;
+
+  final UpdateUserInfoEnum _infoType;
+  final _formKey = GlobalKey<FormState>();
+  final _newValueController = TextEditingController();
+  final _confirmNewValueController = TextEditingController();
 
   @override
   State<UpdateUserInfoScreen> createState() {
@@ -29,64 +48,11 @@ class _UpdateUserInfoScreenState extends State<UpdateUserInfoScreen> {
     super.initState();
   }
 
-  String get screenTitle {
-    return switch (widget.infoType) {
-      UpdateUserInfoEnum.nickname => getStrings(context).changeNickname,
-      UpdateUserInfoEnum.password => getStrings(context).changePasswordScreenTitle
-    };
-  }
-
-  Icon get prefixIcon {
-    return switch (widget.infoType) {
-      UpdateUserInfoEnum.nickname => const Icon(Icons.person),
-      UpdateUserInfoEnum.password => const Icon(Icons.lock)
-    };
-  }
-
-  String get inputLabelText {
-    return switch (widget.infoType) {
-      UpdateUserInfoEnum.nickname => getStrings(context).nickname,
-      UpdateUserInfoEnum.password => getStrings(context).password
-    };
-  }
-
-  String get confirmInputLabelText {
-    return switch (widget.infoType) {
-      UpdateUserInfoEnum.nickname => "",
-      UpdateUserInfoEnum.password => getStrings(context).confirmPassword
-    };
-  }
-
-  String get successMessage {
-    return switch (widget.infoType) {
-      UpdateUserInfoEnum.nickname => 'Apelido atualizado com sucesso!',
-      UpdateUserInfoEnum.password => 'Senha atualizada com sucesso!'
-    };
-  }
-
-  String? Function(String?) get validator {
-    return switch (widget.infoType) {
-      UpdateUserInfoEnum.nickname => nicknameValidator,
-      UpdateUserInfoEnum.password => passwordValidator
-    };
-  }
-
-  update(String newValue) async {
-    switch (widget.infoType) {
-      case UpdateUserInfoEnum.nickname:
-        await firebaseAuthInstance.currentUser!.updateDisplayName(newValue);
-      case UpdateUserInfoEnum.password:
-        await firebaseAuthInstance.currentUser!.updatePassword(newValue);
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
-
-
     return Scaffold(
       appBar: AppBar(
-        title: Text(screenTitle),
+        title: Text(screenConfig.title),
         actions: [
           saveBtn(context),
         ],
@@ -94,13 +60,13 @@ class _UpdateUserInfoScreenState extends State<UpdateUserInfoScreen> {
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
         child: Form(
-          key: widget.formKey,
+          key: widget._formKey,
           child: Column(
             spacing: 16,
             children: [
-              inputTxtField(widget.newValueController, context, inputLabelText),
-              if (widget.infoType == UpdateUserInfoEnum.password)
-                inputTxtField(widget.confirmNewValueController, context, confirmInputLabelText),
+              inputTxtField(widget._newValueController, context, screenConfig.inputLabelText),
+              if (widget._infoType == UpdateUserInfoEnum.password)
+                inputTxtField(widget._confirmNewValueController, context, screenConfig.confirmInputLabelText),
             ],
           ),
         ),
@@ -111,8 +77,8 @@ class _UpdateUserInfoScreenState extends State<UpdateUserInfoScreen> {
   TextFormField inputTxtField(TextEditingController inputController, BuildContext context, String inputLabelText) {
     return TextFormField(
       controller: inputController,
-      keyboardType: widget.infoType == UpdateUserInfoEnum.nickname ? TextInputType.name : null,
-      obscureText: widget.infoType == UpdateUserInfoEnum.password,
+      keyboardType: widget._infoType == UpdateUserInfoEnum.nickname ? TextInputType.name : null,
+      obscureText: widget._infoType == UpdateUserInfoEnum.password,
       enableSuggestions: false,
       autocorrect: false,
       textCapitalization: TextCapitalization.none,
@@ -123,9 +89,9 @@ class _UpdateUserInfoScreenState extends State<UpdateUserInfoScreen> {
             Radius.circular(16),
           ),
         ),
-        prefixIcon: prefixIcon,
+        prefixIcon: screenConfig.prefixIcon,
       ),
-      validator: validator,
+      validator: screenConfig.validator,
     );
   }
 
@@ -142,19 +108,19 @@ class _UpdateUserInfoScreenState extends State<UpdateUserInfoScreen> {
   }
 
   Future<void> save(BuildContext context) async {
-    final formIsInvalid = !widget.formKey.currentState!.validate();
+    final formIsInvalid = !widget._formKey.currentState!.validate();
     if (formIsInvalid) {
       return;
     }
 
-    widget.formKey.currentState!.save();
+    widget._formKey.currentState!.save();
 
     closeKeyboard(context);
     final loadingScreen = LoadingScreen.instance();
     loadingScreen.show(context: context);
 
     try {
-      await update(widget.newValueController.text);
+      await screenConfig.update(widget._newValueController.text);
       if (!context.mounted) {
         return;
       }
@@ -170,16 +136,43 @@ class _UpdateUserInfoScreenState extends State<UpdateUserInfoScreen> {
   }
 
   void handleSuccessOnUpdateUserInfo(BuildContext context) {
-    switch (widget.infoType) {
+    switch (widget._infoType) {
       case UpdateUserInfoEnum.nickname:
-        Navigator.pop(context, widget.newValueController.text);
+        Navigator.pop(context, widget._newValueController.text);
       case UpdateUserInfoEnum.password:
         logout();
         Navigator.pop(context);
     }
 
-    showSnackBarSuccess(successMessage, context);
+    showSnackBarSuccess(screenConfig.successMessage, context);
   }
+
+  _UpdateUserInfoScreenConfig get screenConfig {
+    return switch (widget._infoType) {
+      UpdateUserInfoEnum.nickname => _UpdateUserInfoScreenConfig(
+          getStrings(context).changeNickname,
+          const Icon(Icons.person),
+          getStrings(context).nickname,
+          "",
+          getStrings(context).nicknameUpdatedSuccessfullyMessage,
+          nicknameValidator,
+          updateNickname),
+      UpdateUserInfoEnum.password => _UpdateUserInfoScreenConfig(
+          getStrings(context).changePasswordScreenTitle,
+          const Icon(Icons.lock),
+          getStrings(context).password,
+          getStrings(context).confirmPassword,
+          getStrings(context).passwordUpdatedSuccessfullyMessage,
+          passwordValidator,
+          updatePassword),
+    };
+  }
+
+  Future<void> updatePassword(String newValue) async =>
+      await getCurrentUser()!.updatePassword(newValue);
+
+  Future<void> updateNickname(String newValue) async =>
+      await getCurrentUser()!.updateDisplayName(newValue);
 
   String? nicknameValidator(String? nickname) {
     if (nickname == null || nickname.trim().isEmpty || nickname.trim().length < 3) {
@@ -192,7 +185,7 @@ class _UpdateUserInfoScreenState extends State<UpdateUserInfoScreen> {
     if (password == null || password.trim().isEmpty || password.length < 6) {
       return getStrings(context).passwordInvalidMessage;
     }
-    if (widget.newValueController.text != widget.confirmNewValueController.text) {
+    if (widget._newValueController.text != widget._confirmNewValueController.text) {
       return getStrings(context).passwordConfirmationInvalidMessage;
     }
     return null;

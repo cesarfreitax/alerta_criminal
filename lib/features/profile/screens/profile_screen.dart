@@ -1,4 +1,3 @@
-import 'package:alerta_criminal/core/di/dependency_injection.dart';
 import 'package:alerta_criminal/core/providers/user_notifier.dart';
 import 'package:alerta_criminal/core/utils/auth_util.dart';
 import 'package:alerta_criminal/core/utils/string_util.dart';
@@ -118,7 +117,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           width: 4,
         ),
         Text(
-          firebaseAuthInstance.currentUser!.displayName!,
+          nickname ?? getCurrentUser()!.displayName!,
           style: Theme.of(context).textTheme.headlineLarge!.copyWith(fontWeight: FontWeight.bold),
         ),
         changeNicknameBtnWidget(context),

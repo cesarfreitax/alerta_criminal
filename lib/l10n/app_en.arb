@@ -200,5 +200,13 @@
   "passwordConfirmationInvalidMessage": "Passwords must be the same.",
   "@passwordConfirmationInvalidMessage": {
     "description": "Error message due to the password confirmation failed. Credentials must be the same."
+  },
+  "nicknameUpdatedSuccessfullyMessage": "Nickname updated successfully!",
+  "@nicknameUpdatedSuccessfullyMessage": {
+    "description": "Nickname updated successfully!"
+  },
+  "passwordUpdatedSuccessfullyMessage": "Password updated successfully!",
+  "@passwordUpdatedSuccessfullyMessage": {
+    "description": "Password updated successfully!"
   }
 }
