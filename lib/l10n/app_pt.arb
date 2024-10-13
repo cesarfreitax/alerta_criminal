@@ -42,5 +42,9 @@
   "notifications": "Notificações",
   "profile": "Perfil",
   "nickname": "Apelido",
-  "changeNickname": "Alterar apelido"
+  "changeNickname": "Alterar apelido",
+  "changePasswordScreenTitle": "Alterar senha",
+  "nicknameValidatorMessage": "Um apelido válido deve ter ao menos 3 caracteres.",
+  "confirmPassword": "Confirmar senha",
+  "passwordConfirmationInvalidMessage": "As senhas devem ser iguais."
 }

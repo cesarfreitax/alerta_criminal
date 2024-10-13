@@ -184,5 +184,21 @@
   "changeNickname": "Change nickname",
   "@changeNickname": {
     "description": "Title for screen to change your nickname"
+  },
+  "changePasswordScreenTitle": "Change password",
+  "@changePasswordScreenTitle": {
+    "description": "Title for screen to change your password"
+  },
+  "nicknameValidatorMessage": "A nickname valid must has at least 3 characters.",
+  "@nicknameValidatorMessage": {
+    "description": "Message warning about wrong input for nickname. It should has at least 3 characters."
+  },
+  "confirmPassword": "Confirm password",
+  "@confirmPassword": {
+    "description": "Input to confirm your password."
+  },
+  "passwordConfirmationInvalidMessage": "Passwords must be the same.",
+  "@passwordConfirmationInvalidMessage": {
+    "description": "Error message due to the password confirmation failed. Credentials must be the same."
   }
 }
