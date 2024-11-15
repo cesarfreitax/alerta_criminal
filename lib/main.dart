@@ -17,7 +17,7 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
   await FirebaseAppCheck.instance.activate(
-    androidProvider: AndroidProvider.debug
+    androidProvider: AndroidProvider.debug,
   );
   DependencyInjection().setup();
   FlutterNativeSplash.preserve(
@@ -26,22 +26,40 @@ void main() async {
   runApp(const ProviderScope(child: MyApp()));
 }
 
-class MyApp extends ConsumerWidget {
+class MyApp extends ConsumerStatefulWidget {
   const MyApp({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    var isFetchingLocation = true;
-    var isFetchingCrimes = true;
+  ConsumerState<MyApp> createState() => _MyAppState();
+}
 
-    ref.read(locationProvider.notifier).fetchLocation().whenComplete(() {
-      isFetchingLocation = false;
-      handleSplashLoading(isFetchingLocation, isFetchingCrimes);
+class _MyAppState extends ConsumerState<MyApp> {
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    initializeApp();
+  }
+
+  Future<void> initializeApp() async {
+    var locationFuture = ref.read(locationProvider.notifier).fetchLocation();
+    var crimesFuture = ref.read(crimsProvider.notifier).getCrims();
+
+    await Future.wait([locationFuture, crimesFuture]);
+
+    FlutterNativeSplash.remove();
+
+    setState(() {
+      isLoading = false;
     });
-    ref.read(crimsProvider.notifier).getCrims().whenComplete(() {
-      isFetchingCrimes = false;
-      handleSplashLoading(isFetchingLocation, isFetchingCrimes);
-    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (isLoading) {
+      return const SizedBox();
+    }
 
     return MaterialApp(
       title: 'Alerta Criminal',
@@ -51,11 +69,5 @@ class MyApp extends ConsumerWidget {
       supportedLocales: AppLocalizations.supportedLocales,
       home: const MainScreen(),
     );
-  }
-
-  void handleSplashLoading(bool isFetchingLocation, bool isFetchingCrimes) {
-    if (!isFetchingLocation && !isFetchingCrimes) {
-      FlutterNativeSplash.remove();
-    }
   }
 }

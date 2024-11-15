@@ -79,7 +79,7 @@ class _UpdateUserInfoScreenState extends State<UpdateUserInfoScreen> {
               inputTxtField(widget._newValueController, context, screenConfig.inputLabelText),
               if (widget._infoType == UpdateUserInfoEnum.password)
                 inputTxtField(widget._confirmNewValueController, context, screenConfig.confirmInputLabelText),
-              if (widget.isRecoverPasswordTimeout) recoverPasswordCoutdown(context)
+              if (widget.isRecoverPasswordTimeout) recoverPasswordCountdown(context)
             ],
           ),
         ),
@@ -136,7 +136,7 @@ class _UpdateUserInfoScreenState extends State<UpdateUserInfoScreen> {
     );
   }
 
-  Widget recoverPasswordCoutdown(BuildContext context) {
+  Widget recoverPasswordCountdown(BuildContext context) {
     return Text("Aguarde $remainingSeconds segundos para enviar novamente.");
   }
 

@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:alerta_criminal/core/di/dependency_injection.dart';
+import 'package:alerta_criminal/core/dialog/loading_screen.dart';
 import 'package:alerta_criminal/core/providers/location_notifier.dart';
 import 'package:alerta_criminal/core/utils/auth_util.dart';
 import 'package:alerta_criminal/core/utils/date_util.dart';
@@ -75,13 +76,15 @@ class _AddNewCrimBottomSheetState extends ConsumerState<_AddNewCrimBottomSheet> 
   var selectedCrimeType = crimeTypes.first;
   var isPreciseLocation = true;
   var isSubmiting = false;
+  late LoadingScreen loadingScreen;
 
   File? image;
 
   @override
   void initState() {
-    super.initState();
+    loadingScreen = LoadingScreen.instance();
     setDateAndTime();
+    super.initState();
   }
 
   @override
@@ -107,6 +110,8 @@ class _AddNewCrimBottomSheetState extends ConsumerState<_AddNewCrimBottomSheet> 
       isSubmiting = true;
     });
 
+    loadingScreen.show(context: context);
+
     addCrim();
   }
 
@@ -117,6 +122,8 @@ class _AddNewCrimBottomSheetState extends ConsumerState<_AddNewCrimBottomSheet> 
     if (!context.mounted) {
       return;
     }
+
+    loadingScreen.hide();
 
     Navigator.pop(context);
   }
@@ -233,10 +240,9 @@ class _AddNewCrimBottomSheetState extends ConsumerState<_AddNewCrimBottomSheet> 
 
   ElevatedButton sendButton(BuildContext context) {
     return ElevatedButton.icon(
-      icon: const Icon(Icons.send),
-      onPressed: !isSubmiting ? submit : null,
-      label:
-          isSubmiting ? const SizedBox(height: 24, child: CircularProgressIndicator()) : Text(getStrings(context).send),
+      icon: Icon(Icons.send, color: Theme.of(context).colorScheme.onPrimary,),
+      onPressed: isSubmiting ? null : submit,
+      label: Text(getStrings(context).send),
     );
   }
 
