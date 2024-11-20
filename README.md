@@ -2,6 +2,14 @@
 
 **Alerta Criminal** is a Flutter-based mobile application designed to keep users informed about criminal activities in their area.
 
+<div style="display:flex;">
+<img src="https://i.imgur.com/CFRZcGh.jpeg" alt="teste" height="400" float="left"/>
+<img src="https://i.imgur.com/U8LNcRt.jpeg" alt="teste" height="400" float="left"/>
+<img src="https://i.imgur.com/dhQJTyq.jpeg" alt="teste" height="400" float="left"/>
+<img src="https://i.imgur.com/OkjU38I.jpeg" alt="teste" height="400" float="left"/>
+<img src="https://i.imgur.com/ZysTerf.jpeg" alt="teste" height="400" float="left"/>
+</div>
+
 ## Prerequisites
 
 Before you can set up and run this project, ensure you have the following tools installed:
