@@ -51,5 +51,9 @@
   "passwordUpdatedSuccessfullyMessage": "Senha atualizada com sucesso!",
   "forgotPassword": "Esqueci minha senha",
   "recoverPasswordScreenTitle": "Recuperar senha",
-  "emailRecoverSent": "Email de recuperação de senha enviado com sucesso!"
+  "emailRecoverSent": "Email de recuperação de senha enviado com sucesso!",
+  "loginWarningMessage": "Faça login para acessar todas as funcionalidades do aplicativo.",
+  "loginWarningAccess": "Acessar a minha conta",
+  "loginWarningCreate": "Criar conta"
+
 }

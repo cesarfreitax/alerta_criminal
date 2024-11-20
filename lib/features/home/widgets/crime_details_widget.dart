@@ -31,6 +31,7 @@ class CrimeDetailsWidget extends StatelessWidget {
       width: crime.imageUrl.isNotEmpty ? double.infinity : 250,
       height: 160,
       child: Card(
+        color: Theme.of(context).colorScheme.primary,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12.0),
         ),
@@ -38,8 +39,7 @@ class CrimeDetailsWidget extends StatelessWidget {
         child: Row(
           // spacing: 6,
           children: [
-            if (crime.imageUrl.isNotEmpty)
-              crimeImage(),
+            if (crime.imageUrl.isNotEmpty) crimeImage(),
             const SizedBox(
               width: 6,
             ),
@@ -52,30 +52,30 @@ class CrimeDetailsWidget extends StatelessWidget {
 
   ClipRRect crimeImage() {
     return ClipRRect(
-              borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(12.0),
-                bottomLeft: Radius.circular(12.0),
-              ),
-              child: SizedBox(
+      borderRadius: const BorderRadius.only(
+        topLeft: Radius.circular(12.0),
+        bottomLeft: Radius.circular(12.0),
+      ),
+      child: SizedBox(
+        height: double.infinity,
+        width: 150,
+        child: Stack(
+          children: <Widget>[
+            const Center(child: CircularProgressIndicator()),
+            Center(
+              child: FadeInImage.memoryNetwork(
+                key: ValueKey(crime.id),
+                placeholder: kTransparentImage,
+                image: crime.imageUrl,
+                fit: BoxFit.cover,
+                width: double.infinity,
                 height: double.infinity,
-                width: 150,
-                child: Stack(
-                  children: <Widget>[
-                    const Center(child: CircularProgressIndicator()),
-                    Center(
-                      child: FadeInImage.memoryNetwork(
-                        key: ValueKey(crime.id),
-                        placeholder: kTransparentImage,
-                        image: crime.imageUrl,
-                        fit: BoxFit.cover,
-                        width: double.infinity,
-                        height: double.infinity,
-                      ),
-                    ),
-                  ],
-                ),
               ),
-            );
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   Expanded crimeDetails(BuildContext context, String formattedDayText, bool todayOrYesterday, String hour) {
@@ -87,8 +87,7 @@ class CrimeDetailsWidget extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Column(
-              crossAxisAlignment:
-              crime.imageUrl.isNotEmpty ? CrossAxisAlignment.start : CrossAxisAlignment.center,
+              crossAxisAlignment: crime.imageUrl.isNotEmpty ? CrossAxisAlignment.start : CrossAxisAlignment.center,
               children: [
                 crimeTitle(context),
                 const SizedBox(
@@ -107,65 +106,72 @@ class CrimeDetailsWidget extends StatelessWidget {
 
   Padding crimeDate(String formattedDayText, BuildContext context, bool todayOrYesterday, String hour) {
     return Padding(
-            padding: const EdgeInsets.only(right: 6),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                Text(
-                  formattedDayText,
-                  style: Theme.of(context).textTheme.bodySmall!.copyWith(
-                    fontSize: 8,
-                    fontWeight: todayOrYesterday ? FontWeight.bold : FontWeight.normal,
-                  ),
+      padding: const EdgeInsets.only(right: 6),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          Text(
+            formattedDayText,
+            style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                  fontSize: 8,
+                  fontWeight: todayOrYesterday ? FontWeight.bold : FontWeight.normal,
+                color: Theme.of(context).colorScheme.onPrimary,
                 ),
-                Text(
-                  hour,
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodySmall!
-                      .copyWith(fontSize: 8, fontWeight: FontWeight.w200),
+          ),
+          Text(
+            hour,
+            style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                  fontSize: 8,
+                  fontWeight: FontWeight.w200,
+                  color: Theme.of(context).colorScheme.onPrimary,
                 ),
-              ],
-            ),
-          );
+          ),
+        ],
+      ),
+    );
   }
 
   TextButton seeMoreDetailsTextButton(BuildContext context) {
     return TextButton(
-            onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (ctx) => CrimeDetailsScreen(crime: crime),
-                ),
-              );
-            },
-            child: Text(
-              getStrings(context).seeMoreDetails,
-              style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                decoration: TextDecoration.underline,
-              ),
+      onPressed: () {
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (ctx) => CrimeDetailsScreen(crime: crime),
+          ),
+        );
+      },
+      child: Text(
+        getStrings(context).seeMoreDetails,
+        style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+              decoration: TextDecoration.underline,
+              color: Theme.of(context).colorScheme.onPrimary,
             ),
-          );
+      ),
+    );
   }
 
   Opacity crimeDescription(BuildContext context) {
     return Opacity(
-                opacity: 0.8,
-                child: Text(
-                  crime.description,
-                  maxLines: 3,
-                  overflow: TextOverflow.ellipsis,
-                  style: Theme.of(context).textTheme.bodySmall,
-                ),
-              );
+      opacity: 0.8,
+      child: Text(
+        crime.description,
+        maxLines: 3,
+        overflow: TextOverflow.ellipsis,
+        style: Theme.of(context).textTheme.bodySmall!.copyWith(
+              color: Theme.of(context).colorScheme.onPrimary,
+            ),
+      ),
+    );
   }
 
   Text crimeTitle(BuildContext context) {
     return Text(
-                crime.title,
-                style: Theme.of(context).textTheme.titleSmall,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              );
+      crime.title,
+      style: Theme.of(context).textTheme.titleSmall!.copyWith(
+            color: Theme.of(context).colorScheme.onPrimary,
+          ),
+      maxLines: 1,
+      overflow: TextOverflow.ellipsis,
+    );
   }
 }

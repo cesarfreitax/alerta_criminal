@@ -220,5 +220,17 @@
   "emailRecoverSent": "Email recover was sent. Check your mailbox.",
   "@emailRecoverSent": {
     "description": "Email recover was sent. Check your mailbox."
+  },
+  "loginWarningMessage": "Do login to use all features for free",
+  "@loginWarningMessage": {
+    "description": "Message warning to do login in order to use all application features"
+  },
+  "loginWarningAccess": "Login on my account",
+  "@loginWarningAccess": {
+    "description": "Button to do login in your account"
+  },
+  "loginWarningCreate": "Create account",
+  "@loginWarningCreate": {
+    "description": "Button to do create your account"
   }
 }

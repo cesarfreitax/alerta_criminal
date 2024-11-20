@@ -240,9 +240,14 @@ class _AddNewCrimBottomSheetState extends ConsumerState<_AddNewCrimBottomSheet> 
 
   ElevatedButton sendButton(BuildContext context) {
     return ElevatedButton.icon(
+      style: ElevatedButton.styleFrom(
+        backgroundColor: Theme.of(context).colorScheme.onPrimaryContainer
+      ),
       icon: Icon(Icons.send, color: Theme.of(context).colorScheme.onPrimary,),
       onPressed: isSubmiting ? null : submit,
-      label: Text(getStrings(context).send),
+      label: Text(getStrings(context).send, style: Theme.of(context).textTheme.labelMedium!.copyWith(
+        color: Theme.of(context).colorScheme.onPrimary
+      ),),
     );
   }
 

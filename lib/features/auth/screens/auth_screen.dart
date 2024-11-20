@@ -262,10 +262,16 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
     return SizedBox(
       width: double.infinity,
       child: ElevatedButton(
+        style: ElevatedButton.styleFrom(backgroundColor: Theme.of(context).colorScheme.onPrimaryContainer),
         onPressed: !isAuthenticating ? submit : null,
         child: isAuthenticating
             ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator())
-            : Text(isLogin ? getStrings(context).signInButton : getStrings(context).signUpButton),
+            : Text(
+                isLogin ? getStrings(context).signInButton : getStrings(context).signUpButton,
+                style: Theme.of(context).textTheme.labelMedium!.copyWith(
+                      color: Theme.of(context).colorScheme.onPrimary,
+                    ),
+              ),
       ),
     );
   }
@@ -292,5 +298,10 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
     );
   }
 
-  recoverPassword() => navigate(context, false, UpdateUserInfoScreen(infoType: UpdateUserInfoEnum.recoverPassword,));
+  recoverPassword() => navigate(
+      context,
+      false,
+      UpdateUserInfoScreen(
+        infoType: UpdateUserInfoEnum.recoverPassword,
+      ));
 }
