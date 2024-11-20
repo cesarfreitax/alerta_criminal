@@ -1,4 +1,5 @@
 import 'package:alerta_criminal/core/utils/navigator_util.dart';
+import 'package:alerta_criminal/core/utils/string_util.dart';
 import 'package:alerta_criminal/features/auth/screens/auth_screen.dart';
 import 'package:flutter/material.dart';
 
@@ -43,7 +44,7 @@ class _LoginWarningWidgetState extends State<LoginWarningWidget> {
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
                         Text(
-                          "Faça login para acessar todas as funcionalidades do aplicativo.",
+                          getStrings(context).loginWarningMessage,
                           textAlign: TextAlign.center,
                           style: Theme.of(context).textTheme.labelSmall,
                         ),
@@ -55,16 +56,19 @@ class _LoginWarningWidgetState extends State<LoginWarningWidget> {
                                 navigateToAuthScreen(context, true);
                               },
                               child: Text(
-                                "Acessar a minha conta",
+                                getStrings(context).loginWarningAccess,
                                 style: Theme.of(context).textTheme.labelSmall,
                               ),
                             ),
                             ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Theme.of(context).colorScheme.onPrimaryContainer
+                              ),
                               onPressed: () {
                                 navigateToAuthScreen(context, false);
                               },
                               child: Text(
-                                "Criar conta",
+                                getStrings(context).loginWarningCreate,
                                 style: Theme.of(context).textTheme.labelSmall!.copyWith(
                                       color: Theme.of(context).colorScheme.onPrimary,
                                     ),

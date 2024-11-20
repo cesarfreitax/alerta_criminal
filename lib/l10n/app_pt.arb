@@ -42,5 +42,18 @@
   "notifications": "Notificações",
   "profile": "Perfil",
   "nickname": "Apelido",
-  "changeNickname": "Alterar apelido"
+  "changeNickname": "Alterar apelido",
+  "changePasswordScreenTitle": "Alterar senha",
+  "nicknameValidatorMessage": "Um apelido válido deve ter ao menos 3 caracteres.",
+  "confirmPassword": "Confirmar senha",
+  "passwordConfirmationInvalidMessage": "As senhas devem ser iguais.",
+  "nicknameUpdatedSuccessfullyMessage": "Apelido atualizado com sucesso!",
+  "passwordUpdatedSuccessfullyMessage": "Senha atualizada com sucesso!",
+  "forgotPassword": "Esqueci minha senha",
+  "recoverPasswordScreenTitle": "Recuperar senha",
+  "emailRecoverSent": "Email de recuperação de senha enviado com sucesso!",
+  "loginWarningMessage": "Faça login para acessar todas as funcionalidades do aplicativo.",
+  "loginWarningAccess": "Acessar a minha conta",
+  "loginWarningCreate": "Criar conta"
+
 }

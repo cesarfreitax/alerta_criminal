@@ -20,3 +20,5 @@ List<CrimeType> crimeTypes = [
     CrimeType(7, 'Homicídio', Image.asset('assets/icon_crime_black100.png'), CustomColors().black100),
     CrimeType(8, 'Sequestro', Image.asset('assets/icon_crime_black80.png'), CustomColors().black80),
   ];
+
+CrimeType getCrimeType(int id) => crimeTypes.firstWhere((crime) => crime.id == id);

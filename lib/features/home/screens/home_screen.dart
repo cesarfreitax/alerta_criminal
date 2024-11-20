@@ -53,10 +53,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     }
   }
 
-  void logout() {
-    DependencyInjection.authService.signOut;
-  }
-
   void setProviders() {
     crims = ref.watch(crimsProvider);
     user = ref.watch(userProvider);

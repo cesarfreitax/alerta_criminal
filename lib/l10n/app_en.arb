@@ -184,5 +184,53 @@
   "changeNickname": "Change nickname",
   "@changeNickname": {
     "description": "Title for screen to change your nickname"
+  },
+  "changePasswordScreenTitle": "Change password",
+  "@changePasswordScreenTitle": {
+    "description": "Title for screen to change your password"
+  },
+  "nicknameValidatorMessage": "A nickname valid must has at least 3 characters.",
+  "@nicknameValidatorMessage": {
+    "description": "Message warning about wrong input for nickname. It should has at least 3 characters."
+  },
+  "confirmPassword": "Confirm password",
+  "@confirmPassword": {
+    "description": "Input to confirm your password."
+  },
+  "passwordConfirmationInvalidMessage": "Passwords must be the same.",
+  "@passwordConfirmationInvalidMessage": {
+    "description": "Error message due to the password confirmation failed. Credentials must be the same."
+  },
+  "nicknameUpdatedSuccessfullyMessage": "Nickname updated successfully!",
+  "@nicknameUpdatedSuccessfullyMessage": {
+    "description": "Nickname updated successfully!"
+  },
+  "passwordUpdatedSuccessfullyMessage": "Password updated successfully!",
+  "@passwordUpdatedSuccessfullyMessage": {
+    "description": "Password updated successfully!"
+  },
+  "forgotPassword": "Forgot password",
+  "@forgotPassword": {
+    "description": "Button to recover your password"
+  },
+  "recoverPasswordScreenTitle": "Recover password",
+  "@recoverPasswordScreenTitle": {
+    "description": "Screen title for recovering password"
+  },
+  "emailRecoverSent": "Email recover was sent. Check your mailbox.",
+  "@emailRecoverSent": {
+    "description": "Email recover was sent. Check your mailbox."
+  },
+  "loginWarningMessage": "Do login to use all features for free",
+  "@loginWarningMessage": {
+    "description": "Message warning to do login in order to use all application features"
+  },
+  "loginWarningAccess": "Login on my account",
+  "@loginWarningAccess": {
+    "description": "Button to do login in your account"
+  },
+  "loginWarningCreate": "Create account",
+  "@loginWarningCreate": {
+    "description": "Button to do create your account"
   }
 }
