@@ -27,14 +27,9 @@ class AddNewCrimBottomSheet {
     return showModalBottomSheet(
       context: ctx,
       builder: (ctx) {
-        return Container(
+        return SizedBox(
           height: 600,
           width: double.infinity,
-          decoration: BoxDecoration(
-              gradient: LinearGradient(colors: [
-            Theme.of(ctx).colorScheme.secondaryContainer,
-            Theme.of(ctx).colorScheme.surface,
-          ], begin: Alignment.topCenter, end: Alignment.bottomCenter)),
           child: _AddNewCrimBottomSheet(
             addNewCrim: addNewCrim,
             resetLocation: resetLocation,
@@ -130,19 +125,19 @@ class _AddNewCrimBottomSheetState extends ConsumerState<_AddNewCrimBottomSheet> 
 
   Future<CrimeModel> getCrimeCreatedByUser() async {
     final pickedDate =
-    DateTime(currentDate.year, currentDate.month, currentDate.day, currentTime.hour, currentTime.minute);
+        DateTime(currentDate.year, currentDate.month, currentDate.day, currentTime.hour, currentTime.minute);
 
-    final crime =  CrimeModel(
-    title: titleController.text,
-    description: descriptionController.text,
-    lat: userLocation!.latitude,
-    lng: userLocation!.longitude,
-    address: crimeAddress ??=
-        await DependencyInjection.locationUseCase.getAddressByLatLng(userLocation!.latitude, userLocation!.longitude),
-    crimeTypeId: selectedCrimeType.id,
-    userId: getCurrentUser()!.uid,
-    date: pickedDate,
-  );
+    final crime = CrimeModel(
+      title: titleController.text,
+      description: descriptionController.text,
+      lat: userLocation!.latitude,
+      lng: userLocation!.longitude,
+      address: crimeAddress ??=
+          await DependencyInjection.locationUseCase.getAddressByLatLng(userLocation!.latitude, userLocation!.longitude),
+      crimeTypeId: selectedCrimeType.id,
+      userId: getCurrentUser()!.uid,
+      date: pickedDate,
+    );
 
     if (image != null) {
       final imageUrl = await DependencyInjection.userDataUseCase.saveCrimImage(image!, crime.id);
@@ -240,14 +235,19 @@ class _AddNewCrimBottomSheetState extends ConsumerState<_AddNewCrimBottomSheet> 
 
   ElevatedButton sendButton(BuildContext context) {
     return ElevatedButton.icon(
-      style: ElevatedButton.styleFrom(
-        backgroundColor: Theme.of(context).colorScheme.onPrimaryContainer
+      style: ElevatedButton.styleFrom(backgroundColor: Theme.of(context).colorScheme.secondaryContainer),
+      icon: Icon(
+        Icons.send,
+        color: Theme.of(context).colorScheme.onSecondaryContainer,
       ),
-      icon: Icon(Icons.send, color: Theme.of(context).colorScheme.onPrimary,),
       onPressed: isSubmiting ? null : submit,
-      label: Text(getStrings(context).send, style: Theme.of(context).textTheme.labelMedium!.copyWith(
-        color: Theme.of(context).colorScheme.onPrimary
-      ),),
+      label: Text(
+        getStrings(context).send,
+        style: Theme.of(context).textTheme.labelMedium!.copyWith(
+              color: Theme.of(context).colorScheme.onSecondaryContainer,
+              fontWeight: FontWeight.bold,
+            ),
+      ),
     );
   }
 

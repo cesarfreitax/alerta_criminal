@@ -11,4 +11,5 @@ class CustomColors {
   final black30 = const Color.fromARGB(255, 70, 70, 70);
   final blue = const Color.fromARGB(255, 31, 186, 214);
   final grey = const Color.fromARGB(255, 192, 192, 200);
+  final offWhite = const Color.fromARGB(255, 241, 241, 241);
 }

@@ -31,7 +31,7 @@ class CrimeDetailsWidget extends StatelessWidget {
       width: crime.imageUrl.isNotEmpty ? double.infinity : 250,
       height: 160,
       child: Card(
-        color: Theme.of(context).colorScheme.primary,
+        color: Theme.of(context).colorScheme.primaryContainer,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12.0),
         ),
@@ -115,7 +115,7 @@ class CrimeDetailsWidget extends StatelessWidget {
             style: Theme.of(context).textTheme.bodySmall!.copyWith(
                   fontSize: 8,
                   fontWeight: todayOrYesterday ? FontWeight.bold : FontWeight.normal,
-                color: Theme.of(context).colorScheme.onPrimary,
+                  color: Theme.of(context).colorScheme.onPrimaryContainer,
                 ),
           ),
           Text(
@@ -123,7 +123,7 @@ class CrimeDetailsWidget extends StatelessWidget {
             style: Theme.of(context).textTheme.bodySmall!.copyWith(
                   fontSize: 8,
                   fontWeight: FontWeight.w200,
-                  color: Theme.of(context).colorScheme.onPrimary,
+                  color: Theme.of(context).colorScheme.onPrimaryContainer,
                 ),
           ),
         ],
@@ -131,9 +131,9 @@ class CrimeDetailsWidget extends StatelessWidget {
     );
   }
 
-  TextButton seeMoreDetailsTextButton(BuildContext context) {
-    return TextButton(
-      onPressed: () {
+  GestureDetector seeMoreDetailsTextButton(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
         Navigator.of(context).push(
           MaterialPageRoute(
             builder: (ctx) => CrimeDetailsScreen(crime: crime),
@@ -142,9 +142,9 @@ class CrimeDetailsWidget extends StatelessWidget {
       },
       child: Text(
         getStrings(context).seeMoreDetails,
-        style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-              decoration: TextDecoration.underline,
-              color: Theme.of(context).colorScheme.onPrimary,
+        style: Theme.of(context).textTheme.bodySmall!.copyWith(
+              color: Theme.of(context).colorScheme.secondary,
+              fontWeight: FontWeight.bold,
             ),
       ),
     );
@@ -158,7 +158,7 @@ class CrimeDetailsWidget extends StatelessWidget {
         maxLines: 3,
         overflow: TextOverflow.ellipsis,
         style: Theme.of(context).textTheme.bodySmall!.copyWith(
-              color: Theme.of(context).colorScheme.onPrimary,
+              color: Theme.of(context).colorScheme.onPrimaryContainer,
             ),
       ),
     );
@@ -167,9 +167,10 @@ class CrimeDetailsWidget extends StatelessWidget {
   Text crimeTitle(BuildContext context) {
     return Text(
       crime.title,
-      style: Theme.of(context).textTheme.titleSmall!.copyWith(
-            color: Theme.of(context).colorScheme.onPrimary,
-          ),
+      style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+            color: Theme.of(context).colorScheme.onPrimaryContainer,
+            fontWeight: FontWeight.bold,
+      ),
       maxLines: 1,
       overflow: TextOverflow.ellipsis,
     );

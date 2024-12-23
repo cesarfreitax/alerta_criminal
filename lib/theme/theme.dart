@@ -4,30 +4,30 @@ import 'package:google_fonts/google_fonts.dart';
 
 final ColorScheme kColorScheme = ColorScheme.fromSeed(
   brightness: Brightness.light,
-  seedColor: CustomColors().black80,
-  primary: CustomColors().black80,
+  seedColor: Colors.white,
+  primary: Colors.black87,
   onPrimary: Colors.white,
-  secondary: Colors.grey,
-  onSecondary: Colors.black,
-  error: Colors.red,
-  onError: Colors.white,
   primaryContainer: Colors.white,
   onPrimaryContainer: Colors.black,
-  secondaryContainer: Colors.white,
-  onSecondaryContainer: Colors.black,
   surface: Colors.white,
   onSurface: Colors.black,
+  secondary: Colors.blueAccent,
+  onSecondary: Colors.white,
+  secondaryContainer: CustomColors().offWhite,
+  onSecondaryContainer: Colors.black,
+  error: Colors.redAccent,
+  onError: Colors.white,
 );
 
 final ColorScheme dColorScheme = ColorScheme.fromSeed(
   brightness: Brightness.dark,
   seedColor: Colors.white,
-  surface: CustomColors().black80,
-  onSurface: Colors.white,
   primary: Colors.white,
   onPrimary: Colors.black,
   primaryContainer: CustomColors().black70,
   onPrimaryContainer: Colors.white,
+  surface: CustomColors().black80,
+  onSurface: Colors.white,
   secondary: CustomColors().grey,
   onSecondary: Colors.black,
   secondaryContainer: CustomColors().black60,
@@ -51,4 +51,11 @@ ThemeData darkTheme = ThemeData.dark().copyWith(
 ThemeData lightTheme = ThemeData().copyWith(
   colorScheme: kColorScheme,
   textTheme: GoogleFonts.latoTextTheme(ThemeData.light().textTheme),
+  scaffoldBackgroundColor: Colors.white,
+  appBarTheme: AppBarTheme().copyWith(
+    backgroundColor: Colors.white
+  ),
+  bottomNavigationBarTheme: BottomNavigationBarThemeData().copyWith(
+    backgroundColor: Colors.white,
+  )
 );

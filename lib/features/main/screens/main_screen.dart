@@ -58,16 +58,25 @@ class _MainScreenState extends ConsumerState<MainScreen> {
 
   Text screenTitle() => Text(currentScreenIndex == 1 ? getStrings(context).notifications : getStrings(context).profile);
 
-  BottomNavigationBar bottomNavBar(BuildContext context) {
-    return BottomNavigationBar(
-      items: <BottomNavigationBarItem>[
-        homeNavItem(),
-        notificationsNavItem(),
-        profileNavItem(),
+  Widget bottomNavBar(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        const Divider(
+          height: 1,
+          color: Colors.black12,
+        ),
+        BottomNavigationBar(
+          items: <BottomNavigationBarItem>[
+            homeNavItem(),
+            notificationsNavItem(),
+            profileNavItem(),
+          ],
+          currentIndex: currentScreenIndex,
+          selectedItemColor: Theme.of(context).colorScheme.primary,
+          onTap: onItemTapped,
+        ),
       ],
-      currentIndex: currentScreenIndex,
-      selectedItemColor: Theme.of(context).colorScheme.primary,
-      onTap: onItemTapped,
     );
   }
 
