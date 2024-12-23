@@ -21,41 +21,41 @@ final ColorScheme kColorScheme = ColorScheme.fromSeed(
 
 final ColorScheme dColorScheme = ColorScheme.fromSeed(
   brightness: Brightness.dark,
-  seedColor: Colors.white,
+  seedColor: CustomColors().black70,
   primary: Colors.white,
-  onPrimary: Colors.black,
+  onPrimary: CustomColors().black70,
   primaryContainer: CustomColors().black70,
   onPrimaryContainer: Colors.white,
-  surface: CustomColors().black80,
+  surface: CustomColors().black70,
   onSurface: Colors.white,
-  secondary: CustomColors().grey,
-  onSecondary: Colors.black,
+  secondary: Colors.lightBlueAccent,
+  onSecondary: Colors.white,
   secondaryContainer: CustomColors().black60,
   onSecondaryContainer: Colors.white,
-  error: Colors.red,
+  error: Colors.redAccent,
   onError: Colors.white,
 );
 
 ThemeData darkTheme = ThemeData.dark().copyWith(
-  colorScheme: dColorScheme,
-  elevatedButtonTheme: ElevatedButtonThemeData(
-    style: ElevatedButton.styleFrom(
-      backgroundColor: dColorScheme.primary,
-      foregroundColor: dColorScheme.onPrimary,
+    colorScheme: dColorScheme,
+    elevatedButtonTheme: ElevatedButtonThemeData(
+      style: ElevatedButton.styleFrom(
+        backgroundColor: dColorScheme.primary,
+        foregroundColor: dColorScheme.onPrimary,
+      ),
     ),
-  ),
-  textTheme: GoogleFonts.robotoTextTheme(ThemeData.dark().textTheme),
-  scaffoldBackgroundColor: dColorScheme.primaryContainer
-);
+    textTheme: GoogleFonts.robotoTextTheme(ThemeData.dark().textTheme),
+    scaffoldBackgroundColor: dColorScheme.primaryContainer,
+    appBarTheme: AppBarTheme().copyWith(backgroundColor: dColorScheme.primaryContainer),
+    bottomNavigationBarTheme: BottomNavigationBarThemeData().copyWith(
+      backgroundColor: dColorScheme.primaryContainer,
+    ));
 
 ThemeData lightTheme = ThemeData().copyWith(
-  colorScheme: kColorScheme,
-  textTheme: GoogleFonts.latoTextTheme(ThemeData.light().textTheme),
-  scaffoldBackgroundColor: Colors.white,
-  appBarTheme: AppBarTheme().copyWith(
-    backgroundColor: Colors.white
-  ),
-  bottomNavigationBarTheme: BottomNavigationBarThemeData().copyWith(
-    backgroundColor: Colors.white,
-  )
-);
+    colorScheme: kColorScheme,
+    textTheme: GoogleFonts.latoTextTheme(ThemeData.light().textTheme),
+    scaffoldBackgroundColor: kColorScheme.primaryContainer,
+    appBarTheme: AppBarTheme().copyWith(backgroundColor: kColorScheme.primaryContainer),
+    bottomNavigationBarTheme: BottomNavigationBarThemeData().copyWith(
+      backgroundColor: kColorScheme.primaryContainer,
+    ));
