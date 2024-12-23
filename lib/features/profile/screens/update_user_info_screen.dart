@@ -2,15 +2,15 @@ import 'dart:async';
 
 import 'package:alerta_criminal/core/di/dependency_injection.dart';
 import 'package:alerta_criminal/core/dialog/loading_screen.dart';
-import 'package:alerta_criminal/core/utils/auth_util.dart';
-import 'package:alerta_criminal/core/utils/keyboard_util.dart';
-import 'package:alerta_criminal/core/utils/message_util.dart';
+import 'package:alerta_criminal/core/util/auth_util.dart';
+import 'package:alerta_criminal/core/util/keyboard_util.dart';
+import 'package:alerta_criminal/core/util/message_util.dart';
 import 'package:alerta_criminal/features/profile/enum/update_user_info_enum.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-import '../../../core/utils/string_util.dart';
+import '../../../core/util/string_util.dart';
 
 class _UpdateUserInfoScreenConfig {
   final String title;

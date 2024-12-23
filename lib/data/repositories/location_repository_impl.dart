@@ -6,7 +6,7 @@ import 'package:google_maps_flutter_platform_interface/src/types/location.dart';
 import 'package:http/http.dart' as http;
 import 'package:location/location.dart';
 
-import '../../core/utils/env.dart';
+import '../../core/util/env.dart';
 
 class LocationRepositoryImpl extends LocationRepository {
   final mapsApiKey = Env.mapsApiKey;

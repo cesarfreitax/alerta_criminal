@@ -1,4 +1,4 @@
-import 'package:alerta_criminal/core/utils/env.dart';
+import 'package:alerta_criminal/core/util/env.dart';
 
 final mapsApiKey = Env.mapsApiKey;
 const mapsApi = 'https://maps.googleapis.com/maps/api';

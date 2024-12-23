@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import '../../theme/custom_colors.dart';
-import '../utils/location_util.dart';
+import '../util/location_util.dart';
 
 class LocationPreviewWidget extends StatelessWidget {
   const LocationPreviewWidget({

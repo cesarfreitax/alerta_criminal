@@ -1,8 +1,8 @@
-import 'package:alerta_criminal/core/utils/auth_util.dart';
-import 'package:alerta_criminal/core/utils/formatter_util.dart';
-import 'package:alerta_criminal/core/utils/message_util.dart';
-import 'package:alerta_criminal/core/utils/navigator_util.dart';
-import 'package:alerta_criminal/core/utils/string_util.dart';
+import 'package:alerta_criminal/core/util/auth_util.dart';
+import 'package:alerta_criminal/core/util/formatter_util.dart';
+import 'package:alerta_criminal/core/util/message_util.dart';
+import 'package:alerta_criminal/core/util/navigator_util.dart';
+import 'package:alerta_criminal/core/util/string_util.dart';
 import 'package:alerta_criminal/data/models/user_model.dart';
 import 'package:alerta_criminal/features/main/screens/main_screen.dart';
 import 'package:alerta_criminal/features/profile/screens/update_user_info_screen.dart';

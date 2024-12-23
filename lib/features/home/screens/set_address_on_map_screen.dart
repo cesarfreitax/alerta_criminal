@@ -1,4 +1,4 @@
-import 'package:alerta_criminal/core/utils/string_util.dart';
+import 'package:alerta_criminal/core/util/string_util.dart';
 import 'package:alerta_criminal/data/models/address.dart';
 import 'package:alerta_criminal/features/home/widgets/map_widget.dart';
 import 'package:flutter/material.dart';

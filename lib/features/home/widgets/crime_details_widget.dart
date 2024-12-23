@@ -1,9 +1,8 @@
-import 'package:alerta_criminal/core/utils/date_util.dart';
-import 'package:alerta_criminal/core/utils/string_util.dart';
+import 'package:alerta_criminal/core/util/date_util.dart';
+import 'package:alerta_criminal/core/util/string_util.dart';
 import 'package:alerta_criminal/data/models/crime_model.dart';
 import 'package:alerta_criminal/features/crime_details/screens/crime_details_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:transparent_image/transparent_image.dart';
 
 class CrimeDetailsWidget extends StatelessWidget {
   const CrimeDetailsWidget({super.key, required this.crime});
@@ -39,7 +38,7 @@ class CrimeDetailsWidget extends StatelessWidget {
         child: Row(
           // spacing: 6,
           children: [
-            if (crime.imageUrl.isNotEmpty) crimeImage(),
+            if (crime.imageUrl.isNotEmpty) crimeImage(context),
             const SizedBox(
               width: 6,
             ),
@@ -50,7 +49,7 @@ class CrimeDetailsWidget extends StatelessWidget {
     );
   }
 
-  ClipRRect crimeImage() {
+  ClipRRect crimeImage(BuildContext context) {
     return ClipRRect(
       borderRadius: const BorderRadius.only(
         topLeft: Radius.circular(12.0),
@@ -59,20 +58,15 @@ class CrimeDetailsWidget extends StatelessWidget {
       child: SizedBox(
         height: double.infinity,
         width: 150,
-        child: Stack(
-          children: <Widget>[
-            const Center(child: CircularProgressIndicator()),
-            Center(
-              child: FadeInImage.memoryNetwork(
-                key: ValueKey(crime.id),
-                placeholder: kTransparentImage,
-                image: crime.imageUrl,
-                fit: BoxFit.cover,
-                width: double.infinity,
-                height: double.infinity,
-              ),
-            ),
-          ],
+        child: Center(
+          child: FadeInImage.assetNetwork(
+            key: ValueKey(crime.id),
+            placeholder: 'assets/app_icon.png',
+            image: crime.imageUrl,
+            fit: BoxFit.cover,
+            width: double.infinity,
+            height: double.infinity,
+          ),
         ),
       ),
     );

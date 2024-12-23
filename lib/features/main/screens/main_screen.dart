@@ -1,12 +1,12 @@
 import 'package:alerta_criminal/core/providers/user_notifier.dart';
-import 'package:alerta_criminal/core/utils/auth_util.dart';
+import 'package:alerta_criminal/core/util/auth_util.dart';
 import 'package:alerta_criminal/data/models/user_model.dart';
 import 'package:alerta_criminal/features/home/screens/home_screen.dart';
 import 'package:alerta_criminal/features/profile/screens/profile_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../core/utils/string_util.dart';
+import '../../../core/util/string_util.dart';
 import '../../notifications/screens/notifications_screen.dart';
 
 class MainScreen extends ConsumerStatefulWidget {

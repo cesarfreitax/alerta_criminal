@@ -12,4 +12,5 @@ class CustomColors {
   final blue = const Color.fromARGB(255, 31, 186, 214);
   final grey = const Color.fromARGB(255, 192, 192, 200);
   final offWhite = const Color.fromARGB(255, 241, 241, 241);
+  final transparent = const Color.fromARGB(92, 241, 241, 241);
 }

@@ -53,7 +53,7 @@ ThemeData darkTheme = ThemeData.dark().copyWith(
 
 ThemeData lightTheme = ThemeData().copyWith(
     colorScheme: kColorScheme,
-    textTheme: GoogleFonts.latoTextTheme(ThemeData.light().textTheme),
+    textTheme: GoogleFonts.robotoTextTheme(ThemeData.light().textTheme),
     scaffoldBackgroundColor: kColorScheme.primaryContainer,
     appBarTheme: AppBarTheme().copyWith(backgroundColor: kColorScheme.primaryContainer),
     bottomNavigationBarTheme: BottomNavigationBarThemeData().copyWith(
