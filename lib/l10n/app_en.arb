@@ -232,5 +232,41 @@
   "loginWarningCreate": "Create account",
   "@loginWarningCreate": {
     "description": "Button to do create your account"
+  },
+  "diffTimeMinuteSuffix": "{time}m",
+  "@diffTimeMinuteSuffix": {
+    "description": "How much time does has this comment"
+  },
+  "diffTimeHourSuffix": "{time}h",
+  "@diffTimeHourSuffix": {
+    "description": "How much time does has this comment"
+  },
+  "diffTimeDaySuffix": "{time}d",
+  "@diffTimeDaySuffix": {
+    "description": "How much time does has this comment"
+  },
+  "diffTimeWeekSuffix": "{time}w",
+  "@diffTimeWeekSuffix": {
+    "description": "How much time does has this comment"
+  },
+  "diffTimeMonthSuffix": "{time}mo",
+  "@diffTimeMonthSuffix": {
+    "description": "How much time does has this comment"
+  },
+  "diffTimeYearSuffix": "{time}y",
+  "@diffTimeYearSuffix": {
+    "description": "How much time does has this comment"
+  },
+  "comment": "Comment",
+  "@comment": {
+    "description": "Space to comment"
+  },
+  "allComments": "See all comments",
+  "@allComments": {
+    "description": "Click to check all user comments for this crime"
+  },
+  "firstOnCommenting": "Comment first",
+  "@firstOnCommenting": {
+    "description": "Be the first on commenting this crime"
   }
 }

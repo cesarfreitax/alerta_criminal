@@ -1,5 +1,6 @@
 import 'package:alerta_criminal/core/util/string_util.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 Future<DateTime?> openDatePicker(BuildContext context) async {
   final currentDate = DateTime.now();
@@ -20,26 +21,28 @@ Future<TimeOfDay?> openTimePicker(BuildContext context) async {
   return pickedTime;
 }
 
-String formatDate(DateTime date) => date.toString().split(" ").first;
-
-String formatDateToBrPattern(DateTime date) => "${date.day}/${date.month}/${date.year}";
-
 String formatTime(TimeOfDay time) => "${time.hour}:${time.minute < 10 ? "0" : ""}${time.minute}";
 
-String formatDayText(DateTime date, BuildContext context) {
-  final today = isCurrentDay(date);
-  final yesterday = isYesterday(date);
-  return today ? getStrings(context).today : yesterday ? getStrings(context).yesterday : formatDate(date);
+extension DateParsing on DateTime {
+  String formatToDefaultPattern(BuildContext context) => DateFormat("dd/MM/yyyy").format(this);
+
+  String getDifferenceFromNow(BuildContext context) {
+    final now = DateTime.now();
+    final difference = now.difference(this);
+
+    if (difference.inMinutes < 60) {
+      return getStrings(context).diffTimeMinuteSuffix(difference.inMinutes);
+    } else if (difference.inHours < 24) {
+      return getStrings(context).diffTimeHourSuffix(difference.inHours);
+    } else if (difference.inDays < 7) {
+      return getStrings(context).diffTimeDaySuffix(difference.inDays);
+    } else if (difference.inDays < 30) {
+      return getStrings(context).diffTimeWeekSuffix((difference.inDays / 7).floor());
+    } else if (difference.inDays < 365) {
+      return getStrings(context).diffTimeMonthSuffix((difference.inDays / 30).floor());
+    } else {
+      return getStrings(context).diffTimeYearSuffix((difference.inDays / 365).floor());
+    }
+  }
 }
-
-bool isCurrentDay(DateTime date) => formatDateToBrPattern(date) == formatDateToBrPattern(DateTime.now());
-
-bool isYesterday(DateTime date) {
-  final currentDate = DateTime.now();
-  final yesterdayDate = DateTime(currentDate.year, currentDate.month, currentDate.day - 1);
-  final isYesterday = formatDateToBrPattern(date) == formatDateToBrPattern(yesterdayDate);
-  return isYesterday;
-}
-
-bool isTodayOrYesterday(String formattedDate, BuildContext context) => formattedDate == getStrings(context).today || formattedDate == getStrings(context).yesterday;
 

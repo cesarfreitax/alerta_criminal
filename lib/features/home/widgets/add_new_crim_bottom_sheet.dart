@@ -27,9 +27,9 @@ class AddNewCrimBottomSheet {
     return showModalBottomSheet(
       context: ctx,
       builder: (ctx) {
-        return SizedBox(
-          height: 600,
-          width: double.infinity,
+        return FractionallySizedBox(
+          heightFactor: 0.8,
+          widthFactor: 1.0,
           child: _AddNewCrimBottomSheet(
             addNewCrim: addNewCrim,
             resetLocation: resetLocation,
@@ -150,7 +150,7 @@ class _AddNewCrimBottomSheetState extends ConsumerState<_AddNewCrimBottomSheet> 
   void setDateAndTime() {
     currentDate = DateTime.now();
     currentTime = TimeOfDay(hour: currentDate.hour, minute: currentDate.minute);
-    dateController.text = formatDate(currentDate);
+    dateController.text = currentDate.formatToDefaultPattern(context);
     timeController.text = formatTime(currentTime);
   }
 
@@ -183,7 +183,7 @@ class _AddNewCrimBottomSheetState extends ConsumerState<_AddNewCrimBottomSheet> 
     currentDate = pickedDate;
 
     setState(() {
-      dateController.text = formatDate(pickedDate);
+      dateController.text = pickedDate.formatToDefaultPattern(context);
     });
   }
 
@@ -211,7 +211,12 @@ class _AddNewCrimBottomSheetState extends ConsumerState<_AddNewCrimBottomSheet> 
 
     return SingleChildScrollView(
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: EdgeInsets.only(
+          left: 16,
+          right: 16,
+          top: 16,
+          bottom: MediaQuery.of(context).viewInsets.bottom,
+        ),
         child: Column(
           children: [
             photoPreviewWidget(),
@@ -258,7 +263,7 @@ class _AddNewCrimBottomSheetState extends ConsumerState<_AddNewCrimBottomSheet> 
           height: 120,
           width: double.infinity,
           decoration: BoxDecoration(
-              border: Border.all(width: 2, color: Theme.of(context).colorScheme.primary.withOpacity(0.2))),
+              border: Border.all(width: 2, color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.2))),
           child: Image.network(
             getLocationImagePreview(
               userLocation!.latitude,
@@ -395,13 +400,14 @@ class _AddNewCrimBottomSheetState extends ConsumerState<_AddNewCrimBottomSheet> 
         return null;
       },
       decoration: InputDecoration(
-          border: const OutlineInputBorder(
-            borderRadius: BorderRadius.all(
-              Radius.circular(16),
-            ),
+        border: const OutlineInputBorder(
+          borderRadius: BorderRadius.all(
+            Radius.circular(16),
           ),
-          labelText: getStrings(context).description,
-          alignLabelWithHint: true),
+        ),
+        labelText: getStrings(context).description,
+        alignLabelWithHint: true,
+      ),
     );
   }
 

@@ -11,21 +11,6 @@ class CrimeDetailsWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final formattedDayText = formatDayText(
-      crime.date,
-      context,
-    );
-    final todayOrYesterday = isTodayOrYesterday(formattedDayText, context);
-    final dateDateTime = crime.date;
-    final hour = getStrings(context).hourSuffix(
-      formatTime(
-        TimeOfDay(
-          hour: dateDateTime.hour,
-          minute: dateDateTime.minute,
-        ),
-      ),
-    );
-
     return SizedBox(
       width: crime.imageUrl.isNotEmpty ? double.infinity : 250,
       height: 160,
@@ -42,7 +27,7 @@ class CrimeDetailsWidget extends StatelessWidget {
             const SizedBox(
               width: 6,
             ),
-            crimeDetails(context, formattedDayText, todayOrYesterday, hour),
+            crimeDetails(context),
           ],
         ),
       ),
@@ -59,10 +44,18 @@ class CrimeDetailsWidget extends StatelessWidget {
         height: double.infinity,
         width: 150,
         child: Center(
-          child: FadeInImage.assetNetwork(
+          child: Image.network(
+            crime.imageUrl,
+            loadingBuilder: (context, child, loading) {
+              if (loading == null) return child;
+              return CircularProgressIndicator(
+                color: Theme.of(context).colorScheme.secondary,
+                value: loading.expectedTotalBytes != null
+                    ? loading.cumulativeBytesLoaded / loading.expectedTotalBytes!
+                    : null,
+              );
+            },
             key: ValueKey(crime.id),
-            placeholder: 'assets/app_icon.png',
-            image: crime.imageUrl,
             fit: BoxFit.cover,
             width: double.infinity,
             height: double.infinity,
@@ -72,7 +65,7 @@ class CrimeDetailsWidget extends StatelessWidget {
     );
   }
 
-  Expanded crimeDetails(BuildContext context, String formattedDayText, bool todayOrYesterday, String hour) {
+  Expanded crimeDetails(BuildContext context) {
     return Expanded(
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
@@ -91,36 +84,23 @@ class CrimeDetailsWidget extends StatelessWidget {
               ],
             ),
             seeMoreDetailsTextButton(context),
-            crimeDate(formattedDayText, context, todayOrYesterday, hour),
+            crimeDate(context),
           ],
         ),
       ),
     );
   }
 
-  Padding crimeDate(String formattedDayText, BuildContext context, bool todayOrYesterday, String hour) {
+  Padding crimeDate(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(right: 6),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          Text(
-            formattedDayText,
-            style: Theme.of(context).textTheme.bodySmall!.copyWith(
-                  fontSize: 8,
-                  fontWeight: todayOrYesterday ? FontWeight.bold : FontWeight.normal,
-                  color: Theme.of(context).colorScheme.onPrimaryContainer,
-                ),
-          ),
-          Text(
-            hour,
-            style: Theme.of(context).textTheme.bodySmall!.copyWith(
-                  fontSize: 8,
-                  fontWeight: FontWeight.w200,
-                  color: Theme.of(context).colorScheme.onPrimaryContainer,
-                ),
-          ),
-        ],
+      child: Text(
+        crime.date.getDifferenceFromNow(context),
+        style: Theme.of(context).textTheme.bodySmall!.copyWith(
+              fontSize: 8,
+              fontWeight: FontWeight.w200,
+              color: Theme.of(context).colorScheme.onPrimaryContainer,
+            ),
       ),
     );
   }
@@ -164,7 +144,7 @@ class CrimeDetailsWidget extends StatelessWidget {
       style: Theme.of(context).textTheme.bodyMedium!.copyWith(
             color: Theme.of(context).colorScheme.onPrimaryContainer,
             fontWeight: FontWeight.bold,
-      ),
+          ),
       maxLines: 1,
       overflow: TextOverflow.ellipsis,
     );
