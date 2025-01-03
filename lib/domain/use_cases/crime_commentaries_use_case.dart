@@ -13,5 +13,5 @@ class CrimeCommentariesUseCase {
           String crimeId, CrimeCommentaryModel newComment) async =>
       await repository.createOrUpdateCrimeCommentaries(crimeId, newComment);
 
-  Future<CrimeCommentariesModel?> getCommentaries(String crimeId) async => repository.getCommentaries(crimeId);
+  Future<CrimeCommentariesModel?> getCrimeCommentaries(String crimeId) async => repository.getCrimeCommentaries(crimeId);
 }

@@ -63,5 +63,6 @@
   "diffTimeYearSuffix": "{time}a",
   "comment": "Comentar",
   "allComments": "Ver todos os comentários",
-  "firstOnCommenting": "Deixar um comentário"
+  "firstOnCommenting": "Deixar um comentário",
+  "noCommentsYet": "Ninguém comentou ainda. Seja o primeiro."
 }

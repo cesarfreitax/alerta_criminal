@@ -14,9 +14,7 @@ class CrimeCommentariesRepositoryImpl extends CrimeCommentariesRepository {
   Future<CrimeCommentariesModel?> createOrUpdateCrimeCommentaries(String crimeId, CrimeCommentaryModel newComment) async {
 
     try {
-      final collectionRef = getCollectionRef();
-
-      final querySnapshot = await collectionRef.where(Constants.crimeCommentariesCrimeId, isEqualTo: crimeId).get();
+      final querySnapshot = await getQuerySnapshot(crimeId);
 
       DocumentReference? docRef;
 
@@ -29,15 +27,13 @@ class CrimeCommentariesRepositoryImpl extends CrimeCommentariesRepository {
         });
       } else {
         // Create new document and add the commentary in case of inexistent document
-        docRef = collectionRef.doc();
+        docRef = getCollectionRef().doc();
 
         final newCrimeCommentaries = CrimeCommentariesModel(
           docRef.id,
           crimeId: crimeId,
           comments: [newComment],
         );
-
-        print(newCrimeCommentaries.toJson());
 
         await docRef.set(newCrimeCommentaries.toJson());
       }
@@ -53,11 +49,20 @@ class CrimeCommentariesRepositoryImpl extends CrimeCommentariesRepository {
   }
 
   @override
-  Future<CrimeCommentariesModel?> getCommentaries(String crimeId) async {
-    final querySnapshot = await getQuerySnapshot(crimeId);
-    final docRef = querySnapshot.docs.first.reference;
-    final doc = await docRef.get();
-    return CrimeCommentariesModel.fromJson(doc.data() as Map<String, dynamic>);
+  Future<CrimeCommentariesModel?> getCrimeCommentaries(String crimeId) async {
+    try {
+      final querySnapshot = await getQuerySnapshot(crimeId);
+
+      if (querySnapshot.docs.isEmpty) {
+        return null;
+      }
+
+      final docData = querySnapshot.docs.first.data();
+      return CrimeCommentariesModel.fromJson(docData);
+    } catch (e) {
+      printDebug("Error fetching crime commentaries': ${e.toString()}");
+      return null;
+    }
   }
 
   CollectionReference<Map<String, dynamic>> getCollectionRef() => firebaseFirestoreInstance.collection(Constants.crimeCommentariesCollectionName);

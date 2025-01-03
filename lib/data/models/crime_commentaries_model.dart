@@ -6,7 +6,7 @@ import 'crime_commentary_model.dart';
 part 'crime_commentaries_model.g.dart';
 
 @CustomTimestampConverter()
-@JsonSerializable()
+@JsonSerializable(explicitToJson: true)
 class CrimeCommentariesModel {
   CrimeCommentariesModel(
     this.id, {

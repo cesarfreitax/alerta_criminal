@@ -2,7 +2,6 @@ import 'package:alerta_criminal/core/di/dependency_injection.dart';
 import 'package:alerta_criminal/core/util/auth_util.dart';
 import 'package:alerta_criminal/core/util/keyboard_util.dart';
 import 'package:alerta_criminal/core/util/string_util.dart';
-import 'package:alerta_criminal/data/models/crime_commentaries_model.dart';
 import 'package:alerta_criminal/data/models/crime_commentary_model.dart';
 import 'package:alerta_criminal/features/crime_details/widgets/user_comment_widget.dart';
 import 'package:flutter/material.dart';
@@ -11,7 +10,7 @@ import 'package:uuid/uuid.dart';
 class CommentsBottomSheet {
   Future<dynamic> show(
     BuildContext context,
-    CrimeCommentariesModel? commentaries,
+    List<CrimeCommentaryModel> comments,
     String crimeId,
     void Function(CrimeCommentaryModel) onNewComment,
   ) async {
@@ -22,7 +21,7 @@ class CommentsBottomSheet {
           heightFactor: 0.8,
           widthFactor: 1.0,
           child: _CommentsBottomSheetWidget(
-            commentaries: commentaries,
+            comments: comments,
             crimeId: crimeId,
             onNewComment: onNewComment,
           ),
@@ -34,15 +33,15 @@ class CommentsBottomSheet {
 }
 
 class _CommentsBottomSheetWidget extends StatefulWidget {
-  _CommentsBottomSheetWidget({
-    required this.commentaries,
+  const _CommentsBottomSheetWidget({
+    required this.comments,
     required this.crimeId,
     required this.onNewComment,
   });
 
-  CrimeCommentariesModel? commentaries;
+  final List<CrimeCommentaryModel> comments;
   final String crimeId;
-  void Function(CrimeCommentaryModel) onNewComment;
+  final void Function(CrimeCommentaryModel) onNewComment;
 
   @override
   State<_CommentsBottomSheetWidget> createState() {
@@ -52,16 +51,6 @@ class _CommentsBottomSheetWidget extends StatefulWidget {
 
 class _CommentsBottomSheetWidgetState extends State<_CommentsBottomSheetWidget> {
   final TextEditingController controller = TextEditingController();
-
-  List<CrimeCommentaryModel> comments = [];
-
-  @override
-  void initState() {
-    if (widget.commentaries != null) {
-      comments = widget.commentaries!.comments;
-    }
-    super.initState();
-  }
 
   @override
   void dispose() {
@@ -89,12 +78,14 @@ class _CommentsBottomSheetWidgetState extends State<_CommentsBottomSheetWidget> 
               color: Theme.of(context).colorScheme.primary,
             ),
           ),
+          if (widget.comments.isEmpty)
+            Text(getStrings(context).noCommentsYet),
           Flexible(
             flex: 2,
             child: ListView.builder(
-                itemCount: comments.length,
+                itemCount: widget.comments.length,
                 itemBuilder: (ctx, index) {
-                  final comment = comments[index];
+                  final comment = widget.comments[index];
                   return UserCommentWidget(comment: comment);
                 }),
           ),
@@ -114,7 +105,7 @@ class _CommentsBottomSheetWidgetState extends State<_CommentsBottomSheetWidget> 
 
               final newComment = CrimeCommentaryModel(
                 id: Uuid().v1(),
-                likes: [],
+                likes: [""],
                 text: text,
                 userId: user.uid,
                 cachedUsername: user.displayName!,
@@ -123,7 +114,6 @@ class _CommentsBottomSheetWidgetState extends State<_CommentsBottomSheetWidget> 
 
               setState(() {
                 controller.clear();
-                comments.add(newComment);
               });
 
               if (!context.mounted) {

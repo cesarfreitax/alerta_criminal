@@ -268,5 +268,9 @@
   "firstOnCommenting": "Comment first",
   "@firstOnCommenting": {
     "description": "Be the first on commenting this crime"
+  },
+  "noCommentsYet": "No comments yet. Be the first one.",
+  "@noCommentsYet": {
+    "description": "No comments yet. Be the first one on commenting this crime."
   }
 }

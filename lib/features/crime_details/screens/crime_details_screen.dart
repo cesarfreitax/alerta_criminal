@@ -36,7 +36,7 @@ class _CrimeDetailsScreenState extends State<CrimeDetailsScreen> {
   }
 
   getCommentaries(String crimeId) async {
-    final c = await DependencyInjection.crimeCommentariesUseCase.getCommentaries(crimeId);
+    final c = await DependencyInjection.crimeCommentariesUseCase.getCrimeCommentaries(crimeId);
     setState(() {
       commentaries = c;
       inMemoryComments.addAll(c?.comments ?? []);
@@ -45,7 +45,9 @@ class _CrimeDetailsScreenState extends State<CrimeDetailsScreen> {
   }
 
   void onNewComment(CrimeCommentaryModel newComment) {
-    inMemoryComments.add(newComment);
+    setState(() {
+      inMemoryComments.add(newComment);
+    });
   }
 
   Widget crimeInfoWidget(BuildContext context) {
@@ -150,7 +152,7 @@ class _CrimeDetailsScreenState extends State<CrimeDetailsScreen> {
                   ),
                   GestureDetector(
                     onTap: () {
-                      CommentsBottomSheet().show(context, commentaries, widget.crime.id, onNewComment);
+                      CommentsBottomSheet().show(context, inMemoryComments, widget.crime.id, onNewComment);
                     },
                     child: Text(
                       inMemoryComments.isNotEmpty ? getStrings(context).allComments : getStrings(context).firstOnCommenting,
