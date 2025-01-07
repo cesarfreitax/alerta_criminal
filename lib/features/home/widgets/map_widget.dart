@@ -113,6 +113,10 @@ class _MapWidgetState extends ConsumerState<MapWidget> {
         zoom: widget.isSelecting ? 18.0 : 14.0,
       ),
       zoomControlsEnabled: false,
+      mapToolbarEnabled: true,
+      compassEnabled: true,
+      padding: EdgeInsets.only(bottom: 64.0, right: 8),
+      mapType: MapType.normal,
       markers: markers,
       onTap: widget.isSelecting && !isFetchingLocation
           ? (location) async {

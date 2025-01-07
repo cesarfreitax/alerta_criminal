@@ -124,7 +124,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with WidgetsBindingObse
     );
   }
 
-  Align crimeDetailsCard() {
+  Widget crimeDetailsCard() {
     return Align(
       alignment: Alignment.topCenter,
       child: CrimeDetailsWidget(
