@@ -38,7 +38,6 @@ dependencies:
   transparent_image: ^2.0.1
   font_awesome_flutter: ^10.8.0
 
-  flutter_native_splash: any
   google_maps_flutter_platform_interface: any
   firebase_app_check: ^0.3.1+7
 dev_dependencies:
@@ -54,14 +53,15 @@ dev_dependencies:
   custom_lint: ^0.7.0
   riverpod_lint: ^2.6.3
   flutter_launcher_icons: "^0.13.1"
+  flutter_native_splash: ^2.4.4
 
-flutter_native_splash:
-  color: "#161629"
+#flutter_native_splash:
+#  color: "#161629"
 #  image: assets/app_icon.png
-
-  android_12:
-#    image: assets/alerta-criminal-splash-image.png
-    color: "#161629"
+#
+#  android_12:
+#    image: assets/app_icon.png
+#    color: "#161629"
 
 flutter_launcher_icons:
   android: true

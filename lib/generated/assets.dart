@@ -16,5 +16,6 @@ class Assets {
   static const String assetsIconCrimeBlack90 = 'assets/icon_crime_black90.png';
   static const String assetsLikeFilled = 'assets/like_filled.png';
   static const String assetsLikeOutlined = 'assets/like_outlined.png';
+  static const String assetsSplashAndroid12 = 'assets/splash_android12.png';
 
 }
