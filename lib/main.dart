@@ -50,18 +50,10 @@ class _MyAppState extends ConsumerState<MyApp> {
     await Future.wait([locationFuture, crimesFuture]);
 
     FlutterNativeSplash.remove();
-
-    setState(() {
-      isLoading = false;
-    });
   }
 
   @override
   Widget build(BuildContext context) {
-    if (isLoading) {
-      return const SizedBox();
-    }
-
     return MaterialApp(
       title: 'Alerta Criminal',
       theme: lightTheme,

@@ -1,8 +1,7 @@
 import 'package:alerta_criminal/core/di/dependency_injection.dart';
 import 'package:alerta_criminal/core/providers/location_notifier.dart';
-import 'package:alerta_criminal/core/providers/user_notifier.dart';
+import 'package:alerta_criminal/core/util/auth_util.dart';
 import 'package:alerta_criminal/core/widgets/login_warning_widget.dart';
-import 'package:alerta_criminal/data/models/user_model.dart';
 import 'package:alerta_criminal/features/home/widgets/crime_details_widget.dart';
 import 'package:alerta_criminal/features/home/widgets/map_widget.dart';
 import 'package:flutter/material.dart';
@@ -22,13 +21,32 @@ class HomeScreen extends ConsumerStatefulWidget {
   }
 }
 
-class _HomeScreenState extends ConsumerState<HomeScreen> {
+class _HomeScreenState extends ConsumerState<HomeScreen> with WidgetsBindingObserver {
   LatLng? userLocation;
   LatLng? userPreviousLocation;
   var isShowingCrimeDetails = false;
-  var selectedCrimeId = "";
+  String? selectedCrimeId;
   List<CrimeModel> crims = [];
-  UserModel? user;
+
+  @override
+  void initState() {
+    WidgetsBinding.instance.addObserver(this);
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    if (state == AppLifecycleState.paused) {
+      clearCrimeDetails();
+    }
+  }
 
   Set<Marker> getMarkers(List<CrimeModel> crimes) {
     return crimes
@@ -37,25 +55,22 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               markerId: MarkerId(crime.id),
               position: LatLng(crime.lat, crime.lng),
               onTap: () {
-                toggleCrimeDetails(crime.id, true);
+                toggleCrimeDetails(crime.id);
               }),
         )
         .toSet();
   }
 
-  void toggleCrimeDetails(String? id, bool show) {
+  void toggleCrimeDetails(String? id) {
     setState(() {
-      isShowingCrimeDetails = show;
+      selectedCrimeId = id;
     });
-
-    if (show) {
-      selectedCrimeId = id!;
-    }
   }
+
+  void clearCrimeDetails() => setState(() => selectedCrimeId = null);
 
   void setProviders() {
     crims = ref.watch(crimsProvider);
-    user = ref.watch(userProvider);
     userLocation = ref.watch(locationProvider);
   }
 
@@ -69,10 +84,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       child: Stack(
         children: [
           mapWidget(),
-          if (user != null) fabWidget(),
-          if (isShowingCrimeDetails)
+          if (getCurrentUser() != null) fabWidget(),
+          if (selectedCrimeId != null)
             crimeDetailsCard(),
-          if (user == null) loginWarningWidget()
+          if (getCurrentUser() == null) loginWarningWidget()
         ],
       ),
     );
@@ -97,6 +112,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       right: 16,
       child: FloatingActionButton(
         onPressed: () {
+          clearCrimeDetails();
           AddNewCrimBottomSheet().show(
             context,
             DependencyInjection.crimUseCase.add,
@@ -113,7 +129,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       alignment: Alignment.topCenter,
       child: CrimeDetailsWidget(
         crime:
-        ref.read(crimsProvider.notifier).getCrim(selectedCrimeId),
+        ref.read(crimsProvider.notifier).getCrim(selectedCrimeId!),
       ),
     );
   }

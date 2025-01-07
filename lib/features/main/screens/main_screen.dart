@@ -18,25 +18,28 @@ class MainScreen extends ConsumerStatefulWidget {
   }
 }
 
-class _MainScreenState extends ConsumerState<MainScreen> {
+class _MainScreenState extends ConsumerState<MainScreen> with WidgetsBindingObserver {
   UserModel? user;
+
   var currentScreenIndex = 0;
+  late final void Function() onChangeTab;
+
   static const List<Widget> screenOptions = <Widget>[
     HomeScreen(),
     NotificationsScreen(),
     ProfileScreen(),
   ];
 
-  void onItemTapped(int index) => setState(() => currentScreenIndex = index);
-
-  bool isProfileScreen() => currentScreenIndex == 2;
+  void onTabTapped(int index) {
+    setState(() => currentScreenIndex = index);
+  }
 
   @override
   Widget build(BuildContext context) {
-    user = ref.watch(userProvider);
-    if (user != null) {}
+    getUser();
+    final isHomeScreen = currentScreenIndex == 0;
     return Scaffold(
-      appBar: currentScreenIndex == 0 ? null : appBar(),
+      appBar: isHomeScreen ? null : appBar(),
       body: IndexedStack(
         index: currentScreenIndex,
         children: screenOptions,
@@ -45,11 +48,16 @@ class _MainScreenState extends ConsumerState<MainScreen> {
     );
   }
 
+  void getUser() {
+    user = ref.watch(userProvider);
+  }
+
   AppBar appBar() {
+    final isProfileScreen = currentScreenIndex == 2;
     return AppBar(
       title: screenTitle(),
       actions: [
-        if (isProfileScreen() && user != null) logoutBtn(),
+        if (isProfileScreen && user != null) logoutBtn(),
       ],
     );
   }
@@ -74,7 +82,7 @@ class _MainScreenState extends ConsumerState<MainScreen> {
           ],
           currentIndex: currentScreenIndex,
           selectedItemColor: Theme.of(context).colorScheme.primary,
-          onTap: onItemTapped,
+          onTap: onTabTapped,
         ),
       ],
     );
