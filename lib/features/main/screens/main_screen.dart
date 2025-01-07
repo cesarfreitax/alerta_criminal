@@ -1,12 +1,12 @@
 import 'package:alerta_criminal/core/providers/user_notifier.dart';
-import 'package:alerta_criminal/core/utils/auth_util.dart';
+import 'package:alerta_criminal/core/util/auth_util.dart';
 import 'package:alerta_criminal/data/models/user_model.dart';
 import 'package:alerta_criminal/features/home/screens/home_screen.dart';
 import 'package:alerta_criminal/features/profile/screens/profile_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../core/utils/string_util.dart';
+import '../../../core/util/string_util.dart';
 import '../../notifications/screens/notifications_screen.dart';
 
 class MainScreen extends ConsumerStatefulWidget {
@@ -58,16 +58,25 @@ class _MainScreenState extends ConsumerState<MainScreen> {
 
   Text screenTitle() => Text(currentScreenIndex == 1 ? getStrings(context).notifications : getStrings(context).profile);
 
-  BottomNavigationBar bottomNavBar(BuildContext context) {
-    return BottomNavigationBar(
-      items: <BottomNavigationBarItem>[
-        homeNavItem(),
-        notificationsNavItem(),
-        profileNavItem(),
+  Widget bottomNavBar(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        const Divider(
+          height: 1,
+          color: Colors.black12,
+        ),
+        BottomNavigationBar(
+          items: <BottomNavigationBarItem>[
+            homeNavItem(),
+            notificationsNavItem(),
+            profileNavItem(),
+          ],
+          currentIndex: currentScreenIndex,
+          selectedItemColor: Theme.of(context).colorScheme.primary,
+          onTap: onItemTapped,
+        ),
       ],
-      currentIndex: currentScreenIndex,
-      selectedItemColor: Theme.of(context).colorScheme.primary,
-      onTap: onItemTapped,
     );
   }
 

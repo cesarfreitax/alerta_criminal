@@ -1,9 +1,8 @@
-import 'package:alerta_criminal/core/utils/date_util.dart';
-import 'package:alerta_criminal/core/utils/string_util.dart';
+import 'package:alerta_criminal/core/util/date_util.dart';
+import 'package:alerta_criminal/core/util/string_util.dart';
 import 'package:alerta_criminal/data/models/crime_model.dart';
 import 'package:alerta_criminal/features/crime_details/screens/crime_details_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:transparent_image/transparent_image.dart';
 
 class CrimeDetailsWidget extends StatelessWidget {
   const CrimeDetailsWidget({super.key, required this.crime});
@@ -12,26 +11,11 @@ class CrimeDetailsWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final formattedDayText = formatDayText(
-      crime.date,
-      context,
-    );
-    final todayOrYesterday = isTodayOrYesterday(formattedDayText, context);
-    final dateDateTime = crime.date;
-    final hour = getStrings(context).hourSuffix(
-      formatTime(
-        TimeOfDay(
-          hour: dateDateTime.hour,
-          minute: dateDateTime.minute,
-        ),
-      ),
-    );
-
     return SizedBox(
       width: crime.imageUrl.isNotEmpty ? double.infinity : 250,
       height: 160,
       child: Card(
-        color: Theme.of(context).colorScheme.primary,
+        color: Theme.of(context).colorScheme.primaryContainer,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12.0),
         ),
@@ -39,18 +23,18 @@ class CrimeDetailsWidget extends StatelessWidget {
         child: Row(
           // spacing: 6,
           children: [
-            if (crime.imageUrl.isNotEmpty) crimeImage(),
+            if (crime.imageUrl.isNotEmpty) crimeImage(context),
             const SizedBox(
               width: 6,
             ),
-            crimeDetails(context, formattedDayText, todayOrYesterday, hour),
+            crimeDetails(context),
           ],
         ),
       ),
     );
   }
 
-  ClipRRect crimeImage() {
+  ClipRRect crimeImage(BuildContext context) {
     return ClipRRect(
       borderRadius: const BorderRadius.only(
         topLeft: Radius.circular(12.0),
@@ -59,26 +43,29 @@ class CrimeDetailsWidget extends StatelessWidget {
       child: SizedBox(
         height: double.infinity,
         width: 150,
-        child: Stack(
-          children: <Widget>[
-            const Center(child: CircularProgressIndicator()),
-            Center(
-              child: FadeInImage.memoryNetwork(
-                key: ValueKey(crime.id),
-                placeholder: kTransparentImage,
-                image: crime.imageUrl,
-                fit: BoxFit.cover,
-                width: double.infinity,
-                height: double.infinity,
-              ),
-            ),
-          ],
+        child: Center(
+          child: Image.network(
+            crime.imageUrl,
+            loadingBuilder: (context, child, loading) {
+              if (loading == null) return child;
+              return CircularProgressIndicator(
+                color: Theme.of(context).colorScheme.secondary,
+                value: loading.expectedTotalBytes != null
+                    ? loading.cumulativeBytesLoaded / loading.expectedTotalBytes!
+                    : null,
+              );
+            },
+            key: ValueKey(crime.id),
+            fit: BoxFit.cover,
+            width: double.infinity,
+            height: double.infinity,
+          ),
         ),
       ),
     );
   }
 
-  Expanded crimeDetails(BuildContext context, String formattedDayText, bool todayOrYesterday, String hour) {
+  Expanded crimeDetails(BuildContext context) {
     return Expanded(
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
@@ -97,43 +84,30 @@ class CrimeDetailsWidget extends StatelessWidget {
               ],
             ),
             seeMoreDetailsTextButton(context),
-            crimeDate(formattedDayText, context, todayOrYesterday, hour),
+            crimeDate(context),
           ],
         ),
       ),
     );
   }
 
-  Padding crimeDate(String formattedDayText, BuildContext context, bool todayOrYesterday, String hour) {
+  Padding crimeDate(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(right: 6),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          Text(
-            formattedDayText,
-            style: Theme.of(context).textTheme.bodySmall!.copyWith(
-                  fontSize: 8,
-                  fontWeight: todayOrYesterday ? FontWeight.bold : FontWeight.normal,
-                color: Theme.of(context).colorScheme.onPrimary,
-                ),
-          ),
-          Text(
-            hour,
-            style: Theme.of(context).textTheme.bodySmall!.copyWith(
-                  fontSize: 8,
-                  fontWeight: FontWeight.w200,
-                  color: Theme.of(context).colorScheme.onPrimary,
-                ),
-          ),
-        ],
+      child: Text(
+        crime.date.getDifferenceFromNow(context),
+        style: Theme.of(context).textTheme.bodySmall!.copyWith(
+              fontSize: 8,
+              fontWeight: FontWeight.w200,
+              color: Theme.of(context).colorScheme.onPrimaryContainer,
+            ),
       ),
     );
   }
 
-  TextButton seeMoreDetailsTextButton(BuildContext context) {
-    return TextButton(
-      onPressed: () {
+  GestureDetector seeMoreDetailsTextButton(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
         Navigator.of(context).push(
           MaterialPageRoute(
             builder: (ctx) => CrimeDetailsScreen(crime: crime),
@@ -142,9 +116,9 @@ class CrimeDetailsWidget extends StatelessWidget {
       },
       child: Text(
         getStrings(context).seeMoreDetails,
-        style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-              decoration: TextDecoration.underline,
-              color: Theme.of(context).colorScheme.onPrimary,
+        style: Theme.of(context).textTheme.bodySmall!.copyWith(
+              color: Theme.of(context).colorScheme.secondary,
+              fontWeight: FontWeight.bold,
             ),
       ),
     );
@@ -158,7 +132,7 @@ class CrimeDetailsWidget extends StatelessWidget {
         maxLines: 3,
         overflow: TextOverflow.ellipsis,
         style: Theme.of(context).textTheme.bodySmall!.copyWith(
-              color: Theme.of(context).colorScheme.onPrimary,
+              color: Theme.of(context).colorScheme.onPrimaryContainer,
             ),
       ),
     );
@@ -167,8 +141,9 @@ class CrimeDetailsWidget extends StatelessWidget {
   Text crimeTitle(BuildContext context) {
     return Text(
       crime.title,
-      style: Theme.of(context).textTheme.titleSmall!.copyWith(
-            color: Theme.of(context).colorScheme.onPrimary,
+      style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+            color: Theme.of(context).colorScheme.onPrimaryContainer,
+            fontWeight: FontWeight.bold,
           ),
       maxLines: 1,
       overflow: TextOverflow.ellipsis,

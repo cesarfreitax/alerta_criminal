@@ -3,10 +3,10 @@ import 'dart:io';
 import 'package:alerta_criminal/core/di/dependency_injection.dart';
 import 'package:alerta_criminal/core/dialog/loading_screen.dart';
 import 'package:alerta_criminal/core/providers/location_notifier.dart';
-import 'package:alerta_criminal/core/utils/auth_util.dart';
-import 'package:alerta_criminal/core/utils/date_util.dart';
-import 'package:alerta_criminal/core/utils/location_util.dart';
-import 'package:alerta_criminal/core/utils/string_util.dart';
+import 'package:alerta_criminal/core/util/auth_util.dart';
+import 'package:alerta_criminal/core/util/date_util.dart';
+import 'package:alerta_criminal/core/util/location_util.dart';
+import 'package:alerta_criminal/core/util/string_util.dart';
 import 'package:alerta_criminal/data/models/address.dart';
 import 'package:alerta_criminal/data/models/crime_model.dart';
 import 'package:alerta_criminal/data/models/crime_type.dart';
@@ -27,14 +27,9 @@ class AddNewCrimBottomSheet {
     return showModalBottomSheet(
       context: ctx,
       builder: (ctx) {
-        return Container(
-          height: 600,
-          width: double.infinity,
-          decoration: BoxDecoration(
-              gradient: LinearGradient(colors: [
-            Theme.of(ctx).colorScheme.secondaryContainer,
-            Theme.of(ctx).colorScheme.surface,
-          ], begin: Alignment.topCenter, end: Alignment.bottomCenter)),
+        return FractionallySizedBox(
+          heightFactor: 0.8,
+          widthFactor: 1.0,
           child: _AddNewCrimBottomSheet(
             addNewCrim: addNewCrim,
             resetLocation: resetLocation,
@@ -130,19 +125,19 @@ class _AddNewCrimBottomSheetState extends ConsumerState<_AddNewCrimBottomSheet> 
 
   Future<CrimeModel> getCrimeCreatedByUser() async {
     final pickedDate =
-    DateTime(currentDate.year, currentDate.month, currentDate.day, currentTime.hour, currentTime.minute);
+        DateTime(currentDate.year, currentDate.month, currentDate.day, currentTime.hour, currentTime.minute);
 
-    final crime =  CrimeModel(
-    title: titleController.text,
-    description: descriptionController.text,
-    lat: userLocation!.latitude,
-    lng: userLocation!.longitude,
-    address: crimeAddress ??=
-        await DependencyInjection.locationUseCase.getAddressByLatLng(userLocation!.latitude, userLocation!.longitude),
-    crimeTypeId: selectedCrimeType.id,
-    userId: getCurrentUser()!.uid,
-    date: pickedDate,
-  );
+    final crime = CrimeModel(
+      title: titleController.text,
+      description: descriptionController.text,
+      lat: userLocation!.latitude,
+      lng: userLocation!.longitude,
+      address: crimeAddress ??=
+          await DependencyInjection.locationUseCase.getAddressByLatLng(userLocation!.latitude, userLocation!.longitude),
+      crimeTypeId: selectedCrimeType.id,
+      userId: getCurrentUser()!.uid,
+      date: pickedDate,
+    );
 
     if (image != null) {
       final imageUrl = await DependencyInjection.userDataUseCase.saveCrimImage(image!, crime.id);
@@ -155,7 +150,7 @@ class _AddNewCrimBottomSheetState extends ConsumerState<_AddNewCrimBottomSheet> 
   void setDateAndTime() {
     currentDate = DateTime.now();
     currentTime = TimeOfDay(hour: currentDate.hour, minute: currentDate.minute);
-    dateController.text = formatDate(currentDate);
+    dateController.text = currentDate.formatToDefaultPattern(context);
     timeController.text = formatTime(currentTime);
   }
 
@@ -188,7 +183,7 @@ class _AddNewCrimBottomSheetState extends ConsumerState<_AddNewCrimBottomSheet> 
     currentDate = pickedDate;
 
     setState(() {
-      dateController.text = formatDate(pickedDate);
+      dateController.text = pickedDate.formatToDefaultPattern(context);
     });
   }
 
@@ -216,7 +211,12 @@ class _AddNewCrimBottomSheetState extends ConsumerState<_AddNewCrimBottomSheet> 
 
     return SingleChildScrollView(
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: EdgeInsets.only(
+          left: 16,
+          right: 16,
+          top: 16,
+          bottom: MediaQuery.of(context).viewInsets.bottom,
+        ),
         child: Column(
           children: [
             photoPreviewWidget(),
@@ -240,14 +240,19 @@ class _AddNewCrimBottomSheetState extends ConsumerState<_AddNewCrimBottomSheet> 
 
   ElevatedButton sendButton(BuildContext context) {
     return ElevatedButton.icon(
-      style: ElevatedButton.styleFrom(
-        backgroundColor: Theme.of(context).colorScheme.onPrimaryContainer
+      style: ElevatedButton.styleFrom(backgroundColor: Theme.of(context).colorScheme.secondaryContainer),
+      icon: Icon(
+        Icons.send,
+        color: Theme.of(context).colorScheme.onSecondaryContainer,
       ),
-      icon: Icon(Icons.send, color: Theme.of(context).colorScheme.onPrimary,),
       onPressed: isSubmiting ? null : submit,
-      label: Text(getStrings(context).send, style: Theme.of(context).textTheme.labelMedium!.copyWith(
-        color: Theme.of(context).colorScheme.onPrimary
-      ),),
+      label: Text(
+        getStrings(context).send,
+        style: Theme.of(context).textTheme.labelMedium!.copyWith(
+              color: Theme.of(context).colorScheme.onSecondaryContainer,
+              fontWeight: FontWeight.bold,
+            ),
+      ),
     );
   }
 
@@ -258,7 +263,7 @@ class _AddNewCrimBottomSheetState extends ConsumerState<_AddNewCrimBottomSheet> 
           height: 120,
           width: double.infinity,
           decoration: BoxDecoration(
-              border: Border.all(width: 2, color: Theme.of(context).colorScheme.primary.withOpacity(0.2))),
+              border: Border.all(width: 2, color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.2))),
           child: Image.network(
             getLocationImagePreview(
               userLocation!.latitude,
@@ -395,13 +400,14 @@ class _AddNewCrimBottomSheetState extends ConsumerState<_AddNewCrimBottomSheet> 
         return null;
       },
       decoration: InputDecoration(
-          border: const OutlineInputBorder(
-            borderRadius: BorderRadius.all(
-              Radius.circular(16),
-            ),
+        border: const OutlineInputBorder(
+          borderRadius: BorderRadius.all(
+            Radius.circular(16),
           ),
-          labelText: getStrings(context).description,
-          alignLabelWithHint: true),
+        ),
+        labelText: getStrings(context).description,
+        alignLabelWithHint: true,
+      ),
     );
   }
 

@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:alerta_criminal/core/utils/string_util.dart';
+import 'package:alerta_criminal/core/util/string_util.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 

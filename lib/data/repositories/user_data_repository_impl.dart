@@ -2,8 +2,8 @@ import 'dart:io';
 import 'dart:ui';
 
 import 'package:alerta_criminal/core/di/dependency_injection.dart';
-import 'package:alerta_criminal/core/utils/constants.dart';
-import 'package:alerta_criminal/core/utils/log_util.dart';
+import 'package:alerta_criminal/core/util/constants.dart';
+import 'package:alerta_criminal/core/util/log_util.dart';
 import 'package:alerta_criminal/data/models/user_model.dart';
 import 'package:alerta_criminal/domain/repositories/user_data_repository.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';

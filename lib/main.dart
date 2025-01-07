@@ -2,7 +2,6 @@ import 'package:alerta_criminal/core/di/dependency_injection.dart';
 import 'package:alerta_criminal/core/providers/crims_notifier.dart';
 import 'package:alerta_criminal/core/providers/location_notifier.dart';
 import 'package:alerta_criminal/features/main/screens/main_screen.dart';
-import 'package:alerta_criminal/firebase_options.dart';
 import 'package:alerta_criminal/theme/theme.dart';
 import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -10,6 +9,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import 'firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

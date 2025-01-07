@@ -1,5 +1,5 @@
 import 'package:alerta_criminal/core/di/dependency_injection.dart';
-import 'package:alerta_criminal/core/utils/log_util.dart';
+import 'package:alerta_criminal/core/util/log_util.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 

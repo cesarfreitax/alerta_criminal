@@ -1,5 +1,5 @@
-import 'package:alerta_criminal/core/utils/navigator_util.dart';
-import 'package:alerta_criminal/core/utils/string_util.dart';
+import 'package:alerta_criminal/core/util/navigator_util.dart';
+import 'package:alerta_criminal/core/util/string_util.dart';
 import 'package:alerta_criminal/features/auth/screens/auth_screen.dart';
 import 'package:flutter/material.dart';
 

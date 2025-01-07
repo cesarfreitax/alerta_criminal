@@ -54,6 +54,15 @@
   "emailRecoverSent": "Email de recuperação de senha enviado com sucesso!",
   "loginWarningMessage": "Faça login para acessar todas as funcionalidades do aplicativo.",
   "loginWarningAccess": "Acessar a minha conta",
-  "loginWarningCreate": "Criar conta"
-
+  "loginWarningCreate": "Criar conta",
+  "diffTimeMinuteSuffix": "{time}m",
+  "diffTimeHourSuffix": "{time}h",
+  "diffTimeDaySuffix": "{time}d",
+  "diffTimeWeekSuffix": "{time}s",
+  "diffTimeMonthSuffix": "{time}me",
+  "diffTimeYearSuffix": "{time}a",
+  "comment": "Comentar",
+  "allComments": "Ver todos os comentários",
+  "firstOnCommenting": "Deixar um comentário",
+  "noCommentsYet": "Ninguém comentou ainda. Seja o primeiro."
 }

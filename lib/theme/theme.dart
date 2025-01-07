@@ -4,51 +4,58 @@ import 'package:google_fonts/google_fonts.dart';
 
 final ColorScheme kColorScheme = ColorScheme.fromSeed(
   brightness: Brightness.light,
-  seedColor: CustomColors().black80,
-  primary: CustomColors().black80,
+  seedColor: Colors.white,
+  primary: Colors.black87,
   onPrimary: Colors.white,
-  secondary: Colors.grey,
-  onSecondary: Colors.black,
-  error: Colors.red,
-  onError: Colors.white,
   primaryContainer: Colors.white,
   onPrimaryContainer: Colors.black,
-  secondaryContainer: Colors.white,
-  onSecondaryContainer: Colors.black,
   surface: Colors.white,
   onSurface: Colors.black,
+  secondary: Colors.blueAccent,
+  onSecondary: Colors.white,
+  secondaryContainer: CustomColors().offWhite,
+  onSecondaryContainer: Colors.black,
+  error: Colors.redAccent,
+  onError: Colors.white,
 );
 
 final ColorScheme dColorScheme = ColorScheme.fromSeed(
   brightness: Brightness.dark,
-  seedColor: Colors.white,
-  surface: CustomColors().black80,
-  onSurface: Colors.white,
+  seedColor: CustomColors().black70,
   primary: Colors.white,
-  onPrimary: Colors.black,
+  onPrimary: CustomColors().black70,
   primaryContainer: CustomColors().black70,
   onPrimaryContainer: Colors.white,
-  secondary: CustomColors().grey,
-  onSecondary: Colors.black,
+  surface: CustomColors().black70,
+  onSurface: Colors.white,
+  secondary: Colors.lightBlueAccent,
+  onSecondary: Colors.white,
   secondaryContainer: CustomColors().black60,
   onSecondaryContainer: Colors.white,
-  error: Colors.red,
+  error: Colors.redAccent,
   onError: Colors.white,
 );
 
 ThemeData darkTheme = ThemeData.dark().copyWith(
-  colorScheme: dColorScheme,
-  elevatedButtonTheme: ElevatedButtonThemeData(
-    style: ElevatedButton.styleFrom(
-      backgroundColor: dColorScheme.primary,
-      foregroundColor: dColorScheme.onPrimary,
+    colorScheme: dColorScheme,
+    elevatedButtonTheme: ElevatedButtonThemeData(
+      style: ElevatedButton.styleFrom(
+        backgroundColor: dColorScheme.primary,
+        foregroundColor: dColorScheme.onPrimary,
+      ),
     ),
-  ),
-  textTheme: GoogleFonts.robotoTextTheme(ThemeData.dark().textTheme),
-  scaffoldBackgroundColor: dColorScheme.primaryContainer
-);
+    textTheme: GoogleFonts.robotoTextTheme(ThemeData.dark().textTheme),
+    scaffoldBackgroundColor: dColorScheme.primaryContainer,
+    appBarTheme: AppBarTheme().copyWith(backgroundColor: dColorScheme.primaryContainer),
+    bottomNavigationBarTheme: BottomNavigationBarThemeData().copyWith(
+      backgroundColor: dColorScheme.primaryContainer,
+    ));
 
 ThemeData lightTheme = ThemeData().copyWith(
-  colorScheme: kColorScheme,
-  textTheme: GoogleFonts.latoTextTheme(ThemeData.light().textTheme),
-);
+    colorScheme: kColorScheme,
+    textTheme: GoogleFonts.robotoTextTheme(ThemeData.light().textTheme),
+    scaffoldBackgroundColor: kColorScheme.primaryContainer,
+    appBarTheme: AppBarTheme().copyWith(backgroundColor: kColorScheme.primaryContainer),
+    bottomNavigationBarTheme: BottomNavigationBarThemeData().copyWith(
+      backgroundColor: kColorScheme.primaryContainer,
+    ));

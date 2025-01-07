@@ -1,6 +1,6 @@
 import 'package:alerta_criminal/core/providers/user_notifier.dart';
-import 'package:alerta_criminal/core/utils/auth_util.dart';
-import 'package:alerta_criminal/core/utils/string_util.dart';
+import 'package:alerta_criminal/core/util/auth_util.dart';
+import 'package:alerta_criminal/core/util/string_util.dart';
 import 'package:alerta_criminal/core/widgets/divisor_widget.dart';
 import 'package:alerta_criminal/core/widgets/login_warning_widget.dart';
 import 'package:alerta_criminal/data/models/user_model.dart';

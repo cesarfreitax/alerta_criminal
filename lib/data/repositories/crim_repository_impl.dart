@@ -1,5 +1,5 @@
 import 'package:alerta_criminal/core/di/dependency_injection.dart';
-import 'package:alerta_criminal/core/utils/constants.dart';
+import 'package:alerta_criminal/core/util/constants.dart';
 import 'package:alerta_criminal/data/models/crime_model.dart';
 import 'package:alerta_criminal/domain/repositories/crim_repository.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';

@@ -3,6 +3,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:uuid/uuid.dart';
 
+import 'converter/custom_timestamp_converter.dart';
+
 part 'crime_model.g.dart';
 
 const uuid = Uuid();
@@ -38,14 +40,4 @@ class CrimeModel {
       _$CrimeModelFromJson(json);
 
   Map<String, dynamic> toJson() => _$CrimeModelToJson(this);
-}
-
-class CustomTimestampConverter implements JsonConverter<DateTime, Timestamp> {
-  const CustomTimestampConverter();
-
-  @override
-  DateTime fromJson(Timestamp json) => json.toDate();
-
-  @override
-  Timestamp toJson(DateTime object) => Timestamp.fromDate(object);
 }
