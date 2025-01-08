@@ -24,8 +24,7 @@ class CrimeDetailsScreen extends StatefulWidget {
 }
 
 class _CrimeDetailsScreenState extends State<CrimeDetailsScreen> {
-  List<CrimeCommentaryModel>? commentaries;
-  final List<CrimeCommentaryModel> inMemoryComments = [];
+  final List<CrimeCommentaryModel> comments = [];
   var isLoading = true;
 
   @override
@@ -38,15 +37,16 @@ class _CrimeDetailsScreenState extends State<CrimeDetailsScreen> {
     final c = await DependencyInjection.crimeCommentariesUseCase.getCommentaries(crimeId);
 
     setState(() {
-      commentaries = c;
-      inMemoryComments.addAll(c);
+      comments
+        ..addAll(c)
+        ..sort((comment1, comment2) => comment2.likes.length.compareTo(comment1.likes.length));
       isLoading = false;
     });
   }
 
   void onNewComment(CrimeCommentaryModel newComment) {
     setState(() {
-      inMemoryComments.add(newComment);
+      comments.add(newComment);
     });
   }
 
@@ -144,11 +144,11 @@ class _CrimeDetailsScreenState extends State<CrimeDetailsScreen> {
               width: double.infinity,
               child: Column(
                 children: [
-                  ...inMemoryComments
+                  ...comments
                       .getRange(
                           0,
-                          inMemoryComments.length < commentsPreviewLimit
-                              ? inMemoryComments.length
+                          comments.length < commentsPreviewLimit
+                              ? comments.length
                               : commentsPreviewLimit)
                       .map((comment) => UserCommentWidget(
                             isPreview: true,
@@ -160,10 +160,10 @@ class _CrimeDetailsScreenState extends State<CrimeDetailsScreen> {
                   ),
                   GestureDetector(
                     onTap: () {
-                      CommentsBottomSheet().show(context, inMemoryComments, widget.crime.id, onNewComment);
+                      CommentsBottomSheet().show(context, comments, widget.crime.id, onNewComment);
                     },
                     child: Text(
-                      inMemoryComments.isNotEmpty
+                      comments.isNotEmpty
                           ? getStrings(context).allComments
                           : getStrings(context).firstOnCommenting,
                       style: Theme.of(context).textTheme.bodySmall!.copyWith(
