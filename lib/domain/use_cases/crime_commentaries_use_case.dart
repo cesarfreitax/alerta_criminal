@@ -8,8 +8,18 @@ class CrimeCommentariesUseCase {
 
   CrimeCommentariesUseCase(this.repository, this.firebaseFirestore);
 
-  Future<void> toggleLikeOnCommentary(String crimeId, String commentaryId, String userId) async => repository.toggleLikeOnCommentary(crimeId, commentaryId, userId);
-  CollectionReference<CrimeCommentaryModel> getCommentariesCollectionReference(String crimeId) => repository.getCommentariesCollectionReference(crimeId);
+  Future<void> toggleLikeOnCommentary(String crimeId, String commentaryId, String userId, bool alreadyLiked) async =>
+      repository.toggleLikeOnCommentary(crimeId, commentaryId, userId, alreadyLiked);
+
+  CollectionReference<CrimeCommentaryModel> getCommentariesCollectionReference(String crimeId) =>
+      repository.getCommentariesCollectionReference(crimeId);
+
+  Future<CrimeCommentaryModel?> addCommentary(String crimeId, CrimeCommentaryModel commentary) async =>
+      repository.addCommentary(crimeId, commentary);
+
   Future<List<CrimeCommentaryModel>> getCommentaries(String crimeId) async => repository.getCommentaries(crimeId);
-  Future<CrimeCommentaryModel?> addCommentary(String crimeId, CrimeCommentaryModel commentary) async => repository.addCommentary(crimeId, commentary);
+
+  Future<void> updateCommentary(
+          String crimeId, String commentaryId, Map<String, dynamic> updates) async =>
+      repository.updateCommentary(crimeId, commentaryId, updates);
 }

@@ -78,15 +78,18 @@ class _CommentsBottomSheetWidgetState extends State<_CommentsBottomSheetWidget> 
               color: Theme.of(context).colorScheme.primary,
             ),
           ),
-          if (widget.comments.isEmpty)
-            Text(getStrings(context).noCommentsYet),
+          if (widget.comments.isEmpty) Text(getStrings(context).noCommentsYet),
           Flexible(
             flex: 2,
             child: ListView.builder(
                 itemCount: widget.comments.length,
                 itemBuilder: (ctx, index) {
                   final comment = widget.comments[index];
-                  return UserCommentWidget(comment: comment, crimeId: widget.crimeId,);
+                  return UserCommentWidget(
+                    isPreview: false,
+                    comment: comment,
+                    crimeId: widget.crimeId,
+                  );
                 }),
           ),
           TextField(
@@ -121,9 +124,12 @@ class _CommentsBottomSheetWidgetState extends State<_CommentsBottomSheetWidget> 
 
               closeKeyboard(context);
 
-              final commentaryCreated = await DependencyInjection.crimeCommentariesUseCase.addCommentary(widget.crimeId, newComment);
+              final commentaryCreated =
+                  await DependencyInjection.crimeCommentariesUseCase.addCommentary(widget.crimeId, newComment);
               if (commentaryCreated != null) {
-                widget.onNewComment(newComment);
+                setState(() {
+                  widget.onNewComment(commentaryCreated);
+                });
               } else {
                 if (!context.mounted) {
                   return;

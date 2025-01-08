@@ -6,8 +6,9 @@ import 'package:flutter/material.dart';
 import '../../../data/models/crime_commentary_model.dart';
 
 class UserCommentWidget extends StatefulWidget {
-  const UserCommentWidget({super.key, required this.comment, required this.crimeId});
+  const UserCommentWidget({super.key, required this.isPreview, required this.comment, required this.crimeId});
 
+  final bool isPreview;
   final CrimeCommentaryModel comment;
   final String crimeId;
 
@@ -27,8 +28,8 @@ class _UserCommentWidgetState extends State<UserCommentWidget> {
           Text(
             widget.comment.cachedUsername,
             style: Theme.of(context).textTheme.labelSmall!.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
+                  fontWeight: FontWeight.bold,
+                ),
           ),
           Text(
             widget.comment.date.getDifferenceFromNow(context),
@@ -43,27 +44,41 @@ class _UserCommentWidgetState extends State<UserCommentWidget> {
         widget.comment.text,
         style: Theme.of(context).textTheme.labelSmall,
       ),
-      trailing: Row(
-        mainAxisSize: MainAxisSize.min,
-        spacing: 4,
-        children: [
-          GestureDetector(
-            onTap: () => toggleLike(),
-            child: Image.asset(
-              didILikeThisComment() ? 'assets/like_filled.png' : 'assets/like_outlined.png',
-              scale: 1.5,
-              color: Theme.of(context).colorScheme.primary,
+      trailing: widget.isPreview
+          ? null
+          : GestureDetector(
+              onTap: () => toggleLike(),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                spacing: 4,
+                children: [
+                  Image.asset(
+                    alreadyLiked() ? 'assets/like_filled.png' : 'assets/like_outlined.png',
+                    scale: 1.5,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                  Text(widget.comment.likes.length.toString())
+                ],
+              ),
             ),
-          ),
-          Text(widget.comment.likes.length.toString())
-        ],
-      ),
     );
   }
 
-  bool didILikeThisComment() => widget.comment.likes.contains(getCurrentUser()?.uid);
+  bool alreadyLiked() => widget.comment.likes.contains(getCurrentUser()?.uid);
 
   void toggleLike() async {
-    await DependencyInjection.crimeCommentariesUseCase.toggleLikeOnCommentary(widget.crimeId, widget.comment.id!, getCurrentUser()!.uid);
+    final userAlreadyLiked = alreadyLiked();
+
+    if (userAlreadyLiked) {
+      setState(() {
+        widget.comment.likes.remove(getCurrentUser()!.uid);
+      });
+    } else {
+      setState(() {
+        widget.comment.likes.add(getCurrentUser()!.uid);
+      });
+    }
+    await DependencyInjection.crimeCommentariesUseCase
+        .toggleLikeOnCommentary(widget.crimeId, widget.comment.id!, getCurrentUser()!.uid, userAlreadyLiked);
   }
 }

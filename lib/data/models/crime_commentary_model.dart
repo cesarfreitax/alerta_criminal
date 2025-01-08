@@ -24,6 +24,24 @@ class CrimeCommentaryModel {
     required this.date
   });
 
+  CrimeCommentaryModel copyWith({
+    String? id,
+    String? text,
+    String? userId,
+    String? cachedUsername,
+    DateTime? date,
+    List<String>? likes,
+  }) {
+    return CrimeCommentaryModel(
+      id: id ?? this.id,
+      text: text ?? this.text,
+      userId: userId ?? this.userId,
+      cachedUsername: cachedUsername ?? this.cachedUsername,
+      date: date ?? this.date,
+      likes: likes ?? this.likes,
+    );
+  }
+
   factory CrimeCommentaryModel.fromJson(Map<String, dynamic> json) => _$CrimeCommentaryModelFromJson(json);
 
   Map<String, dynamic> toJson() => _$CrimeCommentaryModelToJson(this);

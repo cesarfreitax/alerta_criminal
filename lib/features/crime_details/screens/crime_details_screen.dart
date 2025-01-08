@@ -35,8 +35,7 @@ class _CrimeDetailsScreenState extends State<CrimeDetailsScreen> {
   }
 
   getCommentaries(String crimeId) async {
-    final c = await DependencyInjection.crimeCommentariesUseCase
-        .getCommentaries(crimeId);
+    final c = await DependencyInjection.crimeCommentariesUseCase.getCommentaries(crimeId);
 
     setState(() {
       commentaries = c;
@@ -152,6 +151,7 @@ class _CrimeDetailsScreenState extends State<CrimeDetailsScreen> {
                               ? inMemoryComments.length
                               : commentsPreviewLimit)
                       .map((comment) => UserCommentWidget(
+                            isPreview: true,
                             comment: comment,
                             crimeId: widget.crime.id,
                           )),

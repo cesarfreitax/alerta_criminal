@@ -5,5 +5,6 @@ abstract class CrimeCommentariesRepository {
   CollectionReference<CrimeCommentaryModel> getCommentariesCollectionReference(String crimeId);
   Future<CrimeCommentaryModel?> addCommentary(String crimeId, CrimeCommentaryModel commentary);
   Future<List<CrimeCommentaryModel>> getCommentaries(String crimeId);
-  Future<void> toggleLikeOnCommentary(String crimeId, String commentaryId, String userId);
+  Future<void> updateCommentary(String crimeId, String commentaryId, Map<String, dynamic> updates);
+  Future<void> toggleLikeOnCommentary(String crimeId, String commentaryId, String userId, bool alreadyLiked);
 }

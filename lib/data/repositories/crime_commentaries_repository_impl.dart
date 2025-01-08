@@ -19,28 +19,11 @@ class CrimeCommentariesRepositoryImpl extends CrimeCommentariesRepository {
   }
 
   @override
-  Future<void> toggleLikeOnCommentary(String crimeId, String commentaryId, String userId) async {
-    final querySnapshot = await getQuerySnapshot(crimeId);
-    final commentariesRef = querySnapshot.docs.first.reference;
-
-    await FirebaseFirestore.instance.runTransaction((transaction) async {
-      final snapshot = await transaction.get(commentariesRef);
-
-      final data = snapshot.data() as Map<String, dynamic>;
-      final comments = data['comments'] as List<CrimeCommentaryModel>;
-      final filteredCommentary = comments.firstWhere((comment) => comment.id == commentaryId);
-      final likes = filteredCommentary.likes;
-
-      if (likes.contains(userId)) {
-        transaction.update(commentariesRef, {
-          'likes': FieldValue.arrayRemove([userId])
-        });
-      } else {
-        transaction.update(commentariesRef, {
-          'likes': FieldValue.arrayUnion([userId])
-        });
-      }
-    });
+  Future<void> toggleLikeOnCommentary(String crimeId, String commentaryId, String userId, bool alreadyLiked) async {
+    final update = {
+      'likes': alreadyLiked ? FieldValue.arrayRemove([userId]) : FieldValue.arrayUnion([userId])
+    };
+    await updateCommentary(crimeId, commentaryId, update);
   }
 
   @override
@@ -58,9 +41,13 @@ class CrimeCommentariesRepositoryImpl extends CrimeCommentariesRepository {
   @override
   Future<CrimeCommentaryModel?> addCommentary(String crimeId, CrimeCommentaryModel commentary) async {
     late final CrimeCommentaryModel? commentaryCreated;
-    final crimeCommentariesDocRef = getCommentariesCollectionReference(crimeId);
+    final crimeCommentariesCollection = getCommentariesCollectionReference(crimeId);
+
     try {
-      final commentaryDocRef = await crimeCommentariesDocRef.add(commentary);
+      final commentaryDocRef = crimeCommentariesCollection.doc();
+      final generatedId = commentaryDocRef.id;
+      final newCommentary = commentary.copyWith(id: generatedId);
+      await commentaryDocRef.set(newCommentary);
       final commentarySnapshot = await commentaryDocRef.get();
       commentaryCreated = commentarySnapshot.data();
     } catch (e) {
@@ -81,5 +68,16 @@ class CrimeCommentariesRepositoryImpl extends CrimeCommentariesRepository {
     }
     final commentaries = commentariesQuerySnapshot.docs.map((doc) => doc.data()).toList();
     return commentaries;
+  }
+
+  @override
+  Future<void> updateCommentary(String crimeId, String commentaryId, Map<String, dynamic> updates) async {
+    final commentariesCollectionReference = getCommentariesCollectionReference(crimeId);
+    try {
+      final commentaryDocRef = commentariesCollectionReference.doc(commentaryId);
+      await commentaryDocRef.update(updates);
+    } catch (e) {
+      printDebug("Error when trying to update a crime commentary: $e");
+    }
   }
 }
