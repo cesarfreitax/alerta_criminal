@@ -1,11 +1,11 @@
 import 'package:alerta_criminal/core/di/dependency_injection.dart';
 import 'package:alerta_criminal/core/util/auth_util.dart';
 import 'package:alerta_criminal/core/util/keyboard_util.dart';
+import 'package:alerta_criminal/core/util/message_util.dart';
 import 'package:alerta_criminal/core/util/string_util.dart';
 import 'package:alerta_criminal/data/models/crime_commentary_model.dart';
 import 'package:alerta_criminal/features/crime_details/widgets/user_comment_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:uuid/uuid.dart';
 
 class CommentsBottomSheet {
   Future<dynamic> show(
@@ -86,7 +86,7 @@ class _CommentsBottomSheetWidgetState extends State<_CommentsBottomSheetWidget> 
                 itemCount: widget.comments.length,
                 itemBuilder: (ctx, index) {
                   final comment = widget.comments[index];
-                  return UserCommentWidget(comment: comment);
+                  return UserCommentWidget(comment: comment, crimeId: widget.crimeId,);
                 }),
           ),
           TextField(
@@ -104,8 +104,7 @@ class _CommentsBottomSheetWidgetState extends State<_CommentsBottomSheetWidget> 
               final user = getCurrentUser()!;
 
               final newComment = CrimeCommentaryModel(
-                id: Uuid().v1(),
-                likes: [""],
+                likes: [],
                 text: text,
                 userId: user.uid,
                 cachedUsername: user.displayName!,
@@ -121,10 +120,16 @@ class _CommentsBottomSheetWidgetState extends State<_CommentsBottomSheetWidget> 
               }
 
               closeKeyboard(context);
-              widget.onNewComment(newComment);
 
-              await DependencyInjection.crimeCommentariesUseCase
-                  .createOrUpdateCrimeCommentaries(widget.crimeId, newComment);
+              final commentaryCreated = await DependencyInjection.crimeCommentariesUseCase.addCommentary(widget.crimeId, newComment);
+              if (commentaryCreated != null) {
+                widget.onNewComment(newComment);
+              } else {
+                if (!context.mounted) {
+                  return;
+                }
+                showSnackBarError(getStrings(context).unexpectedErrorTryAgainLater, context);
+              }
             },
           )
         ],

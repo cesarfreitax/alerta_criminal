@@ -272,5 +272,9 @@
   "noCommentsYet": "No comments yet. Be the first one.",
   "@noCommentsYet": {
     "description": "No comments yet. Be the first one on commenting this crime."
+  },
+  "unexpectedErrorTryAgainLater": "Unexpected error. Sorry... Try again later.",
+  "@unexpectedErrorTryAgainLater": {
+    "description": "Unexpected error during some action. We are sorry about that. Please try again later."
   }
 }

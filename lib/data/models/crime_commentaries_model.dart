@@ -8,14 +8,12 @@ part 'crime_commentaries_model.g.dart';
 @CustomTimestampConverter()
 @JsonSerializable(explicitToJson: true)
 class CrimeCommentariesModel {
-  CrimeCommentariesModel(
-    this.id, {
-    required this.crimeId,
+  CrimeCommentariesModel({
+    this.id,
     required this.comments,
   });
 
-  final String id;
-  final String crimeId;
+  final String? id;
   final List<CrimeCommentaryModel> comments;
 
   factory CrimeCommentariesModel.fromJson(Map<String, dynamic> json) => _$CrimeCommentariesModelFromJson(json);

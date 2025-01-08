@@ -21,32 +21,12 @@ class HomeScreen extends ConsumerStatefulWidget {
   }
 }
 
-class _HomeScreenState extends ConsumerState<HomeScreen> with WidgetsBindingObserver {
+class _HomeScreenState extends ConsumerState<HomeScreen> {
   LatLng? userLocation;
   LatLng? userPreviousLocation;
   var isShowingCrimeDetails = false;
   String? selectedCrimeId;
   List<CrimeModel> crims = [];
-
-  @override
-  void initState() {
-    WidgetsBinding.instance.addObserver(this);
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    WidgetsBinding.instance.removeObserver(this);
-    super.dispose();
-  }
-
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    super.didChangeAppLifecycleState(state);
-    if (state == AppLifecycleState.paused) {
-      clearCrimeDetails();
-    }
-  }
 
   Set<Marker> getMarkers(List<CrimeModel> crimes) {
     return crimes

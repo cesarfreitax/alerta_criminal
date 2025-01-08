@@ -1,45 +1,69 @@
+import 'package:alerta_criminal/core/di/dependency_injection.dart';
+import 'package:alerta_criminal/core/util/auth_util.dart';
 import 'package:alerta_criminal/core/util/date_util.dart';
 import 'package:flutter/material.dart';
 
 import '../../../data/models/crime_commentary_model.dart';
 
-class UserCommentWidget extends StatelessWidget {
-  const UserCommentWidget({super.key, required this.comment});
+class UserCommentWidget extends StatefulWidget {
+  const UserCommentWidget({super.key, required this.comment, required this.crimeId});
 
   final CrimeCommentaryModel comment;
+  final String crimeId;
 
   @override
-  Widget build(context) {
+  State<UserCommentWidget> createState() {
+    return _UserCommentWidgetState();
+  }
+}
+
+class _UserCommentWidgetState extends State<UserCommentWidget> {
+  @override
+  Widget build(BuildContext context) {
     return ListTile(
       title: Row(
         spacing: 4,
         children: [
           Text(
-            comment.cachedUsername,
+            widget.comment.cachedUsername,
             style: Theme.of(context).textTheme.labelSmall!.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+              fontWeight: FontWeight.bold,
+            ),
           ),
           Text(
-            comment.date.getDifferenceFromNow(context),
-            style: Theme.of(context).textTheme.labelSmall!.copyWith(
-              color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.5)
-            ),
+            widget.comment.date.getDifferenceFromNow(context),
+            style: Theme.of(context)
+                .textTheme
+                .labelSmall!
+                .copyWith(color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.5)),
           ),
         ],
       ),
       subtitle: Text(
-        comment.text,
+        widget.comment.text,
         style: Theme.of(context).textTheme.labelSmall,
       ),
       trailing: Row(
         mainAxisSize: MainAxisSize.min,
         spacing: 4,
         children: [
-          GestureDetector(onTap: () => {}, child: Image.asset('assets/like_outlined.png', scale: 1.5,)),
-          Text(comment.likes.length.toString())
+          GestureDetector(
+            onTap: () => toggleLike(),
+            child: Image.asset(
+              didILikeThisComment() ? 'assets/like_filled.png' : 'assets/like_outlined.png',
+              scale: 1.5,
+              color: Theme.of(context).colorScheme.primary,
+            ),
+          ),
+          Text(widget.comment.likes.length.toString())
         ],
       ),
     );
+  }
+
+  bool didILikeThisComment() => widget.comment.likes.contains(getCurrentUser()?.uid);
+
+  void toggleLike() async {
+    await DependencyInjection.crimeCommentariesUseCase.toggleLikeOnCommentary(widget.crimeId, widget.comment.id!, getCurrentUser()!.uid);
   }
 }

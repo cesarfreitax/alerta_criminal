@@ -2,7 +2,6 @@ import 'package:alerta_criminal/core/di/dependency_injection.dart';
 import 'package:alerta_criminal/core/util/date_util.dart';
 import 'package:alerta_criminal/core/util/string_util.dart';
 import 'package:alerta_criminal/core/widgets/location_preview_widget.dart';
-import 'package:alerta_criminal/data/models/crime_commentaries_model.dart';
 import 'package:alerta_criminal/data/models/crime_commentary_model.dart';
 import 'package:alerta_criminal/data/models/crime_model.dart';
 import 'package:alerta_criminal/features/crime_details/widgets/comments_bottom_sheet_widget.dart';
@@ -25,7 +24,7 @@ class CrimeDetailsScreen extends StatefulWidget {
 }
 
 class _CrimeDetailsScreenState extends State<CrimeDetailsScreen> {
-  CrimeCommentariesModel? commentaries;
+  List<CrimeCommentaryModel>? commentaries;
   final List<CrimeCommentaryModel> inMemoryComments = [];
   var isLoading = true;
 
@@ -36,10 +35,12 @@ class _CrimeDetailsScreenState extends State<CrimeDetailsScreen> {
   }
 
   getCommentaries(String crimeId) async {
-    final c = await DependencyInjection.crimeCommentariesUseCase.getCrimeCommentaries(crimeId);
+    final c = await DependencyInjection.crimeCommentariesUseCase
+        .getCommentaries(crimeId);
+
     setState(() {
       commentaries = c;
-      inMemoryComments.addAll(c?.comments ?? []);
+      inMemoryComments.addAll(c);
       isLoading = false;
     });
   }
@@ -145,8 +146,15 @@ class _CrimeDetailsScreenState extends State<CrimeDetailsScreen> {
               child: Column(
                 children: [
                   ...inMemoryComments
-                      .getRange(0, inMemoryComments.length < commentsPreviewLimit ? inMemoryComments.length : commentsPreviewLimit)
-                      .map((comment) => UserCommentWidget(comment: comment)),
+                      .getRange(
+                          0,
+                          inMemoryComments.length < commentsPreviewLimit
+                              ? inMemoryComments.length
+                              : commentsPreviewLimit)
+                      .map((comment) => UserCommentWidget(
+                            comment: comment,
+                            crimeId: widget.crime.id,
+                          )),
                   const SizedBox(
                     height: 8,
                   ),
@@ -155,7 +163,9 @@ class _CrimeDetailsScreenState extends State<CrimeDetailsScreen> {
                       CommentsBottomSheet().show(context, inMemoryComments, widget.crime.id, onNewComment);
                     },
                     child: Text(
-                      inMemoryComments.isNotEmpty ? getStrings(context).allComments : getStrings(context).firstOnCommenting,
+                      inMemoryComments.isNotEmpty
+                          ? getStrings(context).allComments
+                          : getStrings(context).firstOnCommenting,
                       style: Theme.of(context).textTheme.bodySmall!.copyWith(
                             color: Theme.of(context).colorScheme.secondary,
                             fontWeight: FontWeight.bold,

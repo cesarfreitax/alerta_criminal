@@ -1,7 +1,7 @@
 import 'package:alerta_criminal/core/services/auth_service.dart';
 import 'package:alerta_criminal/core/services/string_service.dart';
 import 'package:alerta_criminal/data/repositories/crim_repository_impl.dart';
-import 'package:alerta_criminal/data/repositories/crime_commentary_repository_impl.dart';
+import 'package:alerta_criminal/data/repositories/crime_commentaries_repository_impl.dart';
 import 'package:alerta_criminal/data/repositories/location_repository_impl.dart';
 import 'package:alerta_criminal/data/repositories/user_data_repository_impl.dart';
 import 'package:alerta_criminal/domain/repositories/crim_repository.dart';

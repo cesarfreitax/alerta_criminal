@@ -1,8 +1,9 @@
-import 'package:alerta_criminal/data/models/crime_commentaries_model.dart';
 import 'package:alerta_criminal/data/models/crime_commentary_model.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 abstract class CrimeCommentariesRepository {
-  Future<CrimeCommentariesModel?> createOrUpdateCrimeCommentaries(String crimeId, CrimeCommentaryModel newComment);
-
-  Future<CrimeCommentariesModel?> getCrimeCommentaries(String crimeId);
+  CollectionReference<CrimeCommentaryModel> getCommentariesCollectionReference(String crimeId);
+  Future<CrimeCommentaryModel?> addCommentary(String crimeId, CrimeCommentaryModel commentary);
+  Future<List<CrimeCommentaryModel>> getCommentaries(String crimeId);
+  Future<void> toggleLikeOnCommentary(String crimeId, String commentaryId, String userId);
 }

@@ -64,5 +64,6 @@
   "comment": "Comentar",
   "allComments": "Ver todos os comentários",
   "firstOnCommenting": "Deixar um comentário",
-  "noCommentsYet": "Ninguém comentou ainda. Seja o primeiro."
+  "noCommentsYet": "Ninguém comentou ainda. Seja o primeiro.",
+  "unexpectedErrorTryAgainLater": "Houve um erro inesperado. Desculpe... Tente novamente mais tarde."
 }
