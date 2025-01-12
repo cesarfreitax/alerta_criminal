@@ -7,7 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class MapWidget extends ConsumerStatefulWidget {
-  const MapWidget({
+  MapWidget({
     super.key,
     required this.markers,
     required this.userLocation,
@@ -16,7 +16,7 @@ class MapWidget extends ConsumerStatefulWidget {
     this.onTapMap,
   });
 
-  final Set<Marker> markers;
+  Set<Marker> markers;
   final LatLng userLocation;
   final bool isSelecting;
   final void Function(String address, LatLng location)? onSelectNewLocation;
@@ -30,7 +30,6 @@ class MapWidget extends ConsumerStatefulWidget {
 
 class _MapWidgetState extends ConsumerState<MapWidget> {
   late GoogleMapController mapController;
-  late Set<Marker> markers;
   final searchBarController = TextEditingController();
   var isFetchingLocation = false;
   var currentAddress = "";
@@ -44,7 +43,6 @@ class _MapWidgetState extends ConsumerState<MapWidget> {
 
   @override
   void initState() {
-    markers = widget.markers;
     if (widget.isSelecting) {
       setTextOnSearchBar(widget.userLocation);
     }
@@ -53,7 +51,7 @@ class _MapWidgetState extends ConsumerState<MapWidget> {
 
   void setMarkers(LatLng location) {
     setState(() {
-      markers = {
+      widget.markers = {
         Marker(
           markerId: const MarkerId("m1"),
           position: location,
@@ -117,7 +115,7 @@ class _MapWidgetState extends ConsumerState<MapWidget> {
       compassEnabled: true,
       padding: EdgeInsets.only(bottom: 64.0, right: 8),
       mapType: MapType.normal,
-      markers: markers,
+      markers: widget.markers,
       onTap: widget.isSelecting && !isFetchingLocation
           ? (location) async {
         onTapMapWhenSelecting(location);
